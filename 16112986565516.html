@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  MySQL索引优化 - Isaac Blog
+  String 应用场景 - Isaac Blog
   
   </title>
   
@@ -118,14 +118,14 @@
       <div class="markdown-body article-wrap">
        <div class="article">
           
-          <h1>MySQL索引优化</h1>
+          <h1>String 应用场景</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/11/27 14:08 下午</span>
+          <span class="date">2021/01/22 14:57 下午</span>
 
           <span>posted in&nbsp;</span> 
           
-              <span class="posted-in"><a href='MySQL.html'>MySQL</a></span>
+              <span class="posted-in"><a href='%E5%AE%9E%E8%B7%B5.html'>实践</a></span>
            
          
           <span class="comments">
@@ -138,53 +138,80 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <span id="more"></span><!-- more -->
+      <p>String 提供了 “键 - 单值” 的存储模式，可以使用与很多场景。而且可以保存二进制字节流。但是 String 存在保存的数据内存消耗比较多的问题。</p>
 
-<h3 id="toc_0">1. 索引列上不能使用表达式或函数</h3>
+<span id="more"></span><!-- more -->
 
-<h3 id="toc_1">2. 前缀索引和索引列的选择性</h3>
+<h2 id="toc_0">String 类型内存开销大</h2>
 
-<blockquote>
-<p>索引的选择性是不重复的索引值和表记录数的比值</p>
+<p>除了实际存储的数据，String 类型还需要额外的内存空间记录字符长度，空空间使用等原数据信息。</p>
 
-<h3 id="toc_2">3. 联合索引</h3>
-
-<ol>
-<li>经常被使用的列优先</li>
-<li>选择性高的列优先</li>
-<li>宽度小的列优先<br/>
-### 4. 覆盖索引<br/>
-#### 优点</li>
-<li>可以有优化缓存，减少磁盘IO操作</li>
-<li>可以减少随机IO，变随机IO为顺序IO</li>
-<li>可以避免对Innodb 主键索引的二次索引</li>
-<li>可以避免MyISAM表进行系统调用<br/>
-#### 缺点</li>
-<li>存储引擎不支持覆盖索引</li>
-<li>查询使用太多列</li>
-<li>使用双%号的like查询</li>
-</ol>
-</blockquote>
-
-<h3 id="toc_3">优化查询</h3>
-
-<h4 id="toc_4">使用索引扫描来优化排序</h4>
+<h3 id="toc_1">数据存储方式</h3>
 
 <ol>
-<li>通过排序操作</li>
-<li>按照索引顺序扫描数据<br/>
-##### 使用条件</li>
-<li>索引的列顺序和Order By子句中的顺序完全一致</li>
-<li>索引中的所有列的方向和Order By 子句完全一致</li>
-<li>Order By中的字段全部在关联表中的第一张表</li>
+<li>int编码 ：在保存64位的有符号整数时，String 会保存为一个 8 字节的 Long类型整数</li>
+<li>SDS：String 保存包含字符的数据时，就会使用SDS</li>
 </ol>
 
-<h3 id="toc_5">优化锁</h3>
+<h4 id="toc_2">SDS（Simple Dynamic String）</h4>
+
+<p><img src="media/16112986565516/16113068758448.jpg" alt="" style="width:355px;"/></p>
 
 <ol>
-<li>索引可以减少锁定行数</li>
-<li>索引可以加快处理速度，同时加快了锁的释放</li>
+<li>buf : 字节数组保存实际的数据</li>
+<li>len : 4个字节，表示 buf 已用长度</li>
+<li>alloc : 也占4个字节，表示 buf 实际使用长度</li>
 </ol>
+
+<p>len 和 alloc 就是String一个内存额外消耗</p>
+
+<h3 id="toc_3">RedisObject 的结构消耗</h3>
+
+<p>Redis 有多种数据类型，不同的数据类型有相同的元素要记录，Redis 使用RedisObject 结构来同一记录这些元数据，同时指向实际数据; RedisObject 包含一个8字节的元数据和一个8字节的指针 </p>
+
+<p><img src="media/16112986565516/16113113413125.jpg" alt="" style="width:251px;"/></p>
+
+<ol>
+<li>如果保存的是Long类型的整数时，RedisObject 中的指针就直接被赋值为整数数值。</li>
+<li>embstr : 如果为是字符串，并且字符串小于，等于 <strong>44</strong> 字节时，RedisObject 中元数据、指针、SDS 是一个连续的内存空间</li>
+<li>raw : 如果字符串，大于 <strong>44</strong> 字节时，  RedisObject 给SDS配置独立的内存空间并让指针指向SDS</li>
+</ol>
+
+<p><img src="media/16112986565516/16113118747392.jpg" alt=""/></p>
+
+<h3 id="toc_4">Redis 结构</h3>
+
+<p>Redis 使用一个全局的哈希表保存所有的键值对，哈希表的每一项都是一个dictEntity，dictEntity 结构中有三个 8 字节的指针，指向 key、value、dictEntity, 因为Redis 采用 jemalloc 分配内存空间，会根据申请的字节数 N ，找到一个比N大，但是接近N的2次幂整数作为分配空间的大小，所以一个 dictEntity 占用 32 个字节</p>
+
+<h2 id="toc_5">压缩列表</h2>
+
+<p>Redis 中的压缩列表非常省空间，表头有三个字段，zlbytes : 列表长度； zltail : 列表尾的偏移量；zlen : 列表中 entry 的个数。还有一个zlend : 表示列表结束。压缩列表省内存主要是它使用一系列连续的entry保存，连续存放不需要额外的指针，节省了指针空间。</p>
+
+<p><img src="media/16112986565516/16113221478284.jpg" alt="" style="width:731px;"/></p>
+
+<h3 id="toc_6">压缩类表的Entry</h3>
+
+<ol>
+<li>prev_len : 表示前一个 entry 长度，当一个 entry 长度小于 254 为 1 否则为 5；</li>
+<li>encoding : 表示编码方式 1 字节</li>
+<li>len : 自身的长度 4 字节</li>
+<li>key : 保存实际数据</li>
+</ol>
+
+<h2 id="toc_7">如何使用集合保存单值键值对</h2>
+
+<p>在保存单值键值对时，可以采取基于 Hash 类型的二级编码方式；把一个单值的数据拆成两部分，前一部分作为 Hash 的键，后一个部分作为 Hash 的值</p>
+
+<h3 id="toc_8">二级编码的拆分</h3>
+
+<p>因为哈希有两种数据结构压缩表和哈希表；如果超过下面设置的阈值就会从压缩列表转为哈希表，而且不可逆转</p>
+
+<ol>
+<li><em>hash-max-zlist-entries</em> : 表示压缩链表保存时最大的元素个数</li>
+<li><em>hash-max-zlist-values</em> : 表示压缩链表保存时单个元素的最大长度</li>
+</ol>
+
+<p>基于以上特性，使用二级编码是确保哈希集合中的元素个数</p>
 
 
     
@@ -195,16 +222,13 @@
         <div class="large-6 columns">
         <p class="text-left" style="padding:15px 0px;">
       
-          <a href="16064573242418.html" 
-          title="Previous Post: MySQL索引">&laquo; MySQL索引</a>
-      
         </p>
         </div>
         <div class="large-6 columns">
       <p class="text-right" style="padding:15px 0px;">
       
-          <a  href="16064435077123.html" 
-          title="Next Post: Redis 数据结构">Redis 数据结构 &raquo;</a>
+          <a  href="16111075871272.html" 
+          title="Next Post: 分片集群">分片集群 &raquo;</a>
       
       </p>
         </div>
