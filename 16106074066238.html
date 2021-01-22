@@ -1,0 +1,683 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  Redis 应用场景 - Isaac Blog
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="Isaac Blog" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site: ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">Home</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">Archives</a></li>
+        
+        <li id=""><a target="_self" href="about.html">About</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; Isaac Blog</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">Home</a></li>
+        
+        <li><a target="_self" href="archives.html">Archives</a></li>
+        
+        <li><a target="_self" href="about.html">About</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="Redis.html">Redis</a></li>
+        
+            <li><a href="Tomcat.html">Tomcat</a></li>
+        
+            <li><a href="MySQL.html">MySQL</a></li>
+        
+            <li><a href="Spring.html">Spring</a></li>
+        
+            <li><a href="%E5%B7%A5%E4%BD%9C%E9%97%AE%E9%A2%98.html">工作问题</a></li>
+        
+            <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
+        
+            <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>Redis 应用场景</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2021/01/14 14:56 下午</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='%E5%AE%9E%E8%B7%B5.html'>实践</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>Redis的应用场景，以及Redis数据类型的各种可能的应用方式</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">缓存功能</h2>
+
+<ol>
+<li>Redis作为缓存，MySQL作为存储层，加速读写和降低后端压力</li>
+<li>实现</li>
+</ol>
+
+<p><img src="media/16106074066238/16106074834660.jpg" alt=""/></p>
+
+<h2 id="toc_1">计数功能</h2>
+
+<ol>
+<li>实现快速计数，查询缓存的功能，同时数据可以异步落地到其他数据源</li>
+<li>注意的问题：防作弊，不同维度计数，数据持久化到数据源</li>
+</ol>
+
+<h2 id="toc_2">共享Session</h2>
+
+<ol>
+<li>分布式Web应用共享Session</li>
+<li>实现
+<img src="media/16106074066238/16106075337603.jpg" alt=""/></li>
+</ol>
+
+<h2 id="toc_3">限速</h2>
+
+<ol>
+<li>为了短信接口不被频繁访问，限制获取短信验证码的频率</li>
+</ol>
+
+<h2 id="toc_4">Redis 对象应用场景</h2>
+
+<h3 id="toc_5">哈希</h3>
+
+<blockquote>
+<p>hgetall, 如果哈希数据较多会发生阻塞，如果获取部分则使用hmget,一定获取所有的则使用hscan</p>
+</blockquote>
+
+<h4 id="toc_6">内部编码</h4>
+
+<ul>
+<li>ziplist : 哈希元素个数小于hash-max-ziplist-entries(512),同时所有的值小于hash-max-ziplist-value(64)的值使用ziplist作为内部实现；减少内存使用</li>
+<li>hashtable : 无法满足ziplist的条件时 </li>
+</ul>
+
+<h3 id="toc_7">列表</h3>
+
+<blockquote>
+<p>存储多个有序的字符串，Redis中可以同时在头和尾进行操作，可以充当栈和队列的角色</p>
+</blockquote>
+
+<p>操作图</p>
+
+<p><img src="media/16106074066238/16106074551318.jpg" alt=""/></p>
+
+<h4 id="toc_8">特点</h4>
+
+<ul>
+<li>元素有序</li>
+<li>元素可重复</li>
+</ul>
+
+<h4 id="toc_9">内部编码</h4>
+
+<ul>
+<li>ziplist : 哈希元素个数小于hash-max-ziplist-entries(512),同时所有的值小于hash-max-ziplist-value(64)的值使用ziplist作为内部实现；减少内存使用</li>
+<li>linkedList : 无法满足ziplist的条件时 </li>
+</ul>
+
+<h4 id="toc_10">使用场景</h4>
+
+<ul>
+<li>消息队列：lpush+brpop</li>
+<li>stack : lpush+lpop</li>
+<li>queue : lpush+rpop</li>
+<li>有限集合：lpush+ltrim </li>
+</ul>
+
+<h3 id="toc_11">集合</h3>
+
+<blockquote>
+<p>元素不重复，无序</p>
+</blockquote>
+
+<h4 id="toc_12">内部编码</h4>
+
+<ul>
+<li>intset : 元素都是整数并且元素个数小于set-intset-max-entries(512),减少内存使用</li>
+<li>hashtable : 无法满足intset时</li>
+</ul>
+
+<h4 id="toc_13">使用场景</h4>
+
+<ul>
+<li>标签 ：sadd</li>
+<li>生成随机数： spop/srandmember </li>
+<li>社交需求： sadd + sinter </li>
+</ul>
+
+<h3 id="toc_14">有序集合</h3>
+
+<blockquote>
+<p>有序集合元素不能重复，但是score可以重复</p>
+</blockquote>
+
+<h4 id="toc_15">内部编码</h4>
+
+<ul>
+<li>ziplist : 哈希元素个数小于hash-max-ziplist-entries(128),同时所有的值小于hash-max-ziplist-value(64)的值使用ziplist作为内部实现；减少内存使用</li>
+<li>skiplist : 当ziplist不满足时</li>
+</ul>
+
+<h4 id="toc_16">使用场景</h4>
+
+<ol>
+<li>排行榜系统(点赞)</li>
+<li>zadd+zincrby 获得点赞</li>
+<li>zrem : 取消点赞</li>
+<li>zrevrange : 获取最多点赞数</li>
+<li>zsocre + zrank : 分数和排名</li>
+</ol>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="16106079603297.html" 
+          title="Previous Post: Redis 单线程">&laquo; Redis 单线程</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="16104438103036.html" 
+          title="Next Post: Redis 总览">Redis 总览 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/16064679533535/IMG_2798.jpg" /></div>
+            
+                <h1>Isaac Blog</h1>
+                <div class="site-des">个人博客</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="Redis.html"><strong>Redis</strong></a>
+        
+            <a href="Tomcat.html"><strong>Tomcat</strong></a>
+        
+            <a href="MySQL.html"><strong>MySQL</strong></a>
+        
+            <a href="Spring.html"><strong>Spring</strong></a>
+        
+            <a href="%E5%B7%A5%E4%BD%9C%E9%97%AE%E9%A2%98.html"><strong>工作问题</strong></a>
+        
+            <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
+        
+            <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="16111075871272.html">分片集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16110645751252.html">哨兵集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16110462324914.html">Redis 哨兵机制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16110371253411.html">Redis 数据同步</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16106093934462.html">Redis 持久化</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

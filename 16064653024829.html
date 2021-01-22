@@ -1,0 +1,613 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  如何选择RabbitMQ和Kafka - Isaac Blog
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="Isaac Blog" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site: ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">Home</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">Archives</a></li>
+        
+        <li id=""><a target="_self" href="about.html">About</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; Isaac Blog</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">Home</a></li>
+        
+        <li><a target="_self" href="archives.html">Archives</a></li>
+        
+        <li><a target="_self" href="about.html">About</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="Redis.html">Redis</a></li>
+        
+            <li><a href="Tomcat.html">Tomcat</a></li>
+        
+            <li><a href="MySQL.html">MySQL</a></li>
+        
+            <li><a href="Spring.html">Spring</a></li>
+        
+            <li><a href="%E5%B7%A5%E4%BD%9C%E9%97%AE%E9%A2%98.html">工作问题</a></li>
+        
+            <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
+        
+            <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>如何选择RabbitMQ和Kafka</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/11/27 16:21 下午</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <span id="more"></span><!-- more -->
+
+<h2 id="toc_0">RabbitMQ</h2>
+
+<ol>
+<li>是通用的消息代理，采用点对点，请求/回复和pub-sub通信。</li>
+<li>采用smart broker / dumb consumer模式，专注于一致的消息传递。</li>
+<li>以与broker跟踪消费者状态大致相似的速度消费
+<img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fuxmahm6j7j20hn08ajs3.jpg" alt=""/>
+&gt; RabbitMQ中的通信可以选择是同步或者是异步。发布者向交换发送消息，消费者从队列中检索消息。通过交换将生产者与队列分离可确保生产者不会受到硬编码路由决策的影响<br/>
+## Kafka<br/>
+Kafka专为高容量发布 - 订阅消息和流而设计，旨在持久，快速和可扩展。从本质上讲，<br/>
+Kafka提供了一个持久的消息存储，类似于日志，在服务器集群中运行，它存储称为主题的类别中的记录流
+<img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fuxmdfec9gj20jo0a4mye.jpg" alt=""/>
+&gt;每条消息都包含一个键，一个值和一个时间戳。Kafka使用dumb broker，使用smart consumers 来读取它的缓冲区。Kafka不会尝试跟踪每个消费者读取的消息，只保留未读消息; 相反，Kafka会在一段时间内保留所有消息，消费者有责任在每个日志（消费者状态）中跟踪他们的位置。因此，通过合适的开发人员创建消费者代码，Kafka可以支持大量消费者并以极少的开销保留大量数据</li>
+</ol>
+
+<h2 id="toc_1">需求和用例</h2>
+
+<h3 id="toc_2">Kafka</h3>
+
+<h4 id="toc_3">需求</h4>
+
+<blockquote>
+<p>流处理场景,网站活动跟踪，度量标准，日志聚合，流处理，事件采购和提交日志等常见用例</p>
+
+<h4 id="toc_4">适用场景</h4>
+
+<ol>
+<li>从A到B流，没有复杂的路由，最大吞吐量（100k / sec +），按分区顺序至少提交一次</li>
+<li>当应用程序需要访问流历史记录时，至少按分区顺序提供一次。</li>
+<li>客户可以根据需求“重播”事件流，而不是更传统的消息代理，一旦消息传递，它就会从队列中删除</li>
+<li>流处理</li>
+<li>时间驱动</li>
+</ol>
+</blockquote>
+
+<h3 id="toc_5">RabbitMQ</h3>
+
+<h4 id="toc_6">需求</h4>
+
+<blockquote>
+<p>通常用于Web服务器快速响应请求，而不是在用户等待结果时强制执行资源繁重的过程。它还可以将消息分发给多个接收者以供消费，或者在高负载（20k + / sec）下平衡负载之间的负载。当您的需求超出吞吐量时，RabbitMQ可提供许多功能：可靠的交付，路由，联合，HA，安全性，管理工具和其他功能</p>
+
+<h4 id="toc_7">适用场景</h4>
+
+<ol>
+<li>应用程序需要使用现有协议的任意组合，如AMQP 0-9-1，STOMP，MQTT，AMQP 1.0</li>
+<li>基于每个消息（死信队列等）进行更精细的一致性控制/保证</li>
+<li>应用程序需要点对点，请求/回复以及发布/订阅消息传递的多样性</li>
+<li>复杂的路由到消费者,使用non-trivial路由逻辑集成多个服务/应用程序</li>
+<li>RabbitMQ通常与Apache Cassandra一起使用，对于需要“无限”队列的应用程序，<br/>
+RabbitMQ通常与LevelDB插件一起使用，但这两种功能都不附带RabbitMQ本身</li>
+</ol>
+</blockquote>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="16064653089209.html" 
+          title="Previous Post: MySQL分库分表">&laquo; MySQL分库分表</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="16064652877153.html" 
+          title="Next Post: AMQ Model架构">AMQ Model架构 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/16064679533535/IMG_2798.jpg" /></div>
+            
+                <h1>Isaac Blog</h1>
+                <div class="site-des">个人博客</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="Redis.html"><strong>Redis</strong></a>
+        
+            <a href="Tomcat.html"><strong>Tomcat</strong></a>
+        
+            <a href="MySQL.html"><strong>MySQL</strong></a>
+        
+            <a href="Spring.html"><strong>Spring</strong></a>
+        
+            <a href="%E5%B7%A5%E4%BD%9C%E9%97%AE%E9%A2%98.html"><strong>工作问题</strong></a>
+        
+            <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
+        
+            <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="16111075871272.html">分片集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16110645751252.html">哨兵集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16110462324914.html">Redis 哨兵机制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16110371253411.html">Redis 数据同步</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16106093934462.html">Redis 持久化</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

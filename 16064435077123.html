@@ -1,0 +1,1141 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  Redis 数据结构 - Isaac Blog
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="Isaac Blog" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site: ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">Home</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">Archives</a></li>
+        
+        <li id=""><a target="_self" href="about.html">About</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; Isaac Blog</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">Home</a></li>
+        
+        <li><a target="_self" href="archives.html">Archives</a></li>
+        
+        <li><a target="_self" href="about.html">About</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="Redis.html">Redis</a></li>
+        
+            <li><a href="Tomcat.html">Tomcat</a></li>
+        
+            <li><a href="MySQL.html">MySQL</a></li>
+        
+            <li><a href="Spring.html">Spring</a></li>
+        
+            <li><a href="%E5%B7%A5%E4%BD%9C%E9%97%AE%E9%A2%98.html">工作问题</a></li>
+        
+            <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
+        
+            <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>Redis 数据结构</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2020/11/27 10:18 上午</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='%E5%9F%BA%E7%A1%80.html'>基础</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <span id="more"></span><!-- more -->
+
+<h2 id="toc_0">简单动态字符串(SDS)</h2>
+
+<h3 id="toc_1">适用场景</h3>
+
+<ol>
+<li>包含字符串的底层实现</li>
+<li>用作缓存区
+<ul>
+<li>AOF模块中的AOF缓存区</li>
+<li>客户端状态中的输入缓存区</li>
+</ul></li>
+</ol>
+
+<h3 id="toc_2">SDS的定义</h3>
+
+<pre class="line-numbers"><code class="language-c">struct sdshdr {
+    // 记录buf数组中已使用字节的数量,等于SDS所保存字符串的长度 
+    int len; 
+    // 记录buf数组中未使用字节的数量
+    int free; 
+    // 字节数组,用于保存字符串 
+    char buf[];
+};
+
+</code></pre>
+
+<h3 id="toc_3">SDS 与 C字符串的区别</h3>
+
+<ol>
+<li><p>常数复杂度获取字符串的长度</p>
+<p>len 属性记录了SDS本身的长度，设置和更新SDS长度的工作有SDS的API执行时自动完成</p></li>
+<li><p>杜绝缓存区溢出</p>
+<p>SDS空间分配策略杜绝了发生缓存区溢出的可能性，先申请空间然后执行实际的操作</p></li>
+<li><p>减少修改字符串时带来的内存重分配次数</p>
+<ul>
+<li><p>空间预分配</p>
+<p>当SDS的API对一个SDS进性修改时，并且需要进行空间扩展时，不仅分配SDS所必须要的空间，还会分配额外的未使用空间</p></li>
+<li><p>惰性空间释放</p>
+<p>当SDS的API需要缩短SDS保存的字符串时，程序并不立即使用内存重分配来回收缩短后多出来的字节, 而是使用free属性将这些字节的数量记录起来,并等待将来使用。</p></li>
+</ul></li>
+<li><p>二进制安全</p>
+<p>C字符串中的字符必须符合某种编码，且不能包含空字符串，而SDS确保写入的和读取的一样</p></li>
+</ol>
+
+<h2 id="toc_4">链表</h2>
+
+<h3 id="toc_5">适用场景</h3>
+
+<ol>
+<li>列表键</li>
+<li>发布与订阅</li>
+<li>慢查询</li>
+<li>监视器</li>
+</ol>
+
+<h3 id="toc_6">列表定义</h3>
+
+<pre class="line-numbers"><code class="language-c">typedef struct listNode { 
+    // 前置节点 
+    struct listNode * prev; 
+    // 后置节点
+    struct listNode * next; 
+    // 节点的值
+    void * value; 
+}listNode;
+
+
+typedef struct list { 
+    // 表头节点 
+    listNode * head; 
+    // 表尾节点 
+    listNode * tail; 
+    // 链表所包含的节点数量 
+    unsigned long len; 
+    // 节点值复制函数 
+    void *(* dup)( void *ptr);
+    // 节点值释放函数 
+    void (* free)( void *ptr); 
+    // 节点值对比函数
+    int (* match)( void *ptr, void *key); 
+} list;
+
+// 双端队列 无环  带有头指针和尾指针  带表长计数器
+</code></pre>
+
+<h2 id="toc_7">字典</h2>
+
+<h3 id="toc_8">适用场景</h3>
+
+<ol>
+<li>数据库</li>
+<li>哈希键</li>
+</ol>
+
+<h3 id="toc_9">哈希表的定义</h3>
+
+<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fypxzj560dj20u70gpdif.jpg" alt=""/></p>
+
+<pre class="line-numbers"><code class="language-c">typedef struct dict {
+    dictType *type;
+    void *privdata;
+    dictht ht[2];
+    // 当 rehashidx == -1 时不进行rehash
+    long rehashidx; /* rehashing not in progress if rehashidx == -1 */
+    unsigned long iterators; /* number of iterators currently running */
+} dict;
+
+typedef struct dictht { 
+    // 哈希表数组 
+    dictEntry ** table; 
+    // 哈希表大小 
+    unsigned long size;
+    // 哈希表大小掩码，用于计算索引值总是等于size-1 
+    unsigned long sizemask; 
+    // 该哈希表已有节点的数量
+    unsigned long used; 
+} dictht;
+
+typedef struct dictEntry { 
+    // 键 
+    void *key;
+    // 值 可以是一个指针 或者是uint64_t 或者是 int64_t
+    union{ 
+        void *val;
+        uint64_t u64; 
+        int64_t s64; 
+    } v; 
+    // 指向下个哈希表节点，形成链表解决键冲突
+    struct dictEntry *next; 
+} dictEntry;
+
+typedef struct dictType {
+    // 计算hash的函数
+    uint64_t (*hashFunction)(const void *key);
+    // 复制键的函数
+    void *(*keyDup)(void *privdata, const void *key);
+    // 复制值的函数
+    void *(*valDup)(void *privdata, const void *obj);
+    // 对比键的函数
+    int (*keyCompare)(void *privdata, const void *key1, const void *key2);
+    // 销毁键的函数
+    void (*keyDestructor)(void *privdata, void *key);
+    // 销毁值的函数
+    void (*valDestructor)(void *privdata, void *obj);
+    
+} dictType;
+</code></pre>
+
+<h3 id="toc_10">渐进式rehash</h3>
+
+<blockquote>
+<p>rehash动作并不是一次性、集中式地完成，而是分多次、渐进式地完成的   </p>
+</blockquote>
+
+<h4 id="toc_11">rehash 步骤</h4>
+
+<ol>
+<li>为新的ht 分配空间，让字典同时持有新旧ht 两个hash表</li>
+<li> 在字典中维持一个索引计数器变量rehashindex将值置为0，表示rehash 工作开始</li>
+<li> 在rehash进行期间，每次对字典执行添加 、删除、查找或者更新操作时，程序除了执行指定的操作以外，同时将旧的ht在rehashidx索引上的所有键值对rehash到新的ht中， 当rehash工作完成之后程序将rehashidx属性的值增一。</li>
+<li> 随着字典操作的不断执行，最终在某个时间点上，旧的ht的所有键值对都会被rehash至新的ht，这时程序将rehashidx属性的值设为-1，表示rehash操作已完成。</li>
+<li> 在rehash过程中，查找会在两个ht中进行，新添加的数据被添加到新的ht中，旧ht不执行任何的增加操作</li>
+</ol>
+
+<h2 id="toc_12">跳跃表</h2>
+
+<h3 id="toc_13">适用场景</h3>
+
+<ol>
+<li>有序集合键的底层实现之一</li>
+</ol>
+
+<h3 id="toc_14">跳跃表定义</h3>
+
+<pre class="line-numbers"><code class="language-c">// 跳跃表节点
+typedef struct zskiplistNode {
+    // 保存一个SDS值
+    sds ele;
+    // 分值 跳跃表中的几点都按分值从小到大排序
+    double score;
+    // 后退指针 从表尾向表头访问节点  每个节点只有一个 每次只能后退至前一个指针
+    struct zskiplistNode *backward;
+    // 层 可以包含多个元素，每个元素都指向其他节点的指针
+    struct zskiplistLevel {
+        // 前进指针 从表头向表尾访问节点
+        struct zskiplistNode *forward;
+        // 跨度 记录两个节点之间的距离
+        unsigned long span;
+    } level[];
+} zskiplistNode;
+// 跳跃表
+typedef struct zskiplist {
+    // 表头节点和表尾节点
+    struct zskiplistNode *header, *tail;
+    // 表中节点数量
+    unsigned long length;
+    // 表中最大的节点的层数
+    int level;
+} zskiplist;
+
+// 每个跳跃表节点的层高是1-32 之间的随机数
+// 同一个跳跃表中，多个节点可以包含相同的分值，但是每个节点的 ele 值必须唯一
+// 按分值大小排序，如果分值相同时，节点按照 ele对象的大小排序
+</code></pre>
+
+<h2 id="toc_15">整数集合</h2>
+
+<h3 id="toc_16">适用场景</h3>
+
+<ol>
+<li>集合键的底层实现之一</li>
+</ol>
+
+<h3 id="toc_17">整数集合的定义</h3>
+
+<pre class="line-numbers"><code class="language-c">typedef struct intset {
+    // 编码方式  决定contents 元素的类型
+    uint32_t encoding;
+    // 集合包含的元素数量
+    uint32_t length;
+    // 保存元素的数组
+    int8_t contents[];
+} intset;
+</code></pre>
+
+<h3 id="toc_18">升级</h3>
+
+<ol>
+<li>根据新元素的类型，扩展整数集合底层数组的空间大小并为新元素分配空间。 </li>
+<li>将底层数组现有的所有元素都转换成与新元素相同的类型，并将类型转换后的元素放置到正 确的位上，而且在放置元素的过程中，需要继续维持底层数组的有序性质不变。</li>
+<li>将新元素添加到底层数组里面。</li>
+</ol>
+
+<h3 id="toc_19">升级的优点</h3>
+
+<ol>
+<li><p>提升灵活性</p>
+<p>可以将int16_t int32_t int64_t 类型的数据添加到同一数据结构里</p></li>
+<li><p>节约内存</p>
+<p>确保升级操作只会在有需要的时候进行，这可以尽量节省内存。</p></li>
+</ol>
+
+<h3 id="toc_20">降级</h3>
+
+<ol>
+<li>一旦升级变不能降级</li>
+</ol>
+
+<h2 id="toc_21">压缩列表</h2>
+
+<h3 id="toc_22">适用场景</h3>
+
+<ol>
+<li>列表键底层</li>
+<li>哈希键底层</li>
+</ol>
+
+<h3 id="toc_23">压缩列表实现</h3>
+
+<pre class="line-numbers"><code class="language-c">// ziplist的总体布局如下 如果没有另外指定，所有字段都以小端存储
+// &lt;zlbytes&gt; &lt;zltail&gt; &lt;zllen&gt; &lt;entry&gt; &lt;entry&gt; ... &lt;entry&gt; &lt;zlend&gt;
+/**
+ * &lt;zlbytes&gt; 是一个无符号整数，用于保存字节数 
+ * &lt;zltail&gt; 是列表中最后一个条目的偏移量
+ * &lt;zllen&gt; 是条目数
+ * &lt;zlend&gt; 是表示ziplist结尾的特殊条目
+ */
+// &lt;prevlen&gt; &lt;encoding&gt; &lt;entry-data&gt;
+/**
+ * &lt;prevlen&gt; 存储前一个条目的长度
+ * &lt;encoding&gt; 条目编码
+ * &lt;entry-data&gt; 有时编码表示条目本身 &lt;entry-data&gt;部分缺失
+ */
+// &lt;prevlen&gt; &lt;encoding&gt;
+typedef struct zlentry {
+    unsigned int prevrawlensize; 
+    unsigned int prevrawlen; 
+    unsigned int len;
+    unsigned int headersize;   
+    unsigned char encoding;      
+    unsigned char *p;
+} zlentry;
+</code></pre>
+
+<h3 id="toc_24">连锁跟新</h3>
+
+<p>由于添加大节点导致prevlen大于等于254则 后一个节点空间扩展 导致之后的所有节点进行真写操作，同时删除节点也会导致连锁更新</p>
+
+<h2 id="toc_25">对象</h2>
+
+<blockquote>
+<p>Redis 没有直接使用数据结构来直接实现键值对，而是基于这些数据结构创建了一个对象系统，包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象。</p>
+</blockquote>
+
+<h3 id="toc_26">对象的实现</h3>
+
+<pre class="line-numbers"><code class="language-c">typedef struct redisObject {
+    // 类型
+    unsigned type:4;
+    // 编码
+    unsigned encoding:4;
+    /* LRU time (relative to global lru_clock) or
+     * LFU data (least significant 8 bits frequency
+     * and most significant 16 bits access time).
+     */
+    // 记录了最后一次被访问的时间
+    unsigned lru:LRU_BITS; 
+    // 引用计数 用于对象回收
+    int refcount;
+    // 指向底层实现的数据机构的指针
+    void *ptr;
+} robj;
+</code></pre>
+
+<h4 id="toc_27">类型</h4>
+
+<table>
+<thead>
+<tr>
+<th>类型常量</th>
+<th>对象名称</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>REDIS_STRING</td>
+<td>字符串对象</td>
+</tr>
+<tr>
+<td>REDIS_LIST</td>
+<td>列表对象</td>
+</tr>
+<tr>
+<td>REDIS_HASH</td>
+<td>哈希对象</td>
+</tr>
+<tr>
+<td>REDIS_SET</td>
+<td>集合对象</td>
+</tr>
+<tr>
+<td>REDIS_ZSET</td>
+<td>有序集合对象</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="toc_28">对象编码和底层实现</h4>
+
+<table>
+<thead>
+<tr>
+<th>编码常量</th>
+<th>底层数据结构</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>REDIS_ENCODING_INT</td>
+<td>long类型整数</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_EMBSTR</td>
+<td>embstr编码的简单动态字符串</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_ROW</td>
+<td>简单动态字符串</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_HT</td>
+<td>字典</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_LINKEDLIST</td>
+<td>双端链表</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_ZIPLIST</td>
+<td>压缩链表</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_INTSET</td>
+<td>整数集合</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_SKIPLIST</td>
+<td>跳跃表</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="toc_29">类型和编码对象</h4>
+
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>编码</th>
+<th>对象</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>REDIS_STRING</td>
+<td>REDIS_ENCODING_INT</td>
+<td>使用整数值实现的字符串对象</td>
+</tr>
+<tr>
+<td>REDIS_STRING</td>
+<td>REDIS_ENCODING_EMBSTR</td>
+<td>使用embstr编码的SDS实现的字符串对象</td>
+</tr>
+<tr>
+<td>REDIS_STRING</td>
+<td>REDIS_ENCODING_ROW</td>
+<td>使用SDS实现的字符串对象</td>
+</tr>
+<tr>
+<td>REDIS_LIST</td>
+<td>REDIS_ENCODING_LINKEDLIST</td>
+<td>使用双端列表实现的链表对象</td>
+</tr>
+<tr>
+<td>REDIS_LIST</td>
+<td>REDIS_ENCODING_ZIPLIST</td>
+<td>使用压缩列表实现的链表对象</td>
+</tr>
+<tr>
+<td>REDIS_HASH</td>
+<td>REDIS_ENCODING_HT</td>
+<td>使用字典实现的哈希对象</td>
+</tr>
+<tr>
+<td>REDIS_HASH</td>
+<td>REDIS_ENCODING_ZIPLIST</td>
+<td>使用压缩列表实现的哈希对象</td>
+</tr>
+<tr>
+<td>REDIS_SET</td>
+<td>REDIS_ENCODING_INTSET</td>
+<td>使用整数集合实现的集合对象</td>
+</tr>
+<tr>
+<td>REDIS_SET</td>
+<td>REDIS_ENCODING_HT</td>
+<td>使用字典实现的集合对象</td>
+</tr>
+<tr>
+<td>REDIS_ZSET</td>
+<td>REDIS_ENCODING_ZIPLIST</td>
+<td>使用压缩表实现的有序集合对象</td>
+</tr>
+<tr>
+<td>REDIS_ZSET</td>
+<td>REDIS_ENCODING_SKIPLIST</td>
+<td>使用跳跃表实现的有序集合对象</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_30">字符串对象</h3>
+
+<h4 id="toc_31">存储</h4>
+
+<ol>
+<li>字符串对象保存的是整数，且整数值能用long类型表示，则编码设置为int</li>
+<li> 字符串对象保存的是字符串值，且长度小于等于32个字节，使用embstr方式保存值，编码设置为embstr</li>
+<li>字符串对象保存的是字符串值，且长度大于32个字节，使用SDS保存值，编码设置为raw</li>
+</ol>
+
+<h4 id="toc_32">编码的转化</h4>
+
+<ol>
+<li>执行命令使其不再是整数值，则从int转化为raw</li>
+<li>embstr 是只读的如果有修改操作命令时，则转化为raw</li>
+</ol>
+
+<h4 id="toc_33">使用embstr 编码的好处</h4>
+
+<ol>
+<li>将创建的字符串对象所需的内存次数从raw编码的两次降为一次</li>
+<li>释放embstr编码字符串对象只需要调用一次内存释放函数</li>
+</ol>
+
+<h3 id="toc_34">列表对象</h3>
+
+<h4 id="toc_35">存储</h4>
+
+<ol>
+<li>使用ziplist编码</li>
+<li> 使用linkedlist编码的列表对象使用双端列表作为底层实现</li>
+</ol>
+
+<h4 id="toc_36">编码转化</h4>
+
+<ol>
+<li>列表对象保存的所有的字符串的长度都小于64字节，列表对象保存的元素数量小于512个</li>
+<li>不能满足这两个条件的对象需要使用linkedlist编码</li>
+</ol>
+
+<h3 id="toc_37">哈希对象</h3>
+
+<h4 id="toc_38">存储</h4>
+
+<ol>
+<li><p>使用ziplist</p>
+<p>保存了同一对象的两个节点总是紧挨着，键节点在前面，保存值节点在后面；先添加到哈希对象会被放到表头方向，后来的对象添加到表尾方向</p></li>
+<li><p>使用hashtable</p>
+<p>字典的每个键都是一个字符串对象，对象保存了键；字典的每个值都是一个字符串对象，对象保存了值</p></li>
+</ol>
+
+<h4 id="toc_39">编码转换</h4>
+
+<ol>
+<li>哈希对象保存的所有的键值对的键和值的字符串的长度都小于64字节，哈希对象保存的元素数量小于512个</li>
+<li> 不能满足这两个条件的对象需要使用hashtable编码</li>
+</ol>
+
+<h3 id="toc_40">集合对象</h3>
+
+<h4 id="toc_41">存储</h4>
+
+<ol>
+<li><p>intset</p>
+<p>intset编码的集合对象使用整数集合作为底层实现，集合对象包含的所有元素都被保存在整数集合里面。</p></li>
+<li><p>hashtable</p>
+<p>hashtable编码的集合对象使用字典作为底层实现，字典的每个键都是一个字符串对象，每个字符串对象包含了一个集合元素 而字典的值则全部被设置为NULL。</p></li>
+</ol>
+
+<h4 id="toc_42">编码转化</h4>
+
+<ol>
+<li>集合对象保存的所有元素都是整数值；集合对象保存的元素数量不超过512个 使用inset。</li>
+<li> 不满足这两种条件的使用hashtable</li>
+</ol>
+
+<h3 id="toc_43">有序集合对象</h3>
+
+<h4 id="toc_44">存储</h4>
+
+<ol>
+<li><p>ziplist</p>
+<p>每个集合元素使用两个紧挨在一起的压缩列表节点来保存，第一个节点保存元素的成员，而第二个元素则保存元素的分值。分值小的在头，分值大的在表尾</p></li>
+<li><p>skiplist</p>
+<p>skiplist编码的有序集合对象使用zset结构作为底层实现，一个zset结构同时包含一个字典和一个跳跃表。</p></li>
+</ol>
+
+<h4 id="toc_45">编码转化</h4>
+
+<ol>
+<li>有序集合保存的元素数量小于128 个；有序集合保存的所有元素成员的长度都小于64字节</li>
+<li> 不能满足以上两个条件的有序集合对象将使用skiplist编码。</li>
+</ol>
+
+<h3 id="toc_46">类型检测与命令多态</h3>
+
+<ol>
+<li>针对特定类型的键执行，在执行命令之前先检测输入的类型是否正确，然后在进行相关的操作，通过redisObject结构的type来执行</li>
+<li> 根据编码方式，选择正确的命令实现代码来执行命令</li>
+</ol>
+
+<h3 id="toc_47">内存回收</h3>
+
+<p>采用引用计数实现的内存回收机制，创建对象用引用计数初始化为1，被一个新程序使用时，计数加1，不再被一个程序使用时，引用计数减1，当对象的引用计数为0时，对象所占的内存空间被释放</p>
+
+<h3 id="toc_48">对象共享</h3>
+
+<ol>
+<li>将数据库的键指针指向一个现在的值对象</li>
+<li>将被共享的值对象的引用计数增1</li>
+</ol>
+
+<h3 id="toc_49">对象的空转时长</h3>
+
+<p>记录了对象最后一次被命令程序访问的时间  使用OBJECT IDLETIME key 打印空转时长，不会修改LRU的值，如果服务器打开maxmemory的选项，当服务器占用的内存数超过了maxmemory选项上限时，空转时间较长的那部分被优先回收</p>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="16064573170308.html" 
+          title="Previous Post: MySQL索引优化">&laquo; MySQL索引优化</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="Tomact.html" 
+          title="Next Post: Tomcat 集群">Tomcat 集群 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/16064679533535/IMG_2798.jpg" /></div>
+            
+                <h1>Isaac Blog</h1>
+                <div class="site-des">个人博客</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="Redis.html"><strong>Redis</strong></a>
+        
+            <a href="Tomcat.html"><strong>Tomcat</strong></a>
+        
+            <a href="MySQL.html"><strong>MySQL</strong></a>
+        
+            <a href="Spring.html"><strong>Spring</strong></a>
+        
+            <a href="%E5%B7%A5%E4%BD%9C%E9%97%AE%E9%A2%98.html"><strong>工作问题</strong></a>
+        
+            <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
+        
+            <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="16111075871272.html">分片集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16110645751252.html">哨兵集群</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16110462324914.html">Redis 哨兵机制</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16110371253411.html">Redis 数据同步</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16106093934462.html">Redis 持久化</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>
