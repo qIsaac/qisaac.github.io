@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  StampedLock - Isaac Blog
+  Redis 集合统计模式 - Isaac Blog
   
   </title>
   
@@ -118,14 +118,14 @@
       <div class="markdown-body article-wrap">
        <div class="article">
           
-          <h1>StampedLock</h1>
+          <h1>Redis 集合统计模式</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/05 17:44 下午</span>
+          <span class="date">2021/01/23 15:04 下午</span>
 
           <span>posted in&nbsp;</span> 
           
-              <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
+              <span class="posted-in"><a href='%E5%AE%9E%E8%B7%B5.html'>实践</a></span>
            
          
           <span class="comments">
@@ -138,77 +138,29 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <p>读多写少的场景中，还有没有更快的技术方案,Java 在 1.8 这个版本里，提供了一种叫 StampedLock 的锁，它的性能就比读写锁还要好。</p>
+      <p>Redis 集合特点就是一个键对应一系列的值，适合存储一个 key 对应一个数据集合，但是集合的统计则需求不同。集合类型常见的 4 种统计模式，聚合统计、排序统计、二值状态统计和基数统计。</p>
 
 <span id="more"></span><!-- more -->
 
-<h2 id="toc_0">StampedLock 三种锁模式</h2>
+<h2 id="toc_0">聚合统计</h2>
 
-<h3 id="toc_1">写锁，悲观读锁</h3>
+<p>统计多个集合元素的聚合结果，包括交集、并集、补集。Set的集合运算，计算复杂度高，在数据量较大的时候，会导致Redis阻塞。可以选择一个从库负责计算，也可以返回客户端后在进行计算</p>
 
-<p>写锁和悲观读锁为允许多个线程同时获取悲观锁，但只允许一个线程获取写锁，在获取锁后会返回一个stamp,解锁的时候传入stamp</p>
+<h2 id="toc_1">排序统计</h2>
 
-<pre class="line-numbers"><code class="language-java">final StampedLock sl = new StampedLock();
-  
-// 获取/释放悲观读锁示意代码
-long stamp = sl.readLock();
-try {
-  //省略业务相关代码
-} finally {
-  sl.unlockRead(stamp);
-}
+<p>List 和 Sorted Set 是有序的，前者是按插入顺序排序，后者是按照权重排序</p>
 
-// 获取/释放写锁示意代码
-long stamp = sl.writeLock();
-try {
-  //省略业务相关代码
-} finally {
-  sl.unlockWrite(stamp);
-}
-</code></pre>
+<h2 id="toc_2">二值统计</h2>
 
-<h3 id="toc_2">乐观读</h3>
+<p>集合元素的值只能取 0 或者是 1 ；Bitmap 本身是用 String 类型作为底层数据结构实现的一种统计二值状态的数据类型，Bitmap 提供了 GETBIT/SETBIT 操作，使用一个偏移值 offset 对 bit 数组的某一个 bit 位进行读和写。不过，需要注意的是，Bitmap 的偏移量是从 0 开始算的，也就是说 offset 的最小值是 0</p>
 
-<p>在多个线程同时读的时候，允许一个线程获取读锁，不是所有的写操作都被阻塞 </p>
+<h2 id="toc_3">基数统计</h2>
 
-<pre class="line-numbers"><code class="language-java">
-class Point {
-  private int x, y;
-  final StampedLock sl = new StampedLock();
-  //计算到原点的距离  
-  int distanceFromOrigin() {
-    // 乐观读
-    long stamp = sl.tryOptimisticRead();
-    // 读入局部变量，
-    // 读的过程数据可能被修改
-    int curX = x, curY = y;
-    //判断执行读操作期间，
-    //是否存在写操作，如果存在，
-    //则sl.validate返回false
-    if (!sl.validate(stamp)){
-      // 升级为悲观读锁
-      stamp = sl.readLock();
-      try {
-        curX = x;
-        curY = y;
-      } finally {
-        //释放悲观读锁
-        sl.unlockRead(stamp);
-      }
-    }
-    return Math.sqrt(curX * curX + curY * curY);
-  }
-}
-</code></pre>
+<p>统计一个集合中不重复元素个数；HyperLogLog 是一种用于统计基数的数据集合类型，它的最大优势就在于，当集合元素数量非常多时，它计算基数所需的空间总是固定的，而且还很小</p>
 
-<h3 id="toc_3">StampedLock 注意事项</h3>
+<h2 id="toc_4">总结</h2>
 
-<ol>
-<li>不支持重入</li>
-<li>悲观读锁和写锁都不支持条件变量</li>
-<li>如果线程阻塞在readLock和writeLock,此时调用该线程的interrupt，会导致CPU飙升</li>
-<li>如果要支持中断功能，可中断的悲观读锁readLockInterruptibly()和写锁的writeLockInterruptibly()</li>
-</ol>
+<p><img src="media/16113854855870/16113996799777.jpg" alt=""/></p>
 
 
     
@@ -219,16 +171,13 @@ class Point {
         <div class="large-6 columns">
         <p class="text-left" style="padding:15px 0px;">
       
-          <a href="16099032097782.html" 
-          title="Previous Post: CountDownLatch 和 CyclicBarrier">&laquo; CountDownLatch 和 CyclicBarrier</a>
-      
         </p>
         </div>
         <div class="large-6 columns">
       <p class="text-right" style="padding:15px 0px;">
       
-          <a  href="16098106819138.html" 
-          title="Next Post: ReadWriteLock - 读写锁">ReadWriteLock - 读写锁 &raquo;</a>
+          <a  href="16112986565516.html" 
+          title="Next Post: String 应用场景">String 应用场景 &raquo;</a>
       
       </p>
         </div>
@@ -411,8 +360,6 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-
-<script src="asset/prism.js"></script>
 
 
 <style type="text/css">
