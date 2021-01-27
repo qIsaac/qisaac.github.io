@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  Spring AOP - Isaac Blog
+  CPU 对 Redis 性能的影响 - Isaac Blog
   
   </title>
   
@@ -118,14 +118,14 @@
       <div class="markdown-body article-wrap">
        <div class="article">
           
-          <h1>Spring AOP</h1>
+          <h1>CPU 对 Redis 性能的影响</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/11/27 16:22 下午</span>
+          <span class="date">2021/01/27 15:17 下午</span>
 
           <span>posted in&nbsp;</span> 
           
-              <span class="posted-in"><a href='Spring.html'>Spring</a></span>
+              <span class="posted-in"><a href='%E6%80%A7%E8%83%BD.html'>性能</a></span>
            
          
           <span class="comments">
@@ -138,102 +138,105 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">AOP</h2>
-
-<h3 id="toc_1">AOP 原理</h3>
+      <p>CPU架构对程序运行的影响</p>
 
 <ol>
-<li><p>@EnableAspectJAutoProxy</p>
-<ol>
-<li><p>@Import(AspectJAutoProxyRegistrar.class)  给容器导入AspectJAutoProxyRegistrar；</p></li>
-<li><p>利用AspectJAutoProxyRegistrar 给容器中注册</p>
-<p>internalAutoProxyCreator=AnnotationAwareAspectJAutoProxyCreator </p></li>
-</ol></li>
-<li><p>AnnotationAwareAspectJAutoProxyCreator <img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1g0gil2to75j20w60fa3yv.jpg" alt=""/></p>
-<h3 id="toc_2">AOP 流程</h3></li>
-<li><p>创建IOC容器</p></li>
-<li><p>注册配置类，refresh() 刷新容器</p></li>
-<li><p>registerBeanPostProcessors() 注册拦截bean创建的bean后置处理器</p>
-<ul>
-<li>获取IOC容器中已经定义的需要创建的Bean后置处理器</li>
-<li>容器中添加别的后置处理器</li>
-<li>优先注册实现PriorityOrdered接口的后置处理器</li>
-<li>再注册实现Ordered接口的后置处理器</li>
-<li>注册没有实现优先级接口的后置处理器</li>
-<li><p>注册BeanPostProcessors，<br/>
-创建internalAutoProxyCreator的BeanPostProcessors[AnnotationAwareAspectJAutoProxyCreator ]</p>
-<ol>
-<li>创建Bean的实例</li>
-<li>populateBean：给各种bean的属性赋值</li>
-<li>initializeBean：初始化Bean</li>
-<li>invokeAwareMethods： aware接口的方法处理</li>
-<li>applyBeanPostProcessorsBeforeInitialization：后置处理器的调用BeforeInitialization</li>
-<li>invokeInitMethods：自定义初始化方法</li>
-<li>applyBeanPostProcessorsAfterInitialization：后置处理器的调用AfterInitialization</li>
-<li>BeanPostProcessor(AnnotationAwareAspectJAutoProxyCreator)创建成功；-----   aspectJAdvisorsBuilder</li>
-</ol></li>
-<li><p>把BeanPostProcessor注册到BeanFactory中; beanFactory.addBeanPostProcessor(postProcessor);</p></li>
-</ul></li>
-<li><p>finishBeanFactoryInitialization(beanFactory)：创建剩余的单实例Bean</p>
-<ol>
-<li><p>遍历获取容器中所有的Bean，依次创建对象getBean(beanName);</p>
-<p>getBean-&gt;doGetBean()-&gt;getSingleton()-&gt;</p></li>
-<li><p>创建Bean：先从缓存中获取</p>
-<ol>
-<li><p>createBean：resolveBeforeInstantiation(beanName, mbdToUse);解析BeforeInstantiation</p>
-<blockquote>
-<p>后置处理器返回代理对象;</p>
-<p>【BeanPostProcessor是在Bean对象创建完成初始化前后调用的】              【InstantiationAwareBeanPostProcessor是在创建Bean实例之前先尝试用后置处理器返回对象的】</p>
-</blockquote></li>
-<li><p>doCreateBean(beanName, mbdToUse, args)：真正的去创建一个bean实例</p>
-<pre class="line-numbers"><code class="language-java">Object bean = null;
-// .....<br/>
-bean = applyBeanPostProcessorsBeforeInstantiation（）<br/>
-// 拿到所有后置处理器，如果是InstantiationAwareBeanPostProcessor;<br/>
-// 就执行postProcessBeforeInstantiation<br/>
-if (bean != null) {<br/>
- bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);<br/>
-} 
-</code></pre></li>
-</ol></li>
-</ol></li>
-<li><p>AnnotationAwareAspectJAutoProxyCreator【InstantiationAwareBeanPostProcessor】 的作用</p>
-<ol>
-<li><p>每一个bean创建之前，调用postProcessBeforeInstantiation()</p>
-<ol>
-<li><p>判断当前bean是否在advisedBeans中（保存了所有需要增强bean）</p></li>
-<li><p>判断当前bean是否是基础类型的Advice、Pointcut、Advisor、AopInfrastructureBean，或者是否是切面（@Aspect）</p></li>
-<li><p>是否需要跳过：永远返回false；</p></li>
-</ol></li>
-<li><p>创建对象postProcessAfterInitialization：wrapIfNecessary(bean, beanName, cacheKey)</p>
-<ol>
-<li><p>获取当前bean的所有增强器（通知方法）</p></li>
-<li><p>保存当前bean在advisedBeans中</p></li>
-<li><p>如果当前bean需要增强，创建当前bean的代理对象</p></li>
-<li><p>给容器中返回当前组件使用cglib增强了的代理对象；</p></li>
-<li><p>以后容器中获取到的就是这个组件的代理对象，执行目标方法的时候，代理对象就会执行通知方法的流程</p></li>
-</ol></li>
-<li><p>目标方法执行： 容器中保存了组件的代理对象（cglib增强后的对象），这个对象里面保存了详细信息（比如增强器，目标对象，xxx）</p>
-<ol>
-<li>CglibAopProxy.intercept()：拦截目标方法的执行</li>
-<li>根据ProxyFactory对象获取将要执行的目标方法拦截器链
-<ol>
-<li>保存所有拦截器 1个默认的ExposeInvocationInterceptor 和 4个增强器；</li>
-<li>遍历所有的增强器，将其转为Interceptor</li>
-</ol></li>
-<li>如果没有拦截器链，直接执行目标方法</li>
-<li>如果有拦截器链，把需要执行的目标对象，目标方法，拦截器链等信息传入创建一个 CglibMethodInvocation 对象，并调用 proceed();</li>
-<li>拦截器链的触发过程
-<ol>
-<li> 如果没有拦截器执行执行目标方法，或者拦截器的索引和拦截器数组-1大小一样（指定到了最后一个拦截器）执行目标方法</li>
-<li> 链式获取每一个拦截器，拦截器执行invoke方法，每一个拦截器等待下一个拦截器执行完成返回以后再来执行；</li>
-<li> 拦截器链的机制，保证通知方法与目标方法的执行顺序；</li>
-</ol></li>
-</ol></li>
-</ol></li>
+<li>L1、L2缓存中的指令和数据访问速度快，充分利用L1、L2缓存，可以有效缩短应用程序执行时间</li>
+<li>在NUMA架构下，如果应用程序从一个socket上调用另一个socket上，很可能会出现远端内存访问情况，这回增加程序执行时间 </li>
 </ol>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">CPU 多核对Redis性能影响</h2>
+
+<p> 在 CPU 多核场景下，Redis 实例被频繁的调用到不同的CPU核上运行，Redis 实例处理请求的时间影响就会更大</p>
+
+<p>可以通过绑定CPU可以有效的降低尾延迟</p>
+
+<pre class="line-numbers"><code class="language-shell">taskset -c 0 ./redis-server
+</code></pre>
+
+<h2 id="toc_1">CPU 的 NUMA 架构对Redis性能影响</h2>
+
+<p>网络中断程序从网卡硬件中读取数据，并把数据写入到操作系统内核维护的一个内存缓存区，内核通过epoll 机制触发事件，通知 Redis 实例，Redis 再从内核缓存拷贝到自己内存空间</p>
+
+<p><img src="media/16117318370091/16117324563802.jpg" alt=""/></p>
+
+<p>在CPU 的 NUMA 架构下，当网络中断处理程序、Redis实例分别和CPU核绑定后，就会存在 若果网络中断处理程序和Redis 实例各自绑定CPU 核不在同一CPU socket中 ，Redis 读取网路数据时，就需要跨CPU Socket 访问内存</p>
+
+<p><img src="media/16117318370091/16117328676518.jpg" alt=""/></p>
+
+<h2 id="toc_2">绑定风险和解决方案</h2>
+
+<p>Redsi 实例绑定到一个CPU 逻辑核上时，就会导致子进程、后台线程和Redis主线程竞争CPU资源。</p>
+
+<ol>
+<li><p>一个Redis 绑定一个物理核,这样可以缓解CPU资源的竞争</p>
+<pre class="line-numbers"><code class="language-shell">taskset -c 0,12 ./redis-server
+</code></pre></li>
+<li><p>优化Redis 源码把子进程和后台线程绑定到不同的CPU 核上</p></li>
+</ol>
+
+<h3 id="toc_3">修改元绑定CPU核</h3>
+
+<p>实现绑定时要用到操作系统提供的1个数据结构cpu_set_t和三个函数CPU_ZERO、CPU_SET、sched_setaffinity</p>
+
+<ul>
+<li>cpu_set_t : 是一个位图，每一位表示CPU一个逻辑核</li>
+<li>CPU_ZERO : 以cpu_set_t为输入参数，把所有位图中的位设置为0</li>
+<li>CPU_SET : 以CPU 逻辑核编号和cpu_set_t 为参数，把位图中和输入逻辑核编号对应位置设置为1</li>
+<li>sched_setaffinity : 以进程/线程ID号 和cpu_set_t 为参数，检查cpu_set_t 哪一位为 1 ，就把输入的ID号所代表的进程/线程绑定对应得逻辑核</li>
+</ul>
+
+<h4 id="toc_4">代码实现</h4>
+
+<pre class="line-numbers"><code class="language-c">
+//线程函数
+void worker(int bind_cpu){
+    cpu_set_t cpuset;  //创建位图变量
+    CPU_ZERO(&amp;cpu_set); //位图变量所有位设置0
+    CPU_SET(bind_cpu, &amp;cpuset); //根据输入的bind_cpu编号，把位图对应为设置为1
+    sched_setaffinity(0, sizeof(cpuset), &amp;cpuset); //把程序绑定在cpu_set_t结构位图中为1的逻辑核
+
+    //实际线程函数工作
+}
+
+int main(){
+    pthread_t pthread1
+    //把创建的pthread1绑在编号为3的逻辑核上
+    pthread_create(&amp;pthread1, NULL, (void *)worker, 3);
+}
+</code></pre>
+
+<p>对于Redis 来说，bio.c中的bioProcessBackgroupJobs 函数中创建后台线程，在这函数中实现绑定核</p>
+
+<pre class="line-numbers"><code class="language-c">
+int main(){
+   //用fork创建一个子进程
+   pid_t p = fork();
+   if(p &lt; 0){
+      printf(&quot; fork error\n&quot;);
+   }
+   //子进程代码部分
+   else if(!p){
+      cpu_set_t cpuset;  //创建位图变量
+      CPU_ZERO(&amp;cpu_set); //位图变量所有位设置0
+      CPU_SET(3, &amp;cpuset); //把位图的第3位设置为1
+      sched_setaffinity(0, sizeof(cpuset), &amp;cpuset);  //把程序绑定在3号逻辑核
+      //实际子进程工作
+      exit(0);
+   }
+   ...
+}
+</code></pre>
+
+<p>Redis  生成RDB 和 AOF 日志重写的子进程分别是</p>
+
+<ul>
+<li> rdb.c 文件 ： rdbSaveBackgroud 函数</li>
+<li><p>aof.c 文件 ： rewriteAppendOnlyFileBackgroud 函数</p>
+<p>这两个函数都调用fork 创建子进程，在子进程diamante部分加上核绑定</p></li>
+</ul>
 
 
     
@@ -244,16 +247,13 @@ if (bean != null) {<br/>
         <div class="large-6 columns">
         <p class="text-left" style="padding:15px 0px;">
       
-          <a href="16064653894338.html" 
-          title="Previous Post: 单点登录">&laquo; 单点登录</a>
-      
         </p>
         </div>
         <div class="large-6 columns">
       <p class="text-right" style="padding:15px 0px;">
       
-          <a  href="16064653468102.html" 
-          title="Next Post: ACID+CAP+BASE">ACID+CAP+BASE &raquo;</a>
+          <a  href="16117280331572.html" 
+          title="Next Post: Redis  阻塞式操作">Redis  阻塞式操作 &raquo;</a>
       
       </p>
         </div>

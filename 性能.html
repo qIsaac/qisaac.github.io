@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  Spring AOP - Isaac Blog
+  性能 - Isaac Blog
   
   </title>
   
@@ -109,169 +109,108 @@
        
 
  <script type="text/javascript">
-  $(function(){
-    $('#menu_item_index').addClass('is_active');
-  });
+	$(function(){
+		$('#menu_item_index').addClass('is_active');
+	});
 </script>
 <div class="row">
-  <div class="large-8 medium-8 columns">
-      <div class="markdown-body article-wrap">
-       <div class="article">
-          
-          <h1>Spring AOP</h1>
-     
-        <div class="read-more clearfix">
-          <span class="date">2020/11/27 16:22 下午</span>
-
-          <span>posted in&nbsp;</span> 
-          
-              <span class="posted-in"><a href='Spring.html'>Spring</a></span>
-           
-         
-          <span class="comments">
-            
-
-            
-          </span>
-
-        </div>
-      </div><!-- article -->
-
-      <div class="article-content">
-      <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">AOP</h2>
-
-<h3 id="toc_1">AOP 原理</h3>
+	<div class="large-8 medium-8 columns">
+		<div class="markdown-body home-categories">
+		
+			<div class="article">
+                <a class="clearlink" href="16117318370091.html">
+                
+                  <h1>CPU 对 Redis 性能的影响</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>CPU架构对程序运行的影响</p>
 
 <ol>
-<li><p>@EnableAspectJAutoProxy</p>
-<ol>
-<li><p>@Import(AspectJAutoProxyRegistrar.class)  给容器导入AspectJAutoProxyRegistrar；</p></li>
-<li><p>利用AspectJAutoProxyRegistrar 给容器中注册</p>
-<p>internalAutoProxyCreator=AnnotationAwareAspectJAutoProxyCreator </p></li>
-</ol></li>
-<li><p>AnnotationAwareAspectJAutoProxyCreator <img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1g0gil2to75j20w60fa3yv.jpg" alt=""/></p>
-<h3 id="toc_2">AOP 流程</h3></li>
-<li><p>创建IOC容器</p></li>
-<li><p>注册配置类，refresh() 刷新容器</p></li>
-<li><p>registerBeanPostProcessors() 注册拦截bean创建的bean后置处理器</p>
-<ul>
-<li>获取IOC容器中已经定义的需要创建的Bean后置处理器</li>
-<li>容器中添加别的后置处理器</li>
-<li>优先注册实现PriorityOrdered接口的后置处理器</li>
-<li>再注册实现Ordered接口的后置处理器</li>
-<li>注册没有实现优先级接口的后置处理器</li>
-<li><p>注册BeanPostProcessors，<br/>
-创建internalAutoProxyCreator的BeanPostProcessors[AnnotationAwareAspectJAutoProxyCreator ]</p>
-<ol>
-<li>创建Bean的实例</li>
-<li>populateBean：给各种bean的属性赋值</li>
-<li>initializeBean：初始化Bean</li>
-<li>invokeAwareMethods： aware接口的方法处理</li>
-<li>applyBeanPostProcessorsBeforeInitialization：后置处理器的调用BeforeInitialization</li>
-<li>invokeInitMethods：自定义初始化方法</li>
-<li>applyBeanPostProcessorsAfterInitialization：后置处理器的调用AfterInitialization</li>
-<li>BeanPostProcessor(AnnotationAwareAspectJAutoProxyCreator)创建成功；-----   aspectJAdvisorsBuilder</li>
-</ol></li>
-<li><p>把BeanPostProcessor注册到BeanFactory中; beanFactory.addBeanPostProcessor(postProcessor);</p></li>
-</ul></li>
-<li><p>finishBeanFactoryInitialization(beanFactory)：创建剩余的单实例Bean</p>
-<ol>
-<li><p>遍历获取容器中所有的Bean，依次创建对象getBean(beanName);</p>
-<p>getBean-&gt;doGetBean()-&gt;getSingleton()-&gt;</p></li>
-<li><p>创建Bean：先从缓存中获取</p>
-<ol>
-<li><p>createBean：resolveBeforeInstantiation(beanName, mbdToUse);解析BeforeInstantiation</p>
-<blockquote>
-<p>后置处理器返回代理对象;</p>
-<p>【BeanPostProcessor是在Bean对象创建完成初始化前后调用的】              【InstantiationAwareBeanPostProcessor是在创建Bean实例之前先尝试用后置处理器返回对象的】</p>
-</blockquote></li>
-<li><p>doCreateBean(beanName, mbdToUse, args)：真正的去创建一个bean实例</p>
-<pre class="line-numbers"><code class="language-java">Object bean = null;
-// .....<br/>
-bean = applyBeanPostProcessorsBeforeInstantiation（）<br/>
-// 拿到所有后置处理器，如果是InstantiationAwareBeanPostProcessor;<br/>
-// 就执行postProcessBeforeInstantiation<br/>
-if (bean != null) {<br/>
- bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);<br/>
-} 
-</code></pre></li>
-</ol></li>
-</ol></li>
-<li><p>AnnotationAwareAspectJAutoProxyCreator【InstantiationAwareBeanPostProcessor】 的作用</p>
-<ol>
-<li><p>每一个bean创建之前，调用postProcessBeforeInstantiation()</p>
-<ol>
-<li><p>判断当前bean是否在advisedBeans中（保存了所有需要增强bean）</p></li>
-<li><p>判断当前bean是否是基础类型的Advice、Pointcut、Advisor、AopInfrastructureBean，或者是否是切面（@Aspect）</p></li>
-<li><p>是否需要跳过：永远返回false；</p></li>
-</ol></li>
-<li><p>创建对象postProcessAfterInitialization：wrapIfNecessary(bean, beanName, cacheKey)</p>
-<ol>
-<li><p>获取当前bean的所有增强器（通知方法）</p></li>
-<li><p>保存当前bean在advisedBeans中</p></li>
-<li><p>如果当前bean需要增强，创建当前bean的代理对象</p></li>
-<li><p>给容器中返回当前组件使用cglib增强了的代理对象；</p></li>
-<li><p>以后容器中获取到的就是这个组件的代理对象，执行目标方法的时候，代理对象就会执行通知方法的流程</p></li>
-</ol></li>
-<li><p>目标方法执行： 容器中保存了组件的代理对象（cglib增强后的对象），这个对象里面保存了详细信息（比如增强器，目标对象，xxx）</p>
-<ol>
-<li>CglibAopProxy.intercept()：拦截目标方法的执行</li>
-<li>根据ProxyFactory对象获取将要执行的目标方法拦截器链
-<ol>
-<li>保存所有拦截器 1个默认的ExposeInvocationInterceptor 和 4个增强器；</li>
-<li>遍历所有的增强器，将其转为Interceptor</li>
-</ol></li>
-<li>如果没有拦截器链，直接执行目标方法</li>
-<li>如果有拦截器链，把需要执行的目标对象，目标方法，拦截器链等信息传入创建一个 CglibMethodInvocation 对象，并调用 proceed();</li>
-<li>拦截器链的触发过程
-<ol>
-<li> 如果没有拦截器执行执行目标方法，或者拦截器的索引和拦截器数组-1大小一样（指定到了最后一个拦截器）执行目标方法</li>
-<li> 链式获取每一个拦截器，拦截器执行invoke方法，每一个拦截器等待下一个拦截器执行完成返回以后再来执行；</li>
-<li> 拦截器链的机制，保证通知方法与目标方法的执行顺序；</li>
-</ol></li>
-</ol></li>
-</ol></li>
+<li>L1、L2缓存中的指令和数据访问速度快，充分利用L1、L2缓存，可以有效缩短应用程序执行时间</li>
+<li>在NUMA架构下，如果应用程序从一个socket上调用另一个socket上，很可能会出现远端内存访问情况，这回增加程序执行时间 </li>
 </ol>
 
 
-    
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                   <a href="16117318370091.html">Read more</a>&nbsp;&nbsp; 
+                    <span class="date">2021/01/27 15:17 下午</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E6%80%A7%E8%83%BD.html'>性能</a></span>
+          				   
+                    
 
-      </div>
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
 
-      <div class="row">
-        <div class="large-6 columns">
-        <p class="text-left" style="padding:15px 0px;">
-      
-          <a href="16064653894338.html" 
-          title="Previous Post: 单点登录">&laquo; 单点登录</a>
-      
-        </p>
-        </div>
-        <div class="large-6 columns">
-      <p class="text-right" style="padding:15px 0px;">
-      
-          <a  href="16064653468102.html" 
-          title="Next Post: ACID+CAP+BASE">ACID+CAP+BASE &raquo;</a>
-      
-      </p>
-        </div>
-      </div>
-      <div class="comments-wrap">
-        <div class="share-comments">
-          
-
-          
-
-          
-        </div>
-      </div>
-    </div><!-- article-wrap -->
-  </div><!-- large 8 -->
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="16117280331572.html">
+                
+                  <h1>Redis  阻塞式操作</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>Redis的网络IO和键值对的读写都是由主线程完成的，如果主线程操作消耗时间太长，就会引起主线程阻塞。</p>
 
 
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                   <a href="16117280331572.html">Read more</a>&nbsp;&nbsp; 
+                    <span class="date">2021/01/27 14:13 下午</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E6%80%A7%E8%83%BD.html'>性能</a></span>
+          				   
+                    
 
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+              
+
+
+			<div class="row">
+			  <div class="large-6 columns">
+			  <p class="text-left" style="padding-top:25px;">
+			   
+			  </p>
+			  </div>
+			  <div class="large-6 columns">
+			<p class="text-right" style="padding-top:25px;">
+			
+			</p>
+			  </div>
+			</div>
+		</div>
+	</div><!-- large 8 -->
 
  <div class="large-4 medium-4 columns">
   <div class="hide-for-small">
@@ -436,8 +375,6 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-
-<script src="asset/prism.js"></script>
 
 
 <style type="text/css">
