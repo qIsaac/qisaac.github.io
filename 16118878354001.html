@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  如何自定义数据类型 - Isaac Blog
+  Redis 缓冲区 - Isaac Blog
   
   </title>
   
@@ -118,14 +118,14 @@
       <div class="markdown-body article-wrap">
        <div class="article">
           
-          <h1>如何自定义数据类型</h1>
+          <h1>Redis 缓冲区</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/25 21:41 下午</span>
+          <span class="date">2021/01/29 10:37 上午</span>
 
           <span>posted in&nbsp;</span> 
           
-              <span class="posted-in"><a href='%E5%AE%9E%E8%B7%B5.html'>实践</a></span>
+              <span class="posted-in"><a href='%E6%80%A7%E8%83%BD.html'>性能</a></span>
            
          
           <span class="comments">
@@ -138,127 +138,112 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <p>我们需要一个数据类型符合自己的查询但是Redis本身不支持，此时，我们之前学习的这些数据类型就无法满足需求了。那么，自定义的数据类型是一个很好的解决方法</p>
+      <p>缓冲区用一块内存空间来暂时存放命令，以免出现因为数据和命令处理速度慢于发送速度而导致数据的丢失和性能问题。Redis 客户端和服务端之间进行通信，暂存客户端命令或者服务端返回给客户端的数据结果，还有一个就是主从节点之间的数据同步，用来暂存主节点接受的写命令和数据</p>
 
 <span id="more"></span><!-- more -->
 
-<h2 id="toc_0">Redis 的基本对象结构</h2>
+<h2 id="toc_0">客户端输入和输出缓冲区</h2>
 
-<p>RedisObject 内部包括 type、encoding、lru、refcount 四个元数据以及一个 *ptr 指针</p>
+<p>服务端给每个连接的客户端都设置了一个输入缓冲区和输出缓冲区，输入缓冲区先把客户端发过来的命令暂存，Redis 主线程再从输入缓冲区读取命令进行处理。当Redis 处理完命令后，会把结果写入到输出缓冲区，在通过输出缓冲区返回给客户端。<br/>
+<img src="media/16118878354001/16118890407812.jpg" alt=""/></p>
 
-<ul>
-<li>type : 表示值类型，涵盖基本 5 大类型</li>
-<li>encoding : 值的编码方式，表示实行基本类型的底层数据结构</li>
-<li>lru : 记录对象最后一次被访问的时间，用于淘汰过期数据</li>
-<li>refconut : 记录对象的引用计数</li>
-<li>*ptr : 指向数据的指针，通过该指针指向不同的数据类型</li>
-</ul>
+<h3 id="toc_1">输入缓冲区溢出</h3>
 
-<h2 id="toc_1">开发一个新数据类型</h2>
+<h4 id="toc_2">导致缓冲区溢出的原因</h4>
+
+<p>由于输入缓冲区是暂存客户端发送命令所以，导致的原因可能是：</p>
 
 <ol>
-<li>定义一个新数据类型底层结构、type、encoding 属性值</li>
-<li>实现新数据类型的创建，释放函数和基本操作命令</li>
+<li>写入bigkey， 例如：一次性写入过个百万级集合类型的数据</li>
+<li>服务端处理请求速度过慢，例如：Redis 主线程出现了间歇性阻塞 </li>
 </ol>
 
-<p><img src="media/16115820775689/16115826764684.jpg" alt=""/></p>
+<h4 id="toc_3">如何查看缓冲区使用</h4>
 
-<h2 id="toc_2">定义一个新类型 NewTypeNode</h2>
+<p>查看输入缓冲区内存使用情况，可以使用CLIENT LIST 命令</p>
 
-<h3 id="toc_3">定义新数据类型的底层结构</h3>
-
-<p>使用newtype.h 定义新类型结构，代码如下</p>
-
-<pre class="line-numbers"><code class="language-c">struct NewTypeObject {
-    struct NewTypeNode *head; 
-    size_t len; 
-}NewTypeObject;
+<pre class="line-numbers"><code class="language-shell">CLIENT LIST
+id=5 addr=127.0.0.1:50487 fd=9 name= age=4 idle=0 flags=N db=0 sub=0 psub=0 multi=-1 qbuf=26 qbuf-free=32742 obl=0 oll=0 omem=0 events=r cmd=client
 </code></pre>
 
-<p>其中 NewTypeNode 结构就是自定义的新类型底层结构，包含一个Long类型的value，保存实际数据；一个 *next 指针，指向下一个 NewTypeNode 结构</p>
+<p>其中有两类信息需要关注</p>
 
-<pre class="line-numbers"><code class="language-c">struct NewTypeNode {
-    long value;
-    struct NewTypeNode *next;
-};
-</code></pre>
-
-<h3 id="toc_4">在RedisObject 的 type 属性中增加新类型的定义</h3>
-
-<p>定义在Redis中的 server.h 文件中,定义一个 OBJ_NEWTYPE 的宏指代NewTypeObject</p>
-
-<pre class="line-numbers"><code class="language-c">#define OBJ_STRING 0    /* String object. */
-#define OBJ_LIST 1      /* List object. */
-#define OBJ_SET 2       /* Set object. */
-#define OBJ_ZSET 3      /* Sorted set object. */
-…
-#define OBJ_NEWTYPE 7
-</code></pre>
-
-<h3 id="toc_5">开发新类型的创建和释放函数</h3>
-
-<p>创建函数</p>
-
-<pre class="line-numbers"><code class="language-c">robj *createNewTypeObject(void){
-   // 初始化内存机构
-   NewTypeObject *h = newtypeNew(); 
-   // RedisObject 默认的创建函数
-   robj *o = createObject(OBJ_NEWTYPE,h);
-   return o;
-}
-</code></pre>
-
-<p>初始化内存结构，通过使用zmalloc做底层的结构分配，Redis 默认会为每个数据结构定义一个默认的单独文件 t_newtype.c </p>
-
-<pre class="line-numbers"><code class="language-c">NewTypeObject *newtypeNew(void){
-    NewTypeObject *n = zmalloc(sizeof(*n));
-    n-&gt;head = NULL;
-    n-&gt;len = 0;
-    return n;
-}
-</code></pre>
-
-<p>createObject 是 Redis 本身提供的 RedisObject 创建函数，它的参数是数据类型的 type 和指向数据类型实现的指针*ptr</p>
-
-<pre class="line-numbers"><code class="language-c">
-robj *createObject(int type, void *ptr) {
-    robj *o = zmalloc(sizeof(*o));
-    o-&gt;type = type;
-    o-&gt;ptr = ptr;
-    ...
-    return o;
-}
-</code></pre>
-
-<p>释放函数，是创建函数的反过程，使用 zfree 释放内存空间</p>
-
-<h3 id="toc_6">开发新类型的命令操作</h3>
-
+<ol>
+<li>与服务器连接的客户端信息，例如：127.0.0.1:50487</li>
+<li>输入缓冲区有关
 <ul>
-<li>在 t_newtype.c 文件中增加命令操作的实现 </li>
-</ul>
+<li>cmd : 表示客户端最新执行的命令</li>
+<li>qbuf :  表示输入缓冲区已经使用的大小</li>
+<li>qbuf-free : 表示输入缓冲区尚未使用的大小 </li>
+</ul></li>
+</ol>
 
-<pre class="line-numbers"><code class="language-c">void ntinsertCommand(client *c){
-  //基于客户端传递的参数，实现在NewTypeObject链表头插入元素
-}
-</code></pre>
+<h4 id="toc_4">如何避免溢出</h4>
 
+<p>因为Redis服务器不止一个客户端，当多个客户端连接占用的内存总量，超过Redis的maxmemory 配置项时，就会触发淘汰，这回降低应用访问性能。如果多个客户端导致Redis 内存占用过多，导致内存溢出，Redis崩溃。<br/>
+因为Redis 没有提供参数调节客户端输入缓冲区大小，所以只能通过数据命令的发送和处理速度入手。</p>
+
+<h3 id="toc_5">输出缓冲区溢出</h3>
+
+<p>Redis的输出缓冲区包括两部分：</p>
+
+<ol>
+<li>大小为16KB 的固定缓冲空间，用来暂存OK响应和出错信息</li>
+<li>可以动态增加的缓冲，用来暂存大小可变的响应结果 </li>
+</ol>
+
+<p>导致输出缓冲区溢出的因素：</p>
+
+<ol>
+<li>服务端返回bigkey的大量结果</li>
+<li>执行了MONITOR 命令</li>
+<li>缓冲区大小设置的不合理</li>
+</ol>
+
+<p>由于bigkey 本身占用大量的内存空间，所以只看执行MONITOR 和 设置缓冲区大小</p>
+
+<ol>
+<li>执行MONITOR 命令会持续占用输出缓冲区，所以建议MONITOR 在生产环境少用，甚至不用</li>
+<li>设置输出缓冲区大小
 <ul>
-<li>在 server.h 文件中，声明我们已经实现的命令，以便在 server.c 文件引用这个命令</li>
-</ul>
+<li>设置缓冲区大小的上限</li>
+<li>设置输出缓冲区持续写入数据的数量上限阈值，和持续写入数据的时间的上限阈值   </li>
+</ul></li>
+<li><p>设置普通客户端</p>
+<pre class="line-numbers"><code class="language-shell">client-output-buffer-limit normal 0 0 0
+</code></pre></li>
+<li><p>设置订阅客户端</p>
+<pre class="line-numbers"><code class="language-shell">client-output-buffer-limit pubsub 8mb 2mb 60
+</code></pre></li>
+</ol>
 
-<pre class="line-numbers"><code class="language-c">void ntinsertCommand(client *c)
+<h2 id="toc_6">主从集群中的缓冲区</h2>
+
+<h3 id="toc_7">复制缓冲区溢出</h3>
+
+<p><img src="media/16118878354001/16119028400546.jpg" alt=""/></p>
+
+<p>主从同步是全量复制时，从节点接受和加载RDB较慢，同时主节点接受了大量的写命令，写命令在复制缓冲区中就会越积越多，导致溢出。<br/>
+如何避免复制缓冲区溢出</p>
+
+<ol>
+<li>控制主节点保存的数量的大小，通常设置在 2~4GB</li>
+<li><p>使用client-output-buffer-limit 设置合理的复制缓冲区大小</p>
+<pre class="line-numbers"><code class="language-shell">config set client-output-buffer-limit slave 512mb 128mb 60
 </code></pre>
+<p>slave 参数表明该配置项是针对复制缓冲区的。512mb 代表将缓冲区大小的上限设置为 512MB；128mb 和 60 代表的设置是，如果连续 60 秒内的写入量超过 128MB 的话，也会触发缓冲区溢出   </p></li>
+</ol>
 
-<ul>
-<li>在 server.c 文件中的 redisCommandTable 里面，把新增命令和实现函数关联起来</li>
-</ul>
+<h3 id="toc_8">复制积压缓冲区的溢出问题</h3>
 
-<pre class="line-numbers"><code class="language-c">struct redisCommand redisCommandTable[] = { 
-...
-{&quot;ntinsert&quot;,ntinsertCommand,2,&quot;m&quot;,...}
-}
-</code></pre>
+<p><img src="media/16118878354001/16119037779060.jpg" alt=""/></p>
+
+<p>主从在增量复制时，主节点在把接受到的写命令同步给从节点，同时把这些写命令写入复制积压缓冲区。</p>
+
+<ol>
+<li>复制积压缓冲区是一个环形缓冲区</li>
+<li>调整复制积压缓冲区的大小</li>
+</ol>
 
 
     
@@ -269,16 +254,13 @@ robj *createObject(int type, void *ptr) {
         <div class="large-6 columns">
         <p class="text-left" style="padding:15px 0px;">
       
-          <a href="16116264490792.html" 
-          title="Previous Post: Redis 保存时间序列的数据">&laquo; Redis 保存时间序列的数据</a>
-      
         </p>
         </div>
         <div class="large-6 columns">
       <p class="text-right" style="padding:15px 0px;">
       
-          <a  href="16115812449283.html" 
-          title="Next Post: GEO 实现">GEO 实现 &raquo;</a>
+          <a  href="16118170429623.html" 
+          title="Next Post: Redis 延迟响应">Redis 延迟响应 &raquo;</a>
       
       </p>
         </div>
