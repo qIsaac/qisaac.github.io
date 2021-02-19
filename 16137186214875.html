@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  Spring - Isaac Blog
+  缓存异常 - Isaac Blog
   
   </title>
   
@@ -109,65 +109,128 @@
        
 
  <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
 </script>
 <div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="16064653662427.html">
-                
-                  <h1>Spring AOP</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                   <a href="16064653662427.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/11/27 16:22 下午</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='Spring.html'>Spring</a></span>
-          				   
-                    
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>缓存异常</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2021/02/19 15:10 下午</span>
 
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='%E7%BC%93%E5%AD%98.html'>缓存</a></span>
+           
+         
+          <span class="comments">
+            
 
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-              
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>使用Redis为缓存是会存在一些异常问题，缓存中的数据和数据库不一致、缓存雪崩、缓存穿透、缓存击穿</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">缓存数据与数据库不一致</h2>
+
+<h3 id="toc_1">数据一致性</h3>
+
+<ol>
+<li>缓存中有数据，那么缓存的数据和数据库中的数据保持一致</li>
+<li>缓存中没有数据，那么数据库中的数据必须是最新的</li>
+</ol>
+
+<h3 id="toc_2">读写缓存和只读缓存</h3>
+
+<p>但是不同的写回策略，决定数据不一致的问题</p>
+
+<h4 id="toc_3">读写缓存</h4>
+
+<ol>
+<li>同步直写策略：写缓存时，也不同步写数据库，二者数据一致</li>
+<li>异步写会策略：写缓存时，不写回数据库，等到数据从缓存中淘汰时，再写回数据库，如果在写回数据库时出现异常，则不能保证数据一致  对于读写缓存保证数据一致，只能使用同步直写策略，同时保证事务的机制保证数据库和缓存数据的原子性</li>
+</ol>
+
+<h4 id="toc_4">只读缓存</h4>
+
+<p>针对新增数据，直接写入数据库；如果是删改则标记缓存中的数据无效</p>
+
+<ol>
+<li>新增数据：不对缓存做任何操作，而且数据库是最新的数据所以是一致</li>
+<li>删改数据：应用需要更新数据库，并且删除缓存中的数据<br/>
+   <img src="media/16137186214875/16137253029695.jpg" alt=""/><br/>
+ </li>
+</ol>
+
+<h2 id="toc_5">解决数据不一致问题</h2>
+
+<h3 id="toc_6">重试机制</h3>
+
+<p>把要删除或者修改的数据放到消息队列中，当没有删除应用值或者是没有成功更新数据库时，可以从消息队列中重新读取数据，再次进行更新或者是删除；如果成功删除消息队列中的值，如果多次没有成功则向业务层发送信息</p>
+
+<h4 id="toc_7">先删除缓存，再更新数据库</h4>
+
+<p><img src="media/16137186214875/16137256159341.jpg" alt=""/></p>
+
+<p>解决方法：在线程A更新完数据后吗，先让线程A Sleep 一小段时间，在进行一次缓存删除</p>
+
+<h4 id="toc_8">先更新数据库，再删除缓存值</h4>
+
+<p><img src="media/16137186214875/16137257636514.jpg" alt=""/></p>
+
+<h3 id="toc_9">解决方法</h3>
+
+<ol>
+<li>删除缓存或者是更新数据库失败导致的不一致：使用重试或者是更新成功操作</li>
+<li>在删除缓存值，更新数据库这两步操作中，其他线程的并发读操作，可以使用延迟双删<br/>
+ </li>
+</ol>
 
 
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="16124201772659.html" 
+          title="Next Post: Redis 缓存替换策略">Redis 缓存替换策略 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
 
  <div class="large-4 medium-4 columns">
   <div class="hide-for-small">
