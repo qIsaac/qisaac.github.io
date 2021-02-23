@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  Executor - Isaac Blog
+  Redis ACID - Isaac Blog
   
   </title>
   
@@ -118,14 +118,14 @@
       <div class="markdown-body article-wrap">
        <div class="article">
           
-          <h1>Executor</h1>
+          <h1>Redis ACID</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/08 13:54 下午</span>
+          <span class="date">2021/02/23 16:39 下午</span>
 
           <span>posted in&nbsp;</span> 
           
-              <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
+              <span class="posted-in"><a href='%E5%9F%BA%E7%A1%80.html'>基础</a></span>
            
          
           <span class="comments">
@@ -138,47 +138,62 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <p>目前线程池的使用模式是生产者-消费者模式，线程池的使用方是生产者，线程池本身是消费者</p>
-
-<span id="more"></span><!-- more -->
-
-<h2 id="toc_0">Java中的线程池</h2>
-
-<p>Java中最核心的就是ThreadPoolExecutor，他强调的是Executor不是池化</p>
-
-<pre class="line-numbers"><code class="language-java">
-ThreadPoolExecutor(
-  int corePoolSize,
-  int maximumPoolSize,
-  long keepAliveTime,
-  TimeUnit unit,
-  BlockingQueue&lt;Runnable&gt; workQueue,
-  ThreadFactory threadFactory,
-  RejectedExecutionHandler handler) 
-</code></pre>
-
-<ul>
-<li>corePoolSize : 表示线程池保有的最小线程数。</li>
-<li>maximumPoolSize : 表示线程池创建的最大线程数。线程不能无限制的增加，最多增加到maximumPoolSize个，闲暇时不能减少个数少于corePoolSize；</li>
-<li>keepAliveTime &amp; unit : 一个线程空闲了keepAliveTime &amp; unit 这么久没有执行任务，而且线程数大于corePoolSize 那么这个线程就会被回收</li>
-<li>workQueue : 工作队列</li>
-<li>threadFactory : 如何自定义如何创建线程</li>
-<li><p>handler : 通过这个参数可以自定义拒绝策略，如果线程池中的所有线程都在工作，并且工作队列已经满了，此时提交任务就会被决绝接受，ThreadPoolExecutor 四种执行策略</p>
-<ul>
-<li>CallerRunsPolicy : 提交任务的线程自己去执行</li>
-<li>AbortPolicy : 默认决绝策略，会抛出RejectedExecutionException</li>
-<li>DiscardPolicy : 直接丢弃任务</li>
-<li>DiscardOldestPolicy : 丢弃最老的任务，把最早进入工作队列的任务丢弃    </li>
-</ul></li>
-</ul>
-
-<h3 id="toc_1">线程池使用注意</h3>
+      <p>Redis 事务包含 MULTI 和 EXEC两个命令 完成三个步骤；</p>
 
 <ol>
-<li>不建议使用 Executors 创建线程池 使用的工作队列是无界，容易导致OOM</li>
-<li>默认拒绝策略要慎重使用</li>
-<li>使用 execute 提交任务时，任务执行过程中的运行时异常要按需捕获并处理</li>
+<li>受用MULTI 显示表示一个事务开始</li>
+<li>客户端要把执行的命令发送到服务端，Redis 把命令保存在队列中并不会立即执行</li>
+<li>客户端向服务端发送事务提交命令EXEC，然后执行队列中的命令  
+<span id="more"></span><!-- more --></li>
 </ol>
+
+<h2 id="toc_0">原子性</h2>
+
+<p>如果不出现错误，通过MULTI和EXEC命令可以事项事务，但是如果有错误就不一定分三种情况</p>
+
+<ol>
+<li>执行EXEC 命令前，客户端发送的命令有错，提交事务时会失败，保证原子性</li>
+<li>事务入队列时，命令和操作类型不匹配，但是Redis 没有检测出来；这样部分正确命令会正常的执行但是错误的命令就会失败，保证不了原子性</li>
+<li>执行事务EXEC 命令时，Redis 实例发生故障导致事务执行失败，如果开启了AOF 可以保证原子性</li>
+</ol>
+
+<h4 id="toc_1">原子性总结</h4>
+
+<ol>
+<li>命令入队时报错，会放弃事务，保证原子性</li>
+<li>命令入队时没有错误，实际执行时出现错误，不保证原子性</li>
+<li>EXEC执行明时出现Redis实例故障，如果开启AOF 则可以保证原子性</li>
+</ol>
+
+<h2 id="toc_2">一致性</h2>
+
+<p>事务一致性的保证收到错误命令，实例故障影响。</p>
+
+<ol>
+<li>命令入队错误：会放弃执行事务保证一致性</li>
+<li>入队正确，命令执行错误：错误的命令不能执行，但是正确的命令可以执行，保证不了一致性</li>
+<li>EXEC 命令执行时实例故障：没有开启RDB和AOF不能保证一致性，如果开启RDB 因为不会在事务执行时执行RDB 所以不会影响一致性，如果开启AOF，正确可以记录，如果错误通过修复工具可以修复 保证一致性</li>
+</ol>
+
+<h2 id="toc_3">隔离性</h2>
+
+<p>针对命令入队和命令实际执行两个阶段</p>
+
+<ol>
+<li>并发EXEC执行前，此时隔离需要通过WATCH保证隔离性</li>
+<li>执行EXEC后，可以保证隔离性 </li>
+</ol>
+
+<p>针对 1 是否使用功能WATCH 如果使用了，WATCH会在执行事务前监控键值，当执行EXEC 时如果值被修改 则放弃事务保证隔离性</p>
+
+<p><img src="media/16140695543313/16140712267573.jpg" alt=""/><br/>
+ <br/>
+针对 2 并发操作在EXEC命令之后被服务器接受并执行，Redis是单线程执行命令，所以会保证隔离性 <img src="media/16140695543313/16140721429950.jpg" alt=""/></p>
+
+<h2 id="toc_4">持久性</h2>
+
+<p>使用RDB不能保证一个事务之后，下一次RDB执行之前的数据得到持久化<br/>
+使用AOF三种 no,everysec,always 配置都会有数据丢失，所以无论使用哪种都不能保证持久化 </p>
 
 
     
@@ -189,16 +204,13 @@ ThreadPoolExecutor(
         <div class="large-6 columns">
         <p class="text-left" style="padding:15px 0px;">
       
-          <a href="16100892494209.html" 
-          title="Previous Post: CompletableFuture 异步编程">&laquo; CompletableFuture 异步编程</a>
-      
         </p>
         </div>
         <div class="large-6 columns">
       <p class="text-right" style="padding:15px 0px;">
       
-          <a  href="16100710819489.html" 
-          title="Next Post: 无锁工具类">无锁工具类 &raquo;</a>
+          <a  href="16137186214875.html" 
+          title="Next Post: 缓存异常">缓存异常 &raquo;</a>
       
       </p>
         </div>
@@ -381,8 +393,6 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-
-<script src="asset/prism.js"></script>
 
 
 <style type="text/css">
