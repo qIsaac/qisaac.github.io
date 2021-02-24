@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  消息队列 - Isaac Blog
+  Codis VS Redis Cluster - Isaac Blog
   
   </title>
   
@@ -109,99 +109,147 @@
        
 
  <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
 </script>
 <div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="16064653024829.html">
-                
-                  <h1>如何选择RabbitMQ和Kafka</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                   <a href="16064653024829.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/11/27 16:21 下午</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-          				   
-                    
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>Codis VS Redis Cluster</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2021/02/24 16:32 下午</span>
 
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='%E5%AE%9E%E8%B7%B5.html'>实践</a></span>
+           
+         
+          <span class="comments">
+            
 
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="16064652877153.html">
-                
-                  <h1>AMQ Model架构</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                   <a href="16064652877153.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/11/27 16:21 下午</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-          				   
-                    
+            
+          </span>
 
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
+        </div>
+      </div><!-- article -->
 
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-              
+      <div class="article-content">
+      <p>Redis 切片集群使用多个实例保存数据，能够很好地应对大数据使用场景。而Codis 也是一种提供切片集群的解决方案</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">Codis 整体架构和基本流程</h2>
+
+<h3 id="toc_1">Codis 包含四个组件</h3>
+
+<ul>
+<li>codis server : 进行二次开发的Redis实例，增加了额外的数据结构，支持数据迁移操作，主要负责具体的读写请求</li>
+<li>codis proxy : 接受客户端请求并吧请求转发到codis server</li>
+<li>Zookeeper 集群 : 保存集群元数据</li>
+<li>codis dashboard 和codis fe : 集群管理工具  <img src="media/16141555795193/16141560288393.jpg" alt=""/></li>
+</ul>
+
+<h3 id="toc_2">基本流程</h3>
+
+<ol>
+<li>先使用codis dashboard 设置 codis server 和codis proxy 访问地址，设置完成后codis server 和codis proxy 才会接受访问</li>
+<li>客户端直接和codis proxy 连接</li>
+<li>codis proxy 接受到请求后，查询请求数据和codis server 映射关系，并把请求转发给相应的codis server  <img src="media/16141555795193/16141565586050.jpg" alt=""/></li>
+</ol>
+
+<h2 id="toc_3">Codis 关键技术原理</h2>
+
+<h3 id="toc_4">数据如何在集群中分布</h3>
+
+<p>Codis 数据如何分布式通过逻辑槽映射完成的</p>
+
+<ol>
+<li>Codis 一共有1024个Slot ，编号依次是0到1023，把1024个逻辑槽 手动或者是自动分配给codis server </li>
+<li>读取数据时，根据CRC32算法计算数据key的哈希值，并把Hash值对1024取模，取模的值就是Slot编号，然后根据之情的映射到codis server  <img src="media/16141555795193/16141586691566.jpg" alt=""/></li>
+</ol>
+
+<p>Slot 和 codis server的映射关系称为数据路由表，路由表会缓存在本地同时保存在zookeeper 中</p>
+
+<p><img src="media/16141555795193/16141589204536.jpg" alt=""/></p>
+
+<h4 id="toc_5">数据分布Codis 和 Redis Cluster 区别</h4>
+
+<ol>
+<li>Codis 中的路由表是通过 codis dashboard 分配和修改的，并保存在Zookeeper中，如果修改会重新发送给codis proxy</li>
+<li>Redis Cluster 中数据路由表是通过实例间相互通信传递的，最后在每个实例上都会保存一份</li>
+</ol>
+
+<h3 id="toc_6">集群扩容和数据迁移</h3>
+
+<h4 id="toc_7">Codis 集群扩容</h4>
+
+<p>Codis 扩容包含codis proxy 和 codis server 增加</p>
+
+<ol>
+<li>codis server 增加
+<ol>
+<li>启动新的codis server ，将他加入集群</li>
+<li>把数据迁移到新的server  </li>
+</ol></li>
+</ol>
+
+<h5 id="toc_8">数据迁移流程</h5>
+
+<p>Codis 按照数据Slot粒度进行迁移</p>
+
+<ol>
+<li>在源server上，Codis 从要迁移的Slot上随机选择一个数据，发送给目的server</li>
+<li>目的确认收到消息后，会给源server返回确认消息。源server删除刚迁移的数据</li>
+<li>不断重复 步骤1 和步骤2 知道所有Slot 迁移完成</li>
+</ol>
+
+<p><img src="media/16141555795193/16141600514909.jpg" alt=""/></p>
+
+<p>同步迁移和异步迁移：区别在迁移过程中源server是否阻塞；异步迁移bigkey 采用拆分指令的方式进行迁移<br/>
+  </p>
+
+<h3 id="toc_9">切片集群方案</h3>
+
+<p><img src="media/16141555795193/16141606753197.jpg" alt=""/></p>
 
 
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="16140695543313.html" 
+          title="Next Post: Redis ACID">Redis ACID &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
 
  <div class="large-4 medium-4 columns">
   <div class="hide-for-small">
