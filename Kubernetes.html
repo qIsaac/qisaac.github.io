@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  Redis 总览 - Isaac Blog
+  Kubernetes - Isaac Blog
   
   </title>
   
@@ -111,121 +111,69 @@
        
 
  <script type="text/javascript">
-  $(function(){
-    $('#menu_item_index').addClass('is_active');
-  });
+	$(function(){
+		$('#menu_item_index').addClass('is_active');
+	});
 </script>
 <div class="row">
-  <div class="large-8 medium-8 columns">
-      <div class="markdown-body article-wrap">
-       <div class="article">
-          
-          <h1>Redis 总览</h1>
-     
-        <div class="read-more clearfix">
-          <span class="date">2021/01/12 17:30 下午</span>
+	<div class="large-8 medium-8 columns">
+		<div class="markdown-body home-categories">
+		
+			<div class="article">
+                <a class="clearlink" href="16144993169245.html">
+                
+                  <h1>Kubernetes 本质</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>Kubernetes 项目在Borg体系下，体现出一种独有的 “独有性” 和 “完备性” </p>
 
-          <span>posted in&nbsp;</span> 
-          
-              <span class="posted-in"><a href='Redis.html'>Redis</a></span>
-           
-         
-          <span class="comments">
-            
-
-            
-          </span>
-
-        </div>
-      </div><!-- article -->
-
-      <div class="article-content">
-      <p>Redis 是一个开源的基于内存的数据存储结构，可以用作DataBase，Cache，Message Broker；Redis 提供数据结构有 string, hash, list, set, zset, bitmaps, hyperloglogs, geospatial indexe, streams ； Redis 具有内置的复制，Lua脚本，LRU逐出，事务和不同级别的磁盘持久性，并通过Redis Sentinel和Redis Cluster自动分区提供高可用性；可以在数据结构上进行部分原子操作，如追加字符串，hash中递增值,set进行交集，并集，差集计算，在zset获取最高值；Redis 支持异步复制，快速的非阻塞同步，自动连接，在网络拆分中进行部分重新同步；以及事务、发布/订阅、Lua脚本、生存时间有限的键、LRU收回Key、自动故障转移。</p>
-
-<span id="more"></span><!-- more -->
-
-<h2 id="toc_0">Redis 特性</h2>
-
-<ol>
-<li><p><em>速度快</em> : 正常情况下，Redis执行命令非常快，官方给出的数据是读写性能可以达到 10万/秒，当然这取决于具体的物理环境，但是除去物理环境的差异，Redis还是有速度快的原因</p>
-<ul>
-<li>Redis 的所有的数据都是放到内存中的</li>
-<li>Redis 是使用C语言实现，相对执行速度会快一些</li>
-<li>Redis 使用单线程架构，预防多线程可能引起的竞争问题</li>
-<li>Redis 代码的注重性能</li>
-</ul></li>
-<li><p><em>基于键值对的数据结构服务器</em> : Redis 中的值可以是字符串、哈希、链表、集合，有序集合以及位图，HyperLogLog，还有3.2 之后加入的GEO</p></li>
-<li><p><em>丰富的功能</em> : 提供键值过期服务、提供发布订阅功能，支持Lua脚本，提供简单的事务、提供流水线</p></li>
-<li><p><em>简单稳定</em> : 简单体现在源码少，使用单线程，不需要依赖操作系统的类库</p></li>
-<li><p><em>客户端语言多</em></p></li>
-<li><p><em>持久化</em> : Redis 提供了两种持久化方式RDB和AOF，可以通过两种策略将内存中的数据存到磁盘中</p></li>
-<li><p><em>主从复制</em> : Redis 提供复制功能，实现多个Redis数据副本，是事项分布式的基础</p></li>
-<li><p><em>高可用和分布式</em> : Redis 2.8版本 提供了高可用Redis Sentinel，保证节点故障转移和发现，Redis 3.0 提供了Redis Cluster 实现真正的分布式，提供高可用、读写和容量扩展   </p></li>
-</ol>
-
-<h2 id="toc_1">Redis 使用场景</h2>
-
-<ol>
-<li>缓存</li>
-<li>排行榜系统</li>
-<li>计算器应用</li>
-<li>社交网络</li>
-<li>消息队列 </li>
-</ol>
-
-<h2 id="toc_2">Redis  全景图景</h2>
-
-<p>两大维度，三大主线：两大维度值系统维度和应用维度；三大主线：高性能、高可用、高扩展</p>
-
-<p><img src="media/16104438103036/16105182704060.jpg" alt=""/></p>
-
-<ol>
-<li>高性能主线 : 包括线程模型、数据结构、持久化、网络框架</li>
-<li>高可靠主线 : 包括主从复制、哨兵机制</li>
-<li>高可扩展主线 : 包括数据分片、负载均衡  </li>
-</ol>
-
-<h2 id="toc_3">Redis 问题画像</h2>
-
-<p><img src="media/16104438103036/16105199602659.jpg" alt=""/></p>
+<p><img src="media/16144993169245/16144996185907.jpg" alt=""/></p>
 
 
-    
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                   <a href="16144993169245.html">Read more</a>&nbsp;&nbsp; 
+                    <span class="date">2021/02/28 16:01 下午</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='Kubernetes.html'>Kubernetes</a></span>
+          				   
+                    
 
-      </div>
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
 
-      <div class="row">
-        <div class="large-6 columns">
-        <p class="text-left" style="padding:15px 0px;">
-      
-          <a href="16106074066238.html" 
-          title="Previous Post: Redis 应用场景">&laquo; Redis 应用场景</a>
-      
-        </p>
-        </div>
-        <div class="large-6 columns">
-      <p class="text-right" style="padding:15px 0px;">
-      
-          <a  href="16104145327715.html" 
-          title="Next Post: SynchronousQueue">SynchronousQueue &raquo;</a>
-      
-      </p>
-        </div>
-      </div>
-      <div class="comments-wrap">
-        <div class="share-comments">
-          
-
-          
-
-          
-        </div>
-      </div>
-    </div><!-- article-wrap -->
-  </div><!-- large 8 -->
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+              
 
 
-
+			<div class="row">
+			  <div class="large-6 columns">
+			  <p class="text-left" style="padding-top:25px;">
+			   
+			  </p>
+			  </div>
+			  <div class="large-6 columns">
+			<p class="text-right" style="padding-top:25px;">
+			
+			</p>
+			  </div>
+			</div>
+		</div>
+	</div><!-- large 8 -->
 
  <div class="large-4 medium-4 columns">
   <div class="hide-for-small">

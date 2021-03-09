@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  Redis 总览 - Isaac Blog
+  Kubernetes 本质 - Isaac Blog
   
   </title>
   
@@ -120,14 +120,14 @@
       <div class="markdown-body article-wrap">
        <div class="article">
           
-          <h1>Redis 总览</h1>
+          <h1>Kubernetes 本质</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/12 17:30 下午</span>
+          <span class="date">2021/02/28 16:01 下午</span>
 
           <span>posted in&nbsp;</span> 
           
-              <span class="posted-in"><a href='Redis.html'>Redis</a></span>
+              <span class="posted-in"><a href='Kubernetes.html'>Kubernetes</a></span>
            
          
           <span class="comments">
@@ -140,54 +140,63 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <p>Redis 是一个开源的基于内存的数据存储结构，可以用作DataBase，Cache，Message Broker；Redis 提供数据结构有 string, hash, list, set, zset, bitmaps, hyperloglogs, geospatial indexe, streams ； Redis 具有内置的复制，Lua脚本，LRU逐出，事务和不同级别的磁盘持久性，并通过Redis Sentinel和Redis Cluster自动分区提供高可用性；可以在数据结构上进行部分原子操作，如追加字符串，hash中递增值,set进行交集，并集，差集计算，在zset获取最高值；Redis 支持异步复制，快速的非阻塞同步，自动连接，在网络拆分中进行部分重新同步；以及事务、发布/订阅、Lua脚本、生存时间有限的键、LRU收回Key、自动故障转移。</p>
+      <p>Kubernetes 项目在Borg体系下，体现出一种独有的 “独有性” 和 “完备性” </p>
+
+<p><img src="media/16144993169245/16144996185907.jpg" alt=""/></p>
 
 <span id="more"></span><!-- more -->
 
-<h2 id="toc_0">Redis 特性</h2>
+<h2 id="toc_0">Kubernetes 项目要解决的问题</h2>
+
+<p>全局架构图<br/>
+<img src="media/16144993169245/16144998205261.jpg" alt=""/></p>
+
+<p>Kubernetes 由Master 和 Node 节点构成 这两个节点分别是控制节点和计算节点；</p>
+
+<h3 id="toc_1">Master 节点</h3>
+
+<p>由三个独立组件组合而成，他们分别是负责API 服务的kube-apiserver ; 负责独立调度的kube-scheduler; 负责容器编排的 kube-controller-Manager ； 整个集群的持久化由kube-apiserver 处理后保存在 Etcd 中</p>
+
+<h3 id="toc_2">Node 计算节点</h3>
+
+<p>计算节点的核心是一个kubelet组件，kubelet 负责与容器运行时打交道，而交互所依赖的是CRI（Container Runtime Interface），整个接口定义了容器运行时各项核心操作；只要能够运行标准的容器镜像，它就可以通过CRI接入到Kubernetes 项目中；如Docker 通过OCI运行时规范与底层的Linux 进行交互</p>
 
 <ol>
-<li><p><em>速度快</em> : 正常情况下，Redis执行命令非常快，官方给出的数据是读写性能可以达到 10万/秒，当然这取决于具体的物理环境，但是除去物理环境的差异，Redis还是有速度快的原因</p>
-<ul>
-<li>Redis 的所有的数据都是放到内存中的</li>
-<li>Redis 是使用C语言实现，相对执行速度会快一些</li>
-<li>Redis 使用单线程架构，预防多线程可能引起的竞争问题</li>
-<li>Redis 代码的注重性能</li>
-</ul></li>
-<li><p><em>基于键值对的数据结构服务器</em> : Redis 中的值可以是字符串、哈希、链表、集合，有序集合以及位图，HyperLogLog，还有3.2 之后加入的GEO</p></li>
-<li><p><em>丰富的功能</em> : 提供键值过期服务、提供发布订阅功能，支持Lua脚本，提供简单的事务、提供流水线</p></li>
-<li><p><em>简单稳定</em> : 简单体现在源码少，使用单线程，不需要依赖操作系统的类库</p></li>
-<li><p><em>客户端语言多</em></p></li>
-<li><p><em>持久化</em> : Redis 提供了两种持久化方式RDB和AOF，可以通过两种策略将内存中的数据存到磁盘中</p></li>
-<li><p><em>主从复制</em> : Redis 提供复制功能，实现多个Redis数据副本，是事项分布式的基础</p></li>
-<li><p><em>高可用和分布式</em> : Redis 2.8版本 提供了高可用Redis Sentinel，保证节点故障转移和发现，Redis 3.0 提供了Redis Cluster 实现真正的分布式，提供高可用、读写和容量扩展   </p></li>
+<li>通过gRCP与Device Plugin 插件进行交互，这个插件用来管理GPU等宿主机物理设备的主要组件</li>
+<li>通过调用网络插件和存储插件为容器配置网络和存储；分别是CNI（Container Network Interface）和 CSI （Container Storage Interface）  </li>
 </ol>
 
-<h2 id="toc_1">Redis 使用场景</h2>
+<h2 id="toc_3">Kubernetes 项目着重解决问题</h2>
+
+<p>运行在大规模集群中的各种任务之间，实际上存在各种关系，这些关系的处理才是作业编排和管理系统最难的地方；<br/>
+Kubernetes 设计思想是，在宏观的角度，以统一的方式定义任务之间的各种关系，并且为将来更多的关系留余地</p>
+
+<h3 id="toc_4">Pod</h3>
+
+<p>应用之间需要频繁的交互和访问，或者是通过文件进行信息交互，在Kubernetes 项目中，这些容器被划分为一个Pod，同一个Pod 共享同一个Network ，同一数据卷，达到高效交换信息目的</p>
+
+<h3 id="toc_5">Service</h3>
+
+<p>比如web 应用与数据库之间的访问关系，Kubernetes 提供了一种Service 服务方式；Service 作用是作为Pod的代理入口，从而代替Pod对外暴露一个固定的网络地址</p>
+
+<h2 id="toc_6">Kubernetes 核心功能全景图</h2>
+
+<p><img src="media/16144993169245/16145032645602.jpg" alt=""/></p>
+
+<p>首先容器之间紧密关系扩展到了Pod；有了Pod 希望以此启动多个应用实例 就扩张到Deployment 这个多实例管理器，有了一组相同的Pod需要一个固定的IP和端口以负载均衡的方式访问，这样就有了Service；</p>
+
+<p>针对访问的授权信息则通过Secret 对象，保存在Etcd中启动Pod时，自动以Volume范式挂载到容器，这样就可以访问了</p>
+
+<p>应用运行的形态是影响如何容器化这个应用的第二重重要因素；为此Kubernetes 定义了新的基于Pod改进对象的 - Job;Job 用来描述一次性的运行的Pod；DaemonSet 用来描述每个宿主机上必须且只能运行一个副本的守护进服务；CronJob 用来描述 定时任务</p>
+
+<p>Kuberbnetes 推崇的是</p>
 
 <ol>
-<li>缓存</li>
-<li>排行榜系统</li>
-<li>计算器应用</li>
-<li>社交网络</li>
-<li>消息队列 </li>
+<li>首先通过一个“编排对象”，比如 Pod, Job , CronJob 描述你试图管理的应用</li>
+<li>然后再为他们定义一些服务对象：比如 Service、Secret、Horizontal Pod Autoscaler（自动水平扩展器）等。这些对象，会负责具体的平台级功能  </li>
 </ol>
 
-<h2 id="toc_2">Redis  全景图景</h2>
-
-<p>两大维度，三大主线：两大维度值系统维度和应用维度；三大主线：高性能、高可用、高扩展</p>
-
-<p><img src="media/16104438103036/16105182704060.jpg" alt=""/></p>
-
-<ol>
-<li>高性能主线 : 包括线程模型、数据结构、持久化、网络框架</li>
-<li>高可靠主线 : 包括主从复制、哨兵机制</li>
-<li>高可扩展主线 : 包括数据分片、负载均衡  </li>
-</ol>
-
-<h2 id="toc_3">Redis 问题画像</h2>
-
-<p><img src="media/16104438103036/16105199602659.jpg" alt=""/></p>
+<p>这就是所谓的“声明式 API”。这种 API 对应的“编排对象”和“服务对象”，都是 Kubernetes 项目中的 API 对象（API Object）</p>
 
 
     
@@ -198,16 +207,13 @@
         <div class="large-6 columns">
         <p class="text-left" style="padding:15px 0px;">
       
-          <a href="16106074066238.html" 
-          title="Previous Post: Redis 应用场景">&laquo; Redis 应用场景</a>
-      
         </p>
         </div>
         <div class="large-6 columns">
       <p class="text-right" style="padding:15px 0px;">
       
-          <a  href="16104145327715.html" 
-          title="Next Post: SynchronousQueue">SynchronousQueue &raquo;</a>
+          <a  href="16144274085271.html" 
+          title="Next Post: Redis 数据倾斜">Redis 数据倾斜 &raquo;</a>
       
       </p>
         </div>
