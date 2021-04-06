@@ -81,6 +81,8 @@
         
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
+            <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
+        
             <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
@@ -173,15 +175,20 @@
 
 <ol>
 <li>ESI ：在Web代理服务器上做动态内容请求，并将请求插入到静态页面中，当用户拿到的页面就是一个完整的页面了</li>
-<li>CSI：单独发起异步的JavaScript请求，从服务器上获取动态资源   <br/>
-## 动静分离的服务架构<br/>
-根据架构的复杂度，有三种方案可选</li>
+<li>CSI：单独发起异步的JavaScript请求，从服务器上获取动态资源  </li>
+</ol>
+
+<h2 id="toc_4">动静分离的服务架构</h2>
+
+<p>根据架构的复杂度，有三种方案可选</p>
+
+<ol>
 <li>实体机单机部署</li>
 <li>同一Cache层部署</li>
 <li>上CDN</li>
 </ol>
 
-<h3 id="toc_4">实体机单机部署</h3>
+<h3 id="toc_5">实体机单机部署</h3>
 
 <p>将虚拟机改为实体机，以增大 Cache 的容量，并且采用了一致性 Hash 分组的方式来提升命中率<br/>
 <img src="media/16172471826209/16172668040455.jpg" alt=""/></p>
@@ -191,10 +198,12 @@
 <ol>
 <li>没有网络瓶颈，能够使用大内存</li>
 <li>能提升命中率，减少Gzip</li>
-<li>减少Cache失效压力，采用定时失效的方式  <br/>
-### 同一Cache层<br/>
-将单机的Cache层同一分割出来。形成一个单独的Cache 集群</li>
+<li>减少Cache失效压力，采用定时失效的方式  </li>
 </ol>
+
+<h3 id="toc_6">同一Cache层</h3>
+
+<p>将单机的Cache层同一分割出来。形成一个单独的Cache 集群</p>
 
 <p><img src="media/16172471826209/16172670095549.jpg" alt=""/></p>
 
@@ -219,7 +228,7 @@
 <pre class="line-numbers"><code class="language-text">可以再对 Cache 做 Hash 分组，即一组 Cache 缓存的内容相同，这样能够避免热点数据过度集中导致新的瓶颈产生
 </code></pre>
 
-<h3 id="toc_5">上CND</h3>
+<h3 id="toc_7">上CND</h3>
 
 <p>待解决问题</p>
 
@@ -303,6 +312,8 @@
       	<p class="cat-list">
         
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
+        
+            <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
         
             <a href="Nginx.html"><strong>Nginx</strong></a>
         

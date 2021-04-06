@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  Redis 集合统计模式 - Isaac Blog
+  系统架构 - Isaac Blog
   
   </title>
   
@@ -113,96 +113,103 @@
        
 
  <script type="text/javascript">
-  $(function(){
-    $('#menu_item_index').addClass('is_active');
-  });
+	$(function(){
+		$('#menu_item_index').addClass('is_active');
+	});
 </script>
 <div class="row">
-  <div class="large-8 medium-8 columns">
-      <div class="markdown-body article-wrap">
-       <div class="article">
-          
-          <h1>Redis 集合统计模式</h1>
-     
-        <div class="read-more clearfix">
-          <span class="date">2021/01/23 15:04 下午</span>
-
-          <span>posted in&nbsp;</span> 
-          
-              <span class="posted-in"><a href='%E5%AE%9E%E8%B7%B5.html'>实践</a></span>
-           
-         
-          <span class="comments">
-            
-
-            
-          </span>
-
-        </div>
-      </div><!-- article -->
-
-      <div class="article-content">
-      <p>Redis 集合特点就是一个键对应一系列的值，适合存储一个 key 对应一个数据集合，但是集合的统计则需求不同。集合类型常见的 4 种统计模式，聚合统计、排序统计、二值状态统计和基数统计。</p>
-
-<span id="more"></span><!-- more -->
-
-<h2 id="toc_0">聚合统计</h2>
-
-<p>统计多个集合元素的聚合结果，包括交集、并集、补集。Set的集合运算，计算复杂度高，在数据量较大的时候，会导致Redis阻塞。可以选择一个从库负责计算，也可以返回客户端后在进行计算</p>
-
-<h2 id="toc_1">排序统计</h2>
-
-<p>List 和 Sorted Set 是有序的，前者是按插入顺序排序，后者是按照权重排序</p>
-
-<h2 id="toc_2">二值统计</h2>
-
-<p>集合元素的值只能取 0 或者是 1 ；Bitmap 本身是用 String 类型作为底层数据结构实现的一种统计二值状态的数据类型，Bitmap 提供了 GETBIT/SETBIT 操作，使用一个偏移值 offset 对 bit 数组的某一个 bit 位进行读和写。不过，需要注意的是，Bitmap 的偏移量是从 0 开始算的，也就是说 offset 的最小值是 0</p>
-
-<h2 id="toc_3">基数统计</h2>
-
-<p>统计一个集合中不重复元素个数；HyperLogLog 是一种用于统计基数的数据集合类型，它的最大优势就在于，当集合元素数量非常多时，它计算基数所需的空间总是固定的，而且还很小</p>
-
-<h2 id="toc_4">总结</h2>
-
-<p><img src="media/16113854855870/16113996799777.jpg" alt=""/></p>
+	<div class="large-8 medium-8 columns">
+		<div class="markdown-body home-categories">
+		
+			<div class="article">
+                <a class="clearlink" href="16172471826209.html">
+                
+                  <h1>动静分离</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>“快”抽象起来讲，就只有两点，一点是提高单次请求的效率，一点是减少没必要的请求</p>
 
 
-    
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                   <a href="16172471826209.html">Read more</a>&nbsp;&nbsp; 
+                    <span class="date">2021/04/01 11:19 上午</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F.html'>秒杀系统</a></span>
+          				   
+                    
 
-      </div>
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
 
-      <div class="row">
-        <div class="large-6 columns">
-        <p class="text-left" style="padding:15px 0px;">
-      
-          <a href="16115812449283.html" 
-          title="Previous Post: GEO 实现">&laquo; GEO 实现</a>
-      
-        </p>
-        </div>
-        <div class="large-6 columns">
-      <p class="text-right" style="padding:15px 0px;">
-      
-          <a  href="16112986565516.html" 
-          title="Next Post: String 应用场景">String 应用场景 &raquo;</a>
-      
-      </p>
-        </div>
-      </div>
-      <div class="comments-wrap">
-        <div class="share-comments">
-          
-
-          
-
-          
-        </div>
-      </div>
-    </div><!-- article-wrap -->
-  </div><!-- large 8 -->
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="16172434231303.html">
+                
+                  <h1>秒杀系统架构原则</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>秒杀本质是一个满足大并发、高性能、高可用的分布式系统</p>
 
 
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                   <a href="16172434231303.html">Read more</a>&nbsp;&nbsp; 
+                    <span class="date">2021/04/01 10:17 上午</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F.html'>秒杀系统</a></span>
+          				   
+                    
 
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+              
+
+
+			<div class="row">
+			  <div class="large-6 columns">
+			  <p class="text-left" style="padding-top:25px;">
+			   
+			  </p>
+			  </div>
+			  <div class="large-6 columns">
+			<p class="text-right" style="padding-top:25px;">
+			
+			</p>
+			  </div>
+			</div>
+		</div>
+	</div><!-- large 8 -->
 
  <div class="large-4 medium-4 columns">
   <div class="hide-for-small">
