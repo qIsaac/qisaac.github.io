@@ -1,0 +1,650 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  MySQL 高性能索引策略 - Isaac Blog
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="Isaac Blog" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site: ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">Home</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">Archives</a></li>
+        
+        <li id=""><a target="_self" href="about.html">About</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; Isaac Blog</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">Home</a></li>
+        
+        <li><a target="_self" href="archives.html">Archives</a></li>
+        
+        <li><a target="_self" href="about.html">About</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="Kubernetes.html">Kubernetes</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="Redis.html">Redis</a></li>
+        
+            <li><a href="Tomcat.html">Tomcat</a></li>
+        
+            <li><a href="MySQL.html">MySQL</a></li>
+        
+            <li><a href="Spring.html">Spring</a></li>
+        
+            <li><a href="%E5%B7%A5%E4%BD%9C%E9%97%AE%E9%A2%98.html">工作问题</a></li>
+        
+            <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
+        
+            <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>MySQL 高性能索引策略</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2021/03/14 14:51 下午</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='MySQL.html'>MySQL</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>高效的选择和使用索引是实现高性能查询的基础，使用哪个索引，以及如何评估选择不同的索引是需要不断学习的</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">独立的列</h2>
+
+<p>独立的列索引： 索引列不能是表达式的一部分，也不能是函数的参数</p>
+
+<pre class="line-numbers"><code class="language-sql"> SELECT actor_id FROM sakila.actor WHERE actor_id + 1 = 5;
+</code></pre>
+
+<p>WHERE 中的表达式 语义等价于 actor_id = 4, 但是MySQL 无法自动识别表达式，所以<em>将单独列放到比较符号的一侧</em>。</p>
+
+<h2 id="toc_1">前缀索引和索引选择性</h2>
+
+<p>索引选择性：不重复的索引值和数据表的记录种数的比值。索引选择性越高，越能过滤更多的行，，唯一索引的选择性是 1.</p>
+
+<p>对于BLOB 、TEXT 或者很长的VARCHAR类型的值，必须使用前缀索引，诀窍在于选择足够长的前缀以保证比较高的选择性，同时又不能太长以节省空间</p>
+
+<h3 id="toc_2">解决办法一</h3>
+
+<p>最常见的列表和最长见的前缀列表机型比较</p>
+
+<h3 id="toc_3">解决办法二</h3>
+
+<p>计算完整列的选择性，并使前缀的选择性接近于完成列的选择性。</p>
+
+<h2 id="toc_4">聚簇索引</h2>
+
+<p><img src="media/16157046811341/IMG_3048.png" alt="IMG_3048"/></p>
+
+<p>并不是一种单独的索引类型，而是一种数据存储方式，具体的细节依赖于实现方式，InnoDB 的聚簇索引实际上是在同一结构中保存了B-Tree和数据行</p>
+
+<p>当表有数据行时，他的数据行实际是存放在索引的叶子页中，聚簇表示数据行和相邻的索引紧凑的存储在一起，因为无法把数据行村发哦在不同的两个地方，所以一个表只有一个聚簇索引，当然覆盖索引可以模拟多个聚簇索引的情况。</p>
+
+<p>如果没有定义主键InnoDB 会选择一个唯一的非空索引替代，如果没有这样的索引，InnoDB 会隐式的定义一个主键来作为聚簇索引</p>
+
+<h3 id="toc_5">优点</h3>
+
+<ol>
+<li>可以把相关的数据保存在一起</li>
+<li>访问数据更快：因为索引和数据都保存在一起</li>
+<li>使用覆盖索引扫描的查询可以直接使用页节点中的主键值<br/>
+### 缺点</li>
+<li>如果数据都放在内存中，那么聚簇索引就没那么重要了</li>
+<li>插入速度严重依赖插入顺序</li>
+<li>更新聚簇索引的代价很高</li>
+<li>基于聚簇索引的表插入新行，或者主键别更新，可能导致页分裂</li>
+<li>导致全表扫描变慢，比如 行稀疏，由于页分裂导致数据存储不连续</li>
+<li>二级索引可能会更大</li>
+<li>二级索引访问需要两次索引查找</li>
+</ol>
+
+<h3 id="toc_6">MyISAM 和 InnoDB</h3>
+
+<p><img src="media/16157046811341/IMG_3049.png" alt="IMG_3049"/></p>
+
+<h3 id="toc_7">顺序的主键造成坏结果</h3>
+
+<ol>
+<li>高并发插入可能导致间隙锁竞争</li>
+<li>AUTO_INCREMENT 锁机制</li>
+</ol>
+
+<h2 id="toc_8">覆盖索引</h2>
+
+<p>如果一个索引包含所有需要查询的字段值，成之为覆盖索引</p>
+
+<h3 id="toc_9">优势</h3>
+
+<ol>
+<li>索引条目通常小于数据行的大小</li>
+<li>索引按照顺序存储，所以I/O密集型范围查询会效率高</li>
+<li>如果InnoDB 二级索引在叶子节点中保存了行的主键值，如果二级索引能够覆盖查询，避免对主键索引的二次查询</li>
+</ol>
+
+<h2 id="toc_10">使用索引扫描来排序</h2>
+
+<p>MySQL 通过排序操作或者是按索引顺序来扫描，如果EXPLAIN 出来的type 为index 说明MySQL 使用索引扫描作排序。</p>
+
+<p>只有当索引的顺序和ORDER BY 字句的顺序完全一致，并且所有的列的排序方式都一样，可以通过索引排序。如果查询需要关联多个表，则只有当ORDER BY 子句引用字段必须是第一表；需要满足索引的最左前缀要求，如果前导列为常量测可以避免最左前缀</p>
+
+<h2 id="toc_11">索引和锁</h2>
+
+<p>索引可以让查询锁定更少的行；<br/>
+InnoDB 在二级索引上使用的是共享锁，方式访问主键索引是使用的排他锁，这消除了使用覆盖索引的可能性，并且使得SLELCT FOR UPDATE 比 LOCK IN SHARE MODE 或者非锁定查询要慢的多</p>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="16172434231303.html" 
+          title="Previous Post: 秒杀系统架构原则">&laquo; 秒杀系统架构原则</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="16144993169245.html" 
+          title="Next Post: Kubernetes 本质">Kubernetes 本质 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/16064679533535/IMG_2798.jpg" /></div>
+            
+                <h1>Isaac Blog</h1>
+                <div class="site-des">个人博客</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="Redis.html"><strong>Redis</strong></a>
+        
+            <a href="Tomcat.html"><strong>Tomcat</strong></a>
+        
+            <a href="MySQL.html"><strong>MySQL</strong></a>
+        
+            <a href="Spring.html"><strong>Spring</strong></a>
+        
+            <a href="%E5%B7%A5%E4%BD%9C%E9%97%AE%E9%A2%98.html"><strong>工作问题</strong></a>
+        
+            <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
+        
+            <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="16172471826209.html">动静分离</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16172434231303.html">秒杀系统架构原则</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16157046811341.html">MySQL 高性能索引策略</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16144993169245.html">Kubernetes 本质</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16144274085271.html">Redis 数据倾斜</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="asset/prism.js"></script>
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

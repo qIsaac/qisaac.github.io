@@ -1,0 +1,615 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    
+  秒杀系统架构原则 - Isaac Blog
+  
+  </title>
+  
+  
+  <link href="atom.xml" rel="alternate" title="Isaac Blog" type="application/atom+xml">
+    <link rel="stylesheet" href="asset/css/foundation.min.css" />
+    <link rel="stylesheet" href="asset/css/docs.css" />
+    <script src="asset/js/vendor/modernizr.js"></script>
+    <script src="asset/js/vendor/jquery.js"></script>
+ 
+<script type="text/javascript">
+  function before_search(){
+    var searchVal = 'site: ' + document.getElementById('search_input').value;
+    document.getElementById('search_q').value = searchVal;
+    return true;
+  }
+</script>
+  </head>
+  <body class="antialiased hide-extras">
+    
+    <div class="marketing off-canvas-wrap" data-offcanvas>
+      <div class="inner-wrap">
+
+
+<nav class="top-bar docs-bar hide-for-small" data-topbar>
+
+
+  <section class="top-bar-section">
+  <div class="row">
+      <div style="position: relative;width:100%;"><div style="position: absolute; width:100%;">
+        <ul id="main-menu" class="left">
+        
+        <li id=""><a target="_self" href="index.html">Home</a></li>
+        
+        <li id=""><a target="_self" href="archives.html">Archives</a></li>
+        
+        <li id=""><a target="_self" href="about.html">About</a></li>
+        
+        </ul>
+
+        <ul class="right" id="search-wrap">
+          <li>
+<form target="_blank" onsubmit="return before_search();" action="https://google.com/search" method="get">
+    <input type="hidden" id="search_q" name="q" value="" />
+    <input tabindex="1" type="search" id="search_input"  placeholder="Search"/>
+</form>
+</li>
+          </ul>
+      </div></div>
+  </div>
+  </section>
+
+</nav>
+
+        <nav class="tab-bar show-for-small">
+  <a href="javascript:void(0)" class="left-off-canvas-toggle menu-icon">
+    <span> &nbsp; Isaac Blog</span>
+  </a>
+</nav>
+
+<aside class="left-off-canvas-menu">
+      <ul class="off-canvas-list">
+        
+        <li><a target="_self" href="index.html">Home</a></li>
+        
+        <li><a target="_self" href="archives.html">Archives</a></li>
+        
+        <li><a target="_self" href="about.html">About</a></li>
+        
+
+    <li><label>Categories</label></li>
+
+        
+            <li><a href="Kubernetes.html">Kubernetes</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="Redis.html">Redis</a></li>
+        
+            <li><a href="Tomcat.html">Tomcat</a></li>
+        
+            <li><a href="MySQL.html">MySQL</a></li>
+        
+            <li><a href="Spring.html">Spring</a></li>
+        
+            <li><a href="%E5%B7%A5%E4%BD%9C%E9%97%AE%E9%A2%98.html">工作问题</a></li>
+        
+            <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
+        
+            <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+         
+
+      </ul>
+    </aside>
+
+<a class="exit-off-canvas" href="#"></a>
+
+
+        <section id="main-content" role="main" class="scroll-container">
+        
+       
+
+ <script type="text/javascript">
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
+</script>
+<div class="row">
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>秒杀系统架构原则</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2021/04/01 10:17 上午</span>
+
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F.html'>秒杀系统</a></span>
+           
+         
+          <span class="comments">
+            
+
+            
+          </span>
+
+        </div>
+      </div><!-- article -->
+
+      <div class="article-content">
+      <p>秒杀本质是一个满足大并发、高性能、高可用的分布式系统</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">架构原则：4 要 1 不要</h2>
+
+<h3 id="toc_1">数据量尽量少</h3>
+
+<ol>
+<li>用户请求的数据能少就少：包括用户上传的数据以及请求返回的数据</li>
+<li>系统依赖的数据能少就少：包括系统完成业务逻辑需要读取和保存的数据 </li>
+</ol>
+
+<h3 id="toc_2">请求数量少</h3>
+
+<p>减少页面返回后，浏览器渲染的页面包含的额外请求，包括CSS、JS、Ajax请求等</p>
+
+<h3 id="toc_3">路径要尽量短</h3>
+
+<p>用户从发出请求到返回响应，中间经过的节点数，缩短请求路径，不仅可以增加可用性，同时提高性能，并减少延时<br/>
+其中一个途径就是多个相互强依赖的应用合并部署在一起，把远程过程调用（RPC）变成 JVM 内部之间的方法调用</p>
+
+<h3 id="toc_4">依赖尽量少</h3>
+
+<p>所谓依赖，指的是要完成一次用户请求必须依赖的系统或者服务，这里的依赖指的是强依赖<br/>
+可以对服务分级，必要的情况下对次要服务进行降级</p>
+
+<h3 id="toc_5">消除单点</h3>
+
+<p>单点意味着没有备份，风险不可控，解决的关键点是避免将服务的状态和机器绑定，即把服务无状态化，这样服务就可以在机器中随意移动；如把和机器相关的配置动态化，这些参数可以通过配置中心来动态推送；冗余多个备份的方式。</p>
+
+<h2 id="toc_6">架构案例</h2>
+
+<h3 id="toc_7">初始版本</h3>
+
+<ol>
+<li>把秒杀系统独立出来单独的一个系统，</li>
+<li>系统部署独立做一个集群</li>
+<li>将热点数据单独放在一个缓存中，增加读效率</li>
+<li>增加秒杀答题，防止秒杀器抢单</li>
+</ol>
+
+<p><img src="media/16172434231303/16172461857957.jpg" alt=""/></p>
+
+<h3 id="toc_8">改进版本</h3>
+
+<ol>
+<li>对页面进行动静分离，用户秒杀不需要刷新整个页面，只需要点击抢的按钮</li>
+<li>服务端对秒杀的产品进行本地缓存，不需要再调用依赖系统的后台服务获取数据，甚至不需要去公共的缓存集群中查询数据</li>
+<li>增加系统限流保护，防止最坏情况发生</li>
+</ol>
+
+<p><img src="media/16172434231303/16172464769768.jpg" alt=""/></p>
+
+
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="16172471826209.html" 
+          title="Previous Post: 动静分离">&laquo; 动静分离</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="16157046811341.html" 
+          title="Next Post: MySQL 高性能索引策略">MySQL 高性能索引策略 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
+
+ <div class="large-4 medium-4 columns">
+  <div class="hide-for-small">
+    <div id="sidebar" class="sidebar">
+          <div id="site-info" class="site-info">
+            
+                <div class="site-a-logo"><img src="media/16064679533535/IMG_2798.jpg" /></div>
+            
+                <h1>Isaac Blog</h1>
+                <div class="site-des">个人博客</div>
+                <div class="social">
+
+
+
+
+
+
+
+
+
+
+
+  <a target="_blank" class="rss" href="atom.xml" title="RSS">RSS</a>
+                
+              	 </div>
+          	</div>
+
+             
+
+              <div id="site-categories" class="side-item ">
+                <div class="side-header">
+                  <h2>Categories</h2>
+                </div>
+                <div class="side-content">
+
+      	<p class="cat-list">
+        
+            <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="Redis.html"><strong>Redis</strong></a>
+        
+            <a href="Tomcat.html"><strong>Tomcat</strong></a>
+        
+            <a href="MySQL.html"><strong>MySQL</strong></a>
+        
+            <a href="Spring.html"><strong>Spring</strong></a>
+        
+            <a href="%E5%B7%A5%E4%BD%9C%E9%97%AE%E9%A2%98.html"><strong>工作问题</strong></a>
+        
+            <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
+        
+            <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+         
+        </p>
+
+
+                </div>
+              </div>
+
+              <div id="site-categories" class="side-item">
+                <div class="side-header">
+                  <h2>Recent Posts</h2>
+                </div>
+                <div class="side-content">
+                <ul class="posts-list">
+	      
+		      
+			      <li class="post">
+			        <a href="16172471826209.html">动静分离</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16172434231303.html">秒杀系统架构原则</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16157046811341.html">MySQL 高性能索引策略</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16144993169245.html">Kubernetes 本质</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16144274085271.html">Redis 数据倾斜</a>
+			      </li>
+		     
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		  
+		      
+		   
+		  		</ul>
+                </div>
+              </div>
+        </div><!-- sidebar -->
+      </div><!-- hide for small -->
+</div><!-- large 4 -->
+
+</div><!-- row -->
+
+ <div class="page-bottom clearfix">
+  <div class="row">
+   <p class="copyright">Copyright &copy; 2015
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a>,&nbsp; 
+Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
+  </div>
+</div>
+
+        </section>
+      </div>
+    </div>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+figure{margin: 0;padding: 0;}
+figcaption{text-align:center;}
+
+/* PrismJS 1.14.0
+ http://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript */
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: black;
+    background: none;
+    text-shadow: 0 1px white;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+    text-shadow: none;
+    background:#b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+    text-shadow: none;
+    background: #b3d4fc;
+}
+
+@media print {
+    code[class*="language-"],
+    pre[class*="language-"] {
+        text-shadow: none;
+    }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+    background: #F7F7F7;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: slategray;
+}
+
+.token.punctuation {
+    color: #999;
+}
+
+.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #9a6e3a;
+    background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #07a;
+}
+
+.token.function,
+.token.class-name {
+    color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e90;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+
+pre[class*="language-"].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber;
+}
+
+pre[class*="language-"].line-numbers > code {
+    position: relative;
+    white-space: inherit;
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em; /* works for line-numbers below 1000 lines */
+    letter-spacing: -1px;
+    border-right: 1px solid #999;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+    .line-numbers-rows > span {
+        pointer-events: none;
+        display: block;
+        counter-increment: linenumber;
+    }
+
+        .line-numbers-rows > span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: 0.8em;
+            text-align: right;
+        }
+
+</style>
+
+  
+    
+
+    <script src="asset/js/foundation.min.js"></script>
+    <script>
+      $(document).foundation();
+      function fixSidebarHeight(){
+        var w1 = $('.markdown-body').height();
+          var w2 = $('#sidebar').height();
+          if (w1 > w2) { $('#sidebar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+      $(window).load(function(){
+          fixSidebarHeight();
+      });
+     
+    </script>
+
+
+
+  </body>
+</html>

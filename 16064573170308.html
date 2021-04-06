@@ -148,40 +148,53 @@
 
 <blockquote>
 <p>索引的选择性是不重复的索引值和表记录数的比值</p>
+</blockquote>
 
 <h3 id="toc_2">3. 联合索引</h3>
 
 <ol>
 <li>经常被使用的列优先</li>
 <li>选择性高的列优先</li>
-<li>宽度小的列优先<br/>
-### 4. 覆盖索引<br/>
-#### 优点</li>
+<li>宽度小的列优先</li>
+</ol>
+
+<h3 id="toc_3">4. 覆盖索引</h3>
+
+<h4 id="toc_4">优点</h4>
+
+<ol>
 <li>可以有优化缓存，减少磁盘IO操作</li>
 <li>可以减少随机IO，变随机IO为顺序IO</li>
 <li>可以避免对Innodb 主键索引的二次索引</li>
-<li>可以避免MyISAM表进行系统调用<br/>
-#### 缺点</li>
+<li>可以避免MyISAM表进行系统调用</li>
+</ol>
+
+<h4 id="toc_5">缺点</h4>
+
+<ol>
 <li>存储引擎不支持覆盖索引</li>
 <li>查询使用太多列</li>
 <li>使用双%号的like查询</li>
 </ol>
-</blockquote>
 
-<h3 id="toc_3">优化查询</h3>
+<h3 id="toc_6">优化查询</h3>
 
-<h4 id="toc_4">使用索引扫描来优化排序</h4>
+<h4 id="toc_7">使用索引扫描来优化排序</h4>
 
 <ol>
 <li>通过排序操作</li>
-<li>按照索引顺序扫描数据<br/>
-##### 使用条件</li>
+<li>按照索引顺序扫描数据</li>
+</ol>
+
+<h5 id="toc_8">使用条件</h5>
+
+<ol>
 <li>索引的列顺序和Order By子句中的顺序完全一致</li>
 <li>索引中的所有列的方向和Order By 子句完全一致</li>
 <li>Order By中的字段全部在关联表中的第一张表</li>
 </ol>
 
-<h3 id="toc_5">优化锁</h3>
+<h3 id="toc_9">优化锁</h3>
 
 <ol>
 <li>索引可以减少锁定行数</li>
@@ -297,6 +310,24 @@
 	      
 		      
 			      <li class="post">
+			        <a href="16172471826209.html">动静分离</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16172434231303.html">秒杀系统架构原则</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16157046811341.html">MySQL 高性能索引策略</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
 			        <a href="16144993169245.html">Kubernetes 本质</a>
 			      </li>
 		     
@@ -304,24 +335,6 @@
 		      
 			      <li class="post">
 			        <a href="16144274085271.html">Redis 数据倾斜</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="16141555795193.html">Codis VS Redis Cluster</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="16140695543313.html">Redis ACID</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="16137186214875.html">缓存异常</a>
 			      </li>
 		     
 		  
