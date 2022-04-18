@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>MySQL 高性能索引策略</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/03/14 14:51 下午</span>
+          <span class="date">2021/03/14</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,49 +145,32 @@
 
       <div class="article-content">
       <p>高效的选择和使用索引是实现高性能查询的基础，使用哪个索引，以及如何评估选择不同的索引是需要不断学习的</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">独立的列</h2>
-
+<h2><a id="%E7%8B%AC%E7%AB%8B%E7%9A%84%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>独立的列</h2>
 <p>独立的列索引： 索引列不能是表达式的一部分，也不能是函数的参数</p>
-
-<pre class="line-numbers"><code class="language-sql"> SELECT actor_id FROM sakila.actor WHERE actor_id + 1 = 5;
+<pre><code class="language-sql"> SELECT actor_id FROM sakila.actor WHERE actor_id + 1 = 5;
 </code></pre>
-
 <p>WHERE 中的表达式 语义等价于 actor_id = 4, 但是MySQL 无法自动识别表达式，所以<em>将单独列放到比较符号的一侧</em>。</p>
-
-<h2 id="toc_1">前缀索引和索引选择性</h2>
-
+<h2><a id="%E5%89%8D%E7%BC%80%E7%B4%A2%E5%BC%95%E5%92%8C%E7%B4%A2%E5%BC%95%E9%80%89%E6%8B%A9%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>前缀索引和索引选择性</h2>
 <p>索引选择性：不重复的索引值和数据表的记录种数的比值。索引选择性越高，越能过滤更多的行，，唯一索引的选择性是 1.</p>
-
 <p>对于BLOB 、TEXT 或者很长的VARCHAR类型的值，必须使用前缀索引，诀窍在于选择足够长的前缀以保证比较高的选择性，同时又不能太长以节省空间</p>
-
-<h3 id="toc_2">解决办法一</h3>
-
+<h3><a id="%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%E4%B8%80" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>解决办法一</h3>
 <p>最常见的列表和最长见的前缀列表机型比较</p>
-
-<h3 id="toc_3">解决办法二</h3>
-
+<h3><a id="%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%E4%BA%8C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>解决办法二</h3>
 <p>计算完整列的选择性，并使前缀的选择性接近于完成列的选择性。</p>
-
-<h2 id="toc_4">聚簇索引</h2>
-
-<p><img src="media/16157046811341/IMG_3048.png" alt="IMG_3048"/></p>
-
+<h2><a id="%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>聚簇索引</h2>
+<p><img src="media/16157046811341/IMG_3048.png" alt="IMG_3048" /></p>
 <p>并不是一种单独的索引类型，而是一种数据存储方式，具体的细节依赖于实现方式，InnoDB 的聚簇索引实际上是在同一结构中保存了B-Tree和数据行</p>
-
 <p>当表有数据行时，他的数据行实际是存放在索引的叶子页中，聚簇表示数据行和相邻的索引紧凑的存储在一起，因为无法把数据行村发哦在不同的两个地方，所以一个表只有一个聚簇索引，当然覆盖索引可以模拟多个聚簇索引的情况。</p>
-
 <p>如果没有定义主键InnoDB 会选择一个唯一的非空索引替代，如果没有这样的索引，InnoDB 会隐式的定义一个主键来作为聚簇索引</p>
-
-<h3 id="toc_5">优点</h3>
-
+<h3><a id="%E4%BC%98%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>优点</h3>
 <ol>
 <li>可以把相关的数据保存在一起</li>
 <li>访问数据更快：因为索引和数据都保存在一起</li>
-<li>使用覆盖索引扫描的查询可以直接使用页节点中的主键值<br/>
-### 缺点</li>
+<li>使用覆盖索引扫描的查询可以直接使用页节点中的主键值</li>
+</ol>
+<h3><a id="%E7%BC%BA%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缺点</h3>
+<ol>
 <li>如果数据都放在内存中，那么聚簇索引就没那么重要了</li>
 <li>插入速度严重依赖插入顺序</li>
 <li>更新聚簇索引的代价很高</li>
@@ -194,39 +179,26 @@
 <li>二级索引可能会更大</li>
 <li>二级索引访问需要两次索引查找</li>
 </ol>
-
-<h3 id="toc_6">MyISAM 和 InnoDB</h3>
-
-<p><img src="media/16157046811341/IMG_3049.png" alt="IMG_3049"/></p>
-
-<h3 id="toc_7">顺序的主键造成坏结果</h3>
-
+<h3><a id="myisam%E5%92%8C-innodb" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>MyISAM 和 InnoDB</h3>
+<p><img src="media/16157046811341/IMG_3049.png" alt="IMG_3049" /></p>
+<h3><a id="%E9%A1%BA%E5%BA%8F%E7%9A%84%E4%B8%BB%E9%94%AE%E9%80%A0%E6%88%90%E5%9D%8F%E7%BB%93%E6%9E%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>顺序的主键造成坏结果</h3>
 <ol>
 <li>高并发插入可能导致间隙锁竞争</li>
 <li>AUTO_INCREMENT 锁机制</li>
 </ol>
-
-<h2 id="toc_8">覆盖索引</h2>
-
+<h2><a id="%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>覆盖索引</h2>
 <p>如果一个索引包含所有需要查询的字段值，成之为覆盖索引</p>
-
-<h3 id="toc_9">优势</h3>
-
+<h3><a id="%E4%BC%98%E5%8A%BF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>优势</h3>
 <ol>
 <li>索引条目通常小于数据行的大小</li>
 <li>索引按照顺序存储，所以I/O密集型范围查询会效率高</li>
 <li>如果InnoDB 二级索引在叶子节点中保存了行的主键值，如果二级索引能够覆盖查询，避免对主键索引的二次查询</li>
 </ol>
-
-<h2 id="toc_10">使用索引扫描来排序</h2>
-
+<h2><a id="%E4%BD%BF%E7%94%A8%E7%B4%A2%E5%BC%95%E6%89%AB%E6%8F%8F%E6%9D%A5%E6%8E%92%E5%BA%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用索引扫描来排序</h2>
 <p>MySQL 通过排序操作或者是按索引顺序来扫描，如果EXPLAIN 出来的type 为index 说明MySQL 使用索引扫描作排序。</p>
-
 <p>只有当索引的顺序和ORDER BY 字句的顺序完全一致，并且所有的列的排序方式都一样，可以通过索引排序。如果查询需要关联多个表，则只有当ORDER BY 子句引用字段必须是第一表；需要满足索引的最左前缀要求，如果前导列为常量测可以避免最左前缀</p>
-
-<h2 id="toc_11">索引和锁</h2>
-
-<p>索引可以让查询锁定更少的行；<br/>
+<h2><a id="%E7%B4%A2%E5%BC%95%E5%92%8C%E9%94%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>索引和锁</h2>
+<p>索引可以让查询锁定更少的行；<br />
 InnoDB 在二级索引上使用的是共享锁，方式访问主键索引是使用的排他锁，这消除了使用覆盖索引的可能性，并且使得SLELCT FOR UPDATE 比 LOCK IN SHARE MODE 或者非锁定查询要慢的多</p>
 
 
@@ -303,11 +275,15 @@ InnoDB 在二级索引上使用的是共享锁，方式访问主键索引是使�
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -322,8 +298,6 @@ InnoDB 在二级索引上使用的是共享锁，方式访问主键索引是使�
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

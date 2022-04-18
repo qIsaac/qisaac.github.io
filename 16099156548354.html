@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>并发容器</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/06 14:47 下午</span>
+          <span class="date">2021/01/06</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,50 +145,29 @@
 
       <div class="article-content">
       <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">并发容器分类</h2>
-
-<p><img src="media/16099156548354/16099157256880.jpg" alt=""/></p>
-
-<h3 id="toc_1">List</h3>
-
+<h2><a id="%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8%E5%88%86%E7%B1%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>并发容器分类</h2>
+<p><img src="media/16099156548354/16099157256880.jpg" alt="" /></p>
+<h3><a id="list" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>List</h3>
 <p>只有一个实现类CopyOrWriteArrayList，写的时候将共享变量赋值一份出来，读操作完全无锁</p>
-
-<h4 id="toc_2">实现原理</h4>
-
-<p><img src="media/16099156548354/16099158770738.jpg" alt=""/></p>
-
+<h4><a id="%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>实现原理</h4>
+<p><img src="media/16099156548354/16099158770738.jpg" alt="" /></p>
 <p>内部维护一个数组，成员变量array 指向这个内部数组，所有读操作都是基于这个array进行的，如果读的过程有写操作，则复制一份出来，然后在新复制的数组上进行增减操作，执行完后再将array指向这个新数组，读写并行，读操作一直是基于原数组进行的</p>
-
-<h4 id="toc_3">注意事项</h4>
-
+<h4><a id="%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>注意事项</h4>
 <ol>
 <li>使用于写操作非常少的场景，并且能容忍短时间的读写不一致的问题</li>
 <li>迭代器只支持读，不支持增删改</li>
 </ol>
-
-<h3 id="toc_4">Map</h3>
-
+<h3><a id="map" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Map</h3>
 <p>Map接口主要有ConcurrentHashMap 和 ConcurrentSkipListMap,前者的key是无序的后者的key是有序的 </p>
-
-<h4 id="toc_5">注意事项</h4>
-
+<h4><a id="%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>注意事项</h4>
 <p>二者的key和value 都不能为空否则会报空指针异常；在并发读高的情况下如果ConcurrentHashMap性能不太好，可以考虑使用ConcurrentSkipListMap操作</p>
-
-<h3 id="toc_6">Set</h3>
-
+<h3><a id="set" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Set</h3>
 <p>Set 接口的两个实现是 CopyOnWriteArraySet 和 ConcurrentSkipListSet，使用场景可以参考前面讲述的 CopyOnWriteArrayList 和 ConcurrentSkipListMap，它们的原理都是一样的</p>
-
-<h3 id="toc_7">Queue</h3>
-
+<h3><a id="queue" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Queue</h3>
 <p>可以从两个维度划分，阻塞和非阻塞，单端和双端，阻塞用Blocking标识，单端用Queue双端用Deque</p>
-
-<h4 id="toc_8">单端阻塞</h4>
-
+<h4><a id="%E5%8D%95%E7%AB%AF%E9%98%BB%E5%A1%9E" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>单端阻塞</h4>
 <p>其实现有 ArrayBlockingQueue、LinkedBlockingQueue、SynchronousQueue、LinkedTransferQueue、PriorityBlockingQueue 和 DelayQueue</p>
-
-<p><img src="media/16099156548354/16099173447317.jpg" alt=""/></p>
-
+<p><img src="media/16099156548354/16099173447317.jpg" alt="" /></p>
 <ol>
 <li>内部队列是数组ArrayBlockingQueue</li>
 <li>内部队列是链表LinkedBlockingQueue</li>
@@ -194,23 +175,14 @@
 <li>LinkedTransferQueue 融合 LinkedBlockingQueue 和 SynchronousQueue 的功能，性能比 LinkedBlockingQueue 更好</li>
 <li>DelayQueue 支持延时出队</li>
 </ol>
-
-<h4 id="toc_9">双端阻塞</h4>
-
+<h4><a id="%E5%8F%8C%E7%AB%AF%E9%98%BB%E5%A1%9E" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>双端阻塞</h4>
 <p>其实现是 LinkedBlockingDeque</p>
-
-<p><img src="media/16099156548354/16099173652683.jpg" alt=""/></p>
-
-<h4 id="toc_10">单端非阻塞</h4>
-
+<p><img src="media/16099156548354/16099173652683.jpg" alt="" /></p>
+<h4><a id="%E5%8D%95%E7%AB%AF%E9%9D%9E%E9%98%BB%E5%A1%9E" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>单端非阻塞</h4>
 <p>其实现是 ConcurrentLinkedQueue</p>
-
-<h4 id="toc_11">双端非阻塞</h4>
-
+<h4><a id="%E5%8F%8C%E7%AB%AF%E9%9D%9E%E9%98%BB%E5%A1%9E" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>双端非阻塞</h4>
 <p>其实现是 ConcurrentLinkedDeque</p>
-
-<h4 id="toc_12">注意事项</h4>
-
+<h4><a id="%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>注意事项</h4>
 <p>只有ArrayBlockingQueue 和 LinkedBlockingQueue 是支持有界的，所以在使用其他无界队列时，一定要充分考虑是否存在导致 OOM 的隐患。</p>
 
 
@@ -287,11 +259,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -306,8 +282,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

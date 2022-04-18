@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Nginx</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/11/27 16:20 下午</span>
+          <span class="date">2020/11/27</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,39 +145,34 @@
 
       <div class="article-content">
       <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">Nginx-概述</h2>
-
-<h3 id="toc_1">适用场景</h3>
-
-<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fyd2j17fw7j210k0i477a.jpg" alt=""/></p>
-
+<h2><a id="nginx%E6%A6%82%E8%BF%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Nginx-概述</h2>
+<h3><a id="%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>适用场景</h3>
+<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fyd2j17fw7j210k0i477a.jpg" alt="" /></p>
 <ol>
 <li>反向代理服务(集群)
 <ul>
 <li>容灾：负载均衡</li>
 <li>不变的动态资源：缓存</li>
-</ul></li>
+</ul>
+</li>
 <li>静态资源服务
 <ul>
 <li>图片，js：静态资源</li>
-</ul></li>
+</ul>
+</li>
 <li>API服务
 <ul>
-<li>Nginx 直接访问数据库服务，或者是应用服务，防火墙 </li>
-</ul></li>
+<li>Nginx 直接访问数据库服务，或者是应用服务，防火墙</li>
+</ul>
+</li>
 </ol>
-
-<h3 id="toc_2">背景</h3>
-
+<h3><a id="%E8%83%8C%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>背景</h3>
 <ol>
 <li>互联网数据快速增长：物联网</li>
 <li>摩尔定律：性能提升</li>
 <li>低效的Apache：一个连接对应一个进程（进程间切换，无法提供更多进程）</li>
 </ol>
-
-<h3 id="toc_3">优点</h3>
-
+<h3><a id="%E4%BC%98%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>优点</h3>
 <ol>
 <li>高并发，高性能</li>
 <li>可扩展性</li>
@@ -183,13 +180,9 @@
 <li>热部署</li>
 <li>BSD许可</li>
 </ol>
-
-<h3 id="toc_4">组成</h3>
-
-<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fyd2jm24tlj20ub0f87b8.jpg" alt=""/></p>
-
-<h3 id="toc_5">配置语法</h3>
-
+<h3><a id="%E7%BB%84%E6%88%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>组成</h3>
+<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fyd2jm24tlj20ub0f87b8.jpg" alt="" /></p>
+<h3><a id="%E9%85%8D%E7%BD%AE%E8%AF%AD%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>配置语法</h3>
 <ol>
 <li>配置文件由指令和指令块构成</li>
 <li>每条指令由；结束，指令和参数之间以空格符分割</li>
@@ -199,10 +192,8 @@
 <li>使用$使用变量</li>
 <li>部分指令的参数支持正则表达式</li>
 </ol>
-
-<h4 id="toc_6">语法示例</h4>
-
-<pre class="line-numbers"><code class="language-nginx">http{
+<h4><a id="%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>语法示例</h4>
+<pre><code class="language-nginx">http{
     include  minie.types;
     upstream isaac{
         server 127.0.0.1:8080;
@@ -220,26 +211,18 @@
     }
 }
 </code></pre>
-
-<h5 id="toc_7">配置参数：时间</h5>
-
-<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fyd2jund4hj20jv08l3zd.jpg" alt=""/></p>
-
-<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fyd2k17wgxj20g508v0t5.jpg" alt=""/></p>
-
+<h5><a id="%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0%EF%BC%9A%E6%97%B6%E9%97%B4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>配置参数：时间</h5>
+<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fyd2jund4hj20jv08l3zd.jpg" alt="" /></p>
+<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fyd2k17wgxj20g508v0t5.jpg" alt="" /></p>
 <p>配置参数：指令块</p>
-
-<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fyd2k7mn1aj20fl0a774w.jpg" alt=""/></p>
-
+<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fyd2k7mn1aj20fl0a774w.jpg" alt="" /></p>
 <ol>
 <li>http:所有指令都是由http</li>
 <li>server: 一个域名</li>
 <li>location:url表达式</li>
 <li>upstream:上游服务</li>
 </ol>
-
-<h5 id="toc_8">参考</h5>
-
+<h5><a id="%E5%8F%82%E8%80%83" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>参考</h5>
 <p><a href="https://time.geekbang.org/course/intro/138" target="_blank">极客时间-Nginx核心知识100讲</a></p>
 
 
@@ -316,11 +299,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -335,8 +322,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

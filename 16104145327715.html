@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,9 +127,11 @@
           <h1>SynchronousQueue</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/12 09:22 上午</span>
+          <span class="date">2021/01/12</span>
 
+          <span>posted in&nbsp;</span> 
           
+              <span class="posted-in"><a href='%E9%98%9F%E5%88%97.html'>队列</a></span>
            
          
           <span class="comments">
@@ -141,14 +145,10 @@
 
       <div class="article-content">
       <p>SynchronousQueue是比较独特的队列，其本身没有容量大小，插入操作返回必须等另一个线程取操作执行成功后才能返回，反之亦然；队列由两种数据结构组成，后入先出的栈和先入先出的队列，堆栈是非公平的，队列是公平的了；</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">整体结构</h2>
-
+<h2><a id="%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>整体结构</h2>
 <p>SynchronousQueue 整体类图和 LinkedBlockingQueue 相似，都是实现了 BlockingQueue 接口，但因为其不储存数据结构，有一些方法是没有实现的，比如说 isEmpty、size、contains、remove 和迭代等方法，这些方法都是默认实现</p>
-
-<pre class="line-numbers"><code class="language-java">    // 堆栈和队列共同的接口
+<pre><code class="language-java">    // 堆栈和队列共同的接口
     // 负责执行 put or take
     abstract static class Transferer&lt;E&gt; {
         // e 为空的，会直接返回特殊值，不为空会传递给消费者
@@ -172,12 +172,9 @@
         transferer = fair ? new TransferQueue&lt;E&gt;() : new TransferStack&lt;E&gt;();
     }
 </code></pre>
-
-<h2 id="toc_1">非公平的堆栈</h2>
-
-<h3 id="toc_2">堆栈结构</h3>
-
-<pre class="line-numbers"><code class="language-java">static final class SNode {
+<h2><a id="%E9%9D%9E%E5%85%AC%E5%B9%B3%E7%9A%84%E5%A0%86%E6%A0%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>非公平的堆栈</h2>
+<h3><a id="%E5%A0%86%E6%A0%88%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>堆栈结构</h3>
+<pre><code class="language-java">static final class SNode {
     // 栈的下一个元素，被当前栈压在下面的栈元素
     volatile SNode next;
     // 节点匹配，用来判断阻塞元素能被唤醒的时机    
@@ -191,9 +188,7 @@
     int mode;
 }
 </code></pre>
-
-<h3 id="toc_3">入栈和出站</h3>
-
+<h3><a id="%E5%85%A5%E6%A0%88%E5%92%8C%E5%87%BA%E7%AB%99" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>入栈和出站</h3>
 <ol>
 <li>判断是 put 或者是 take 操作 --- ①</li>
 <li>判断栈头是否为空，如果为空或头节点类型和本次操作类型一致 走 3  ---- ②</li>
@@ -203,8 +198,7 @@
 <li>把自己当作一个节点，赋值到栈头的 match 属性上，并唤醒栈头节点</li>
 <li>栈头被唤醒后，拿到 match 属性，就是把自己唤醒的节点的信息，返回</li>
 </ol>
-
-<pre class="line-numbers"><code class="language-java">// put 和 take 两个方法都揉在一起
+<pre><code class="language-java">// put 和 take 两个方法都揉在一起
 E transfer(E e, boolean timed, long nanos) {
             SNode s = null; // constructed/reused as needed
             // e 为空则为 take 操作，不为空则为 put 操作
@@ -281,10 +275,8 @@ E transfer(E e, boolean timed, long nanos) {
             }
         }
 </code></pre>
-
-<h3 id="toc_4">阻塞方法</h3>
-
-<pre class="line-numbers"><code class="language-java">        SNode awaitFulfill(SNode s, boolean timed, long nanos) {
+<h3><a id="%E9%98%BB%E5%A1%9E%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>阻塞方法</h3>
+<pre><code class="language-java">        SNode awaitFulfill(SNode s, boolean timed, long nanos) {
         // deadline  - 如果设置的超时则为 当前时间 + 超时时间，否则问题0
         final long deadline = timed ? System.nanoTime() + nanos : 0L;
         Thread w = Thread.currentThread();
@@ -319,10 +311,8 @@ E transfer(E e, boolean timed, long nanos) {
             }
         }
 </code></pre>
-
-<h2 id="toc_5">公平队列</h2>
-
-<pre class="line-numbers"><code class="language-java">/** 队列头 */
+<h2><a id="%E5%85%AC%E5%B9%B3%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>公平队列</h2>
+<pre><code class="language-java">/** 队列头 */
 transient volatile QNode head;
 /** 队列尾 */
 transient volatile QNode tail;
@@ -333,23 +323,20 @@ static final class QNode {
     volatile QNode next;         
     // 当前元素的值，如果当前元素被阻塞住了，等其他线程来唤醒自己时，其他线程
     // 会把自己 set 到 item 里面
-    volatile Object item;         // CAS&#39;ed to or from null
+    volatile Object item;         // CAS'ed to or from null
     // 可以阻塞住的当前线程
     volatile Thread waiter;       // to control park/unpark
     // true 是 put，false 是 take
     final boolean isData;
 } 
 </code></pre>
-
-<h3 id="toc_6">TransferQueue 内部类的 transfer 方法</h3>
-
+<h3><a id="transferqueue%E5%86%85%E9%83%A8%E7%B1%BB%E7%9A%84-transfer%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>TransferQueue 内部类的 transfer 方法</h3>
 <ol>
 <li>线程 1 从队列中拿数据，发现队列中没有数据，于是被阻塞</li>
 <li>线程 2 往队尾put数据，会从往前找第一个被阻塞的节点，假设此时能找到的就是节点 A，然后线程 B 把将 put 的数据放到节点 A 的 item 属性里面，并唤醒线程 1</li>
 <li>线程 1 被唤醒后，就能从A.item里面拿到线程 2 put的数据，线程 1 返回</li>
 </ol>
-
-<pre class="line-numbers"><code class="language-java">E transfer(E e, boolean timed, long nanos) {
+<pre><code class="language-java">E transfer(E e, boolean timed, long nanos) {
 
     QNode s = null; // constructed/reused as needed
     // true 是 put，false 是 get
@@ -379,7 +366,7 @@ static final class QNode {
                 continue;
             }
             //超时直接返回 null
-            if (timed &amp;&amp; nanos &lt;= 0)        // can&#39;t wait
+            if (timed &amp;&amp; nanos &lt;= 0)        // can't wait
                 return null;
             //构造node节点
             if (s == null)
@@ -507,11 +494,15 @@ static final class QNode {
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -526,8 +517,6 @@ static final class QNode {
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

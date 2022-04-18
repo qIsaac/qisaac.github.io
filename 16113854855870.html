@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Redis 集合统计模式</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/23 15:04 下午</span>
+          <span class="date">2021/01/23</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,28 +145,17 @@
 
       <div class="article-content">
       <p>Redis 集合特点就是一个键对应一系列的值，适合存储一个 key 对应一个数据集合，但是集合的统计则需求不同。集合类型常见的 4 种统计模式，聚合统计、排序统计、二值状态统计和基数统计。</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">聚合统计</h2>
-
+<h2><a id="%E8%81%9A%E5%90%88%E7%BB%9F%E8%AE%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>聚合统计</h2>
 <p>统计多个集合元素的聚合结果，包括交集、并集、补集。Set的集合运算，计算复杂度高，在数据量较大的时候，会导致Redis阻塞。可以选择一个从库负责计算，也可以返回客户端后在进行计算</p>
-
-<h2 id="toc_1">排序统计</h2>
-
+<h2><a id="%E6%8E%92%E5%BA%8F%E7%BB%9F%E8%AE%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>排序统计</h2>
 <p>List 和 Sorted Set 是有序的，前者是按插入顺序排序，后者是按照权重排序</p>
-
-<h2 id="toc_2">二值统计</h2>
-
+<h2><a id="%E4%BA%8C%E5%80%BC%E7%BB%9F%E8%AE%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>二值统计</h2>
 <p>集合元素的值只能取 0 或者是 1 ；Bitmap 本身是用 String 类型作为底层数据结构实现的一种统计二值状态的数据类型，Bitmap 提供了 GETBIT/SETBIT 操作，使用一个偏移值 offset 对 bit 数组的某一个 bit 位进行读和写。不过，需要注意的是，Bitmap 的偏移量是从 0 开始算的，也就是说 offset 的最小值是 0</p>
-
-<h2 id="toc_3">基数统计</h2>
-
+<h2><a id="%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基数统计</h2>
 <p>统计一个集合中不重复元素个数；HyperLogLog 是一种用于统计基数的数据集合类型，它的最大优势就在于，当集合元素数量非常多时，它计算基数所需的空间总是固定的，而且还很小</p>
-
-<h2 id="toc_4">总结</h2>
-
-<p><img src="media/16113854855870/16113996799777.jpg" alt=""/></p>
+<h2><a id="%E6%80%BB%E7%BB%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>总结</h2>
+<p><img src="media/16113854855870/16113996799777.jpg" alt="" /></p>
 
 
     
@@ -240,11 +231,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -259,8 +254,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  如何选择RabbitMQ和Kafka - Isaac Blog
+  队列 - Isaac Blog
   
   </title>
   
@@ -115,119 +115,66 @@
        
 
  <script type="text/javascript">
-  $(function(){
-    $('#menu_item_index').addClass('is_active');
-  });
+	$(function(){
+		$('#menu_item_index').addClass('is_active');
+	});
 </script>
 <div class="row">
-  <div class="large-8 medium-8 columns">
-      <div class="markdown-body article-wrap">
-       <div class="article">
-          
-          <h1>如何选择RabbitMQ和Kafka</h1>
-     
-        <div class="read-more clearfix">
-          <span class="date">2020/11/27</span>
+	<div class="large-8 medium-8 columns">
+		<div class="markdown-body home-categories">
+		
+			<div class="article">
+                <a class="clearlink" href="16104145327715.html">
+                
+                  <h1>SynchronousQueue</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>SynchronousQueue是比较独特的队列，其本身没有容量大小，插入操作返回必须等另一个线程取操作执行成功后才能返回，反之亦然；队列由两种数据结构组成，后入先出的栈和先入先出的队列，堆栈是非公平的，队列是公平的了；</p>
 
-          <span>posted in&nbsp;</span> 
-          
-              <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-           
-         
-          <span class="comments">
-            
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                   <a href="16104145327715.html">Read more</a>&nbsp;&nbsp; 
+                    <span class="date">2021/01/12</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E9%98%9F%E5%88%97.html'>队列</a></span>
+          				   
+                    
 
-            
-          </span>
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
 
-        </div>
-      </div><!-- article -->
-
-      <div class="article-content">
-      <span id="more"></span><!-- more -->
-<h2><a id="rabbitmq" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>RabbitMQ</h2>
-<ol>
-<li>是通用的消息代理，采用点对点，请求/回复和pub-sub通信。</li>
-<li>采用smart broker / dumb consumer模式，专注于一致的消息传递。</li>
-<li>以与broker跟踪消费者状态大致相似的速度消费<br />
-<img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fuxmahm6j7j20hn08ajs3.jpg" alt="" /></li>
-</ol>
-<blockquote>
-<p>RabbitMQ中的通信可以选择是同步或者是异步。发布者向交换发送消息，消费者从队列中检索消息。通过交换将生产者与队列分离可确保生产者不会受到硬编码路由决策的影响</p>
-</blockquote>
-<h2><a id="kafka" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kafka</h2>
-<p>Kafka专为高容量发布 - 订阅消息和流而设计，旨在持久，快速和可扩展。从本质上讲，<br />
-Kafka提供了一个持久的消息存储，类似于日志，在服务器集群中运行，它存储称为主题的类别中的记录流<br />
-<img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fuxmdfec9gj20jo0a4mye.jpg" alt="" /></p>
-<blockquote>
-<p>每条消息都包含一个键，一个值和一个时间戳。Kafka使用dumb broker，使用smart consumers 来读取它的缓冲区。Kafka不会尝试跟踪每个消费者读取的消息，只保留未读消息; 相反，Kafka会在一段时间内保留所有消息，消费者有责任在每个日志（消费者状态）中跟踪他们的位置。因此，通过合适的开发人员创建消费者代码，Kafka可以支持大量消费者并以极少的开销保留大量数据</p>
-</blockquote>
-<h2><a id="%E9%9C%80%E6%B1%82%E5%92%8C%E7%94%A8%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>需求和用例</h2>
-<h3><a id="kafka" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kafka</h3>
-<h4><a id="%E9%9C%80%E6%B1%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>需求</h4>
-<blockquote>
-<p>流处理场景,网站活动跟踪，度量标准，日志聚合，流处理，事件采购和提交日志等常见用例</p>
-</blockquote>
-<h4><a id="%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>适用场景</h4>
-<ol>
-<li>从A到B流，没有复杂的路由，最大吞吐量（100k / sec +），按分区顺序至少提交一次</li>
-<li>当应用程序需要访问流历史记录时，至少按分区顺序提供一次。</li>
-<li>客户可以根据需求“重播”事件流，而不是更传统的消息代理，一旦消息传递，它就会从队列中删除</li>
-<li>流处理</li>
-<li>时间驱动</li>
-</ol>
-<h3><a id="rabbitmq" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>RabbitMQ</h3>
-<h4><a id="%E9%9C%80%E6%B1%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>需求</h4>
-<blockquote>
-<p>通常用于Web服务器快速响应请求，而不是在用户等待结果时强制执行资源繁重的过程。它还可以将消息分发给多个接收者以供消费，或者在高负载（20k + / sec）下平衡负载之间的负载。当您的需求超出吞吐量时，RabbitMQ可提供许多功能：可靠的交付，路由，联合，HA，安全性，管理工具和其他功能</p>
-</blockquote>
-<h4><a id="%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>适用场景</h4>
-<ol>
-<li>应用程序需要使用现有协议的任意组合，如AMQP 0-9-1，STOMP，MQTT，AMQP 1.0</li>
-<li>基于每个消息（死信队列等）进行更精细的一致性控制/保证</li>
-<li>应用程序需要点对点，请求/回复以及发布/订阅消息传递的多样性</li>
-<li>复杂的路由到消费者,使用non-trivial路由逻辑集成多个服务/应用程序</li>
-<li>RabbitMQ通常与Apache Cassandra一起使用，对于需要“无限”队列的应用程序，<br />
-RabbitMQ通常与LevelDB插件一起使用，但这两种功能都不附带RabbitMQ本身</li>
-</ol>
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+              
 
 
-    
-
-      </div>
-
-      <div class="row">
-        <div class="large-6 columns">
-        <p class="text-left" style="padding:15px 0px;">
-      
-          <a href="16064653089209.html" 
-          title="Previous Post: MySQL分库分表">&laquo; MySQL分库分表</a>
-      
-        </p>
-        </div>
-        <div class="large-6 columns">
-      <p class="text-right" style="padding:15px 0px;">
-      
-          <a  href="16064652877153.html" 
-          title="Next Post: AMQ Model架构">AMQ Model架构 &raquo;</a>
-      
-      </p>
-        </div>
-      </div>
-      <div class="comments-wrap">
-        <div class="share-comments">
-          
-
-          
-
-          
-        </div>
-      </div>
-    </div><!-- article-wrap -->
-  </div><!-- large 8 -->
-
-
-
+			<div class="row">
+			  <div class="large-6 columns">
+			  <p class="text-left" style="padding-top:25px;">
+			   
+			  </p>
+			  </div>
+			  <div class="large-6 columns">
+			<p class="text-right" style="padding-top:25px;">
+			
+			</p>
+			  </div>
+			</div>
+		</div>
+	</div><!-- large 8 -->
 
  <div class="large-4 medium-4 columns">
   <div class="hide-for-small">

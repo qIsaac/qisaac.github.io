@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Redis 保存时间序列的数据</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/26 10:00 上午</span>
+          <span class="date">2021/01/26</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,23 +145,18 @@
 
       <div class="article-content">
       <p>时间序列数据的写入特点就是插入数据块，读操作特点就是既有单条的记录查询，也有范围查询，还有聚合查询；针对写特点 Redis 的高性能保证写操作，针对读特点，Redis 提供了保存数据的两种方案，基于Hash 和 Sorted Set 实现，以及RedisTimeSeries 模块的实现</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">基于 Hash 和 Sorted Set 保存时间序列的数据</h2>
-
+<h2><a id="%E5%9F%BA%E4%BA%8Ehash%E5%92%8C-sorted-set%E4%BF%9D%E5%AD%98%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E6%95%B0%E6%8D%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基于 Hash 和 Sorted Set 保存时间序列的数据</h2>
 <ol>
 <li>稳定性由 Redis 自身性能保证</li>
 <li>Hash 用于单键的快速查询，Sorted Set 用于对数据范围的查询</li>
 <li>通过 MULTI 和 EXEC 包含保证数据存储Hash 和 Sorted Set 的原子操作</li>
-<li><p>聚合操作只能返回到客户端进行计算，但是大量的数据在Redis实例和客户端之间传输，占用网络资源，导致其他操作变慢</p></li>
+<li>聚合操作只能返回到客户端进行计算，但是大量的数据在Redis实例和客户端之间传输，占用网络资源，导致其他操作变慢</li>
 </ol>
-
 <ul>
 <li>单值查询</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-shell">HGET device:temperature 202008030905
+<pre><code class="language-shell">HGET device:temperature 202008030905
 &quot;25.1&quot;
 
 HMGET device:temperature 202008030905 202008030907 202008030908
@@ -167,23 +164,19 @@ HMGET device:temperature 202008030905 202008030907 202008030908
 2) &quot;25.9&quot;
 3) &quot;24.9&quot;
 </code></pre>
-
 <ul>
 <li>范围查询</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-shell">ZRANGEBYSCORE device:temperature 202008030907 202008030910
+<pre><code class="language-shell">ZRANGEBYSCORE device:temperature 202008030907 202008030910
 1) &quot;25.9&quot;
 2) &quot;24.9&quot;
 3) &quot;25.3&quot;
 4) &quot;25.2&quot;
 </code></pre>
-
 <ul>
 <li>保证原子操作</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-shell">
+<pre><code class="language-shell">
 127.0.0.1:6379&gt; MULTI
 OK
 
@@ -197,18 +190,13 @@ QUEUED
 1) (integer) 1
 2) (integer) 1
 </code></pre>
-
-<h2 id="toc_1">基于 RedisTimeSeries 模块保存时间序列的数据</h2>
-
+<h2><a id="%E5%9F%BA%E4%BA%8Eredistimeseries%E6%A8%A1%E5%9D%97%E4%BF%9D%E5%AD%98%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9A%84%E6%95%B0%E6%8D%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基于 RedisTimeSeries 模块保存时间序列的数据</h2>
 <p>RedisTimeSeries 是Redis 的一个扩展模块，他专门面向时间序列数据提供的数据类型和访问接口，并支持在Redis 实例上直接对数据进行按时间范围的聚合操作</p>
-
 <ul>
 <li>操作： 下载源码 编译成redistimeseries.so 然后使用 loadmodule 加载</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-shell">loadmodule redistimeseries.so
+<pre><code class="language-shell">loadmodule redistimeseries.so
 </code></pre>
-
 <ul>
 <li>命令
 <ul>
@@ -217,32 +205,30 @@ QUEUED
 <li>TS.GET 读取最新数据</li>
 <li>TS.MGET 按标签过滤查询结果</li>
 <li>TS.RANGE 支持聚合计算的范围查询 </li>
-</ul></li>
 </ul>
-
-<h3 id="toc_2">实例</h3>
-
+</li>
+</ul>
+<h3><a id="%E5%AE%9E%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>实例</h3>
 <ul>
-<li><p>创建一个时间序列数据集合</p>
-<pre class="line-numbers"><code class="language-shell">TS.CREATE device:temperature RETENTION 600000 LABELS device_id 1
-OK
-</code></pre></li>
-<li><p>插入数据，读取最新数据</p></li>
+<li>创建一个时间序列数据集合</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-shell">TS.ADD device:temperature 1596416700 25.1
+<pre><code class="language-shell">TS.CREATE device:temperature RETENTION 600000 LABELS device_id 1
+OK
+</code></pre>
+<ul>
+<li>插入数据，读取最新数据</li>
+</ul>
+<pre><code class="language-shell">TS.ADD device:temperature 1596416700 25.1
 1596416700
 
 TS.GET device:temperature 
 25.1
 
 </code></pre>
-
 <ul>
 <li>按标签过滤查询数据集合</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-shell">TS.MGET FILTER device_id!=2 
+<pre><code class="language-shell">TS.MGET FILTER device_id!=2 
 1) 1) &quot;device:temperature:1&quot;
    2) (empty list or set)
    3) 1) (integer) 1596417000
@@ -257,12 +243,10 @@ TS.GET device:temperature
       2) &quot;30.1&quot;
       
 </code></pre>
-
 <ul>
 <li>聚合计算的范围查询</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-shell">TS.RANGE device:temperature 1596416700 1596417120 AGGREGATION avg 180000
+<pre><code class="language-shell">TS.RANGE device:temperature 1596416700 1596417120 AGGREGATION avg 180000
 1) 1) (integer) 1596416700
    2) &quot;25.6&quot;
 2) 1) (integer) 1596416880
@@ -345,11 +329,15 @@ TS.GET device:temperature
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -364,8 +352,6 @@ TS.GET device:temperature
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

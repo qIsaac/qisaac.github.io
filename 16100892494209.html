@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>CompletableFuture 异步编程</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/08 15:00 下午</span>
+          <span class="date">2021/01/08</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,12 +145,9 @@
 
       <div class="article-content">
       <p>异步化是并发实施的的基础吗，，利用多线程优化性能这个核心方案得以实施的基础，Java 在 1.8 版本提供了 CompletableFuture 来支持异步编程，CompletableFuture 有可能是你见过的最复杂的工具类</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">CompletableFuture 创建</h2>
-
-<pre class="line-numbers"><code class="language-java">
+<h2><a id="completablefuture%E5%88%9B%E5%BB%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CompletableFuture 创建</h2>
+<pre><code class="language-java">
 //使用默认线程池
 // runnable 的run方法没有返回值
 static CompletableFuture&lt;Void&gt; 
@@ -162,37 +161,24 @@ static CompletableFuture&lt;Void&gt;
 static &lt;U&gt; CompletableFuture&lt;U&gt; 
   supplyAsync(Supplier&lt;U&gt; supplier, Executor executor)  
 </code></pre>
-
 <p>创建完 CompletableFuture 对象之后，会自动的执行runnable 的run方法或者是 supplier.get() 方法, 需要关注的是执行什么时候结束，以及操作的结果获取，它实现了Futura接口可以通过这些解决</p>
-
-<h2 id="toc_1">CompletionStage 接口</h2>
-
+<h2><a id="completionstage%E6%8E%A5%E5%8F%A3" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CompletionStage 接口</h2>
 <p>任务是有时序关系的比如串行关系，并行关系，汇聚关系等</p>
-
-<h3 id="toc_2">串行关系</h3>
-
+<h3><a id="%E4%B8%B2%E8%A1%8C%E5%85%B3%E7%B3%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>串行关系</h3>
 <p>CompletionStage描述的串行关系，主要有thenApply,thenAccept,thenRun,thenCompse四个系列接口</p>
-
 <ol>
-<li>thenApply 系列函数里参数 fn 的类型是接口 Function<T,R>,这个接口里与 CompletionStage 相关的方法是 R apply(T t)，这个方法既能接收参数也支持返回值，所以 thenApply 系列方法返回的是CompletionStage<R></li>
+<li>thenApply 系列函数里参数 fn 的类型是接口 Function&lt;T,R&gt;,这个接口里与 CompletionStage 相关的方法是 R apply(T t)，这个方法既能接收参数也支持返回值，所以 thenApply 系列方法返回的是CompletionStage<R></li>
 <li>thenAccept 系列函数中参数 consumer 的类型接口是Consumer<T>,这个接口里与 CompletionStage 相关的方法是 void accept(T t),这个方法支持传入参数但是不支持返回值，所以 thenAccept 系列方法返回的是CompletionStage<Void></li>
 <li>thenRun 系列函数中的参数 action 的参数是 Runnable，所以 action 既不能接收参数也不支持返回值，所以 thenRun 系列方法返回的也是CompletionStage<Void></li>
 <li>这个系列的方法会新创建出一个子流程，最终结果和 thenApply 系列是相同的</li>
 </ol>
-
-<h3 id="toc_3">AND 汇聚关系</h3>
-
+<h3><a id="and%E6%B1%87%E8%81%9A%E5%85%B3%E7%B3%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AND 汇聚关系</h3>
 <p>CompletionStage 接口里面描述 AND 汇聚关系，主要是 thenCombine、thenAcceptBoth 和 runAfterBoth 系列的接口，这些接口的区别也是源自 fn、consumer、action 这三个核心参数不同</p>
-
-<h3 id="toc_4">OR 汇聚关系</h3>
-
+<h3><a id="or%E6%B1%87%E8%81%9A%E5%85%B3%E7%B3%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>OR 汇聚关系</h3>
 <p>CompletionStage 接口里面描述 OR 汇聚关系，主要是 applyToEither、acceptEither 和 runAfterEither 系列的接口，这些接口的区别也是源自 fn、consumer、action 这三个核心参数不同</p>
-
-<h3 id="toc_5">异常处理</h3>
-
+<h3><a id="%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>异常处理</h3>
 <p>fn、consumer、action 它们的核心方法都不允许抛出可检查异常，但是却无法限制它们抛出运行时异常</p>
-
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 // try{}catch{}中的 catch{}
 CompletionStage exceptionally(fn);
 //类似于 try{}finally{}中的 finally{} 但是没有返回值
@@ -277,11 +263,15 @@ CompletionStage&lt;R&gt; handleAsync(fn);
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -296,8 +286,6 @@ CompletionStage&lt;R&gt; handleAsync(fn);
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

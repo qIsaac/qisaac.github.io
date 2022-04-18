@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>AMQ Model架构</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/11/27 16:21 下午</span>
+          <span class="date">2020/11/27</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,90 +145,72 @@
 
       <div class="article-content">
       <span id="more"></span><!-- more -->
-
-<h3 id="toc_0">Main entity（主要实体）</h3>
-
-<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fveuemyi9jj20lr0d1js2.jpg" alt=""/></p>
-
-<h4 id="toc_1">Message Queue（消息队列）</h4>
-
+<h3><a id="main-entity%EF%BC%88%E4%B8%BB%E8%A6%81%E5%AE%9E%E4%BD%93%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Main entity（主要实体）</h3>
+<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fveuemyi9jj20lr0d1js2.jpg" alt="" /></p>
+<h4><a id="message-queue%EF%BC%88%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Message Queue（消息队列）</h4>
 <blockquote>
 <p>消息队列是消息存储和分发实体,每个消息队列都是独立的</p>
-
-<h4 id="toc_2">Exchange（交换机）</h4>
-
-<p>交换机接受来自生产者应用程序的消息，并根据预先安排的标准将这些消息路由到消息队列,交换是匹配和路由引擎。</p>
-
-<h4 id="toc_3">Routing Key（路由key）</h4>
-
-<p>路由key是交换机可用于决定如何路由消息的虚拟地址。</p>
-
-<h3 id="toc_4">Message Flow (消息流)</h3>
-
-<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fvev381uvqj20n60cnt9g.jpg" alt=""/><br/>
-消息由一组属性和不透明内容构成，</p>
-
-<h3 id="toc_5">Functional Specification</h3>
 </blockquote>
-
-<h4 id="toc_6">Message and Content</h4>
-
+<h4><a id="exchange%EF%BC%88%E4%BA%A4%E6%8D%A2%E6%9C%BA%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exchange（交换机）</h4>
+<blockquote>
+<p>交换机接受来自生产者应用程序的消息，并根据预先安排的标准将这些消息路由到消息队列,交换是匹配和路由引擎。</p>
+</blockquote>
+<h4><a id="routing-key%EF%BC%88%E8%B7%AF%E7%94%B1key%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Routing Key（路由key）</h4>
+<blockquote>
+<p>路由key是交换机可用于决定如何路由消息的虚拟地址。</p>
+</blockquote>
+<h3><a id="message-flow%E6%B6%88%E6%81%AF%E6%B5%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Message Flow (消息流)</h3>
+<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fvev381uvqj20n60cnt9g.jpg" alt="" /></p>
+<blockquote>
+<p>消息由一组属性和不透明内容构成，</p>
+</blockquote>
+<h3><a id="functional-specification" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Functional Specification</h3>
+<h4><a id="message-and-content" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Message and Content</h4>
 <blockquote>
 <p>消息是中间件路由和排队系统的处理的原子单元,消息携带一个有内容头，内容体和一组属性。消息可能持久，消息可能具有优先级，服务器不能修改他接受的消息主体，可以向消息内容头添加，但是不能修改和删除</p>
-
-<h4 id="toc_7">Virtual Hosts</h4>
-
+</blockquote>
+<h4><a id="virtual-hosts" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Virtual Hosts</h4>
+<blockquote>
 <p>虚拟主机包括其自己的名称空间，一组交换，消息队列以及所有关联的对象,每个连接必须与单个虚拟主机相关联</p>
 </blockquote>
-
-<h4 id="toc_8">Exchange</h4>
-
+<h4><a id="exchange" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exchange</h4>
 <blockquote>
 <p>交换是虚拟主机内的消息路由代理。可以将单个消息并行路由到多个消息队列，这创造了多个独立使用的消息实例</p>
 </blockquote>
-
-<h5 id="toc_9">Direct Exchange Type（直接交换类型）</h5>
-
-<h6 id="toc_10">直接交换类型的工作原理如下：</h6>
-
+<h5><a id="direct-exchange-type%EF%BC%88%E7%9B%B4%E6%8E%A5%E4%BA%A4%E6%8D%A2%E7%B1%BB%E5%9E%8B%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Direct Exchange Type（直接交换类型）</h5>
+<h6><a id="%E7%9B%B4%E6%8E%A5%E4%BA%A4%E6%8D%A2%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%A6%82%E4%B8%8B%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>直接交换类型的工作原理如下：</h6>
 <ol>
 <li>消息队列使用路由密钥K绑定到交换机。</li>
 <li>发布者向交换机发送带有路由密钥R的消息。</li>
 <li>如果K = R，则将消息传递给消息队列。</li>
 </ol>
-
-<h6 id="toc_11">使用场景</h6>
-
-<p>直连交换机经常用来循环分发任务给多个工作者（workers）。当这样做的时候，我们需要明白一点，在AMQP 0-9-1中，消息的负载均衡是发生在消费者（consumer）之间的，而不是队列（queue）之间<br/>
-<img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fvezj95pzbj20ie0dqgon.jpg" alt=""/></p>
-
-<h5 id="toc_12">Fanout Exchange Type  （扇出交换类型）</h5>
-
-<h6 id="toc_13">工作原理如下：</h6>
-
+<h6><a id="%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用场景</h6>
+<p>直连交换机经常用来循环分发任务给多个工作者（workers）。当这样做的时候，我们需要明白一点，在AMQP 0-9-1中，消息的负载均衡是发生在消费者（consumer）之间的，而不是队列（queue）之间<br />
+<img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fvezj95pzbj20ie0dqgon.jpg" alt="" /></p>
+<h5><a id="fanout-exchange-type%EF%BC%88%E6%89%87%E5%87%BA%E4%BA%A4%E6%8D%A2%E7%B1%BB%E5%9E%8B%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fanout Exchange Type  （扇出交换类型）</h5>
+<h6><a id="%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%A6%82%E4%B8%8B%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>工作原理如下：</h6>
 <p>扇出交换机（funout exchange）将消息路由给绑定到它身上的所有队列，而不理会绑定的路由键。如果N个队列绑定到某个扇型交换机上，当有消息发送给此扇型交换机时，交换机会将消息的拷贝分别发送给这所有的N个队列。扇型用来交换机处理消息的广播路由（broadcast routing）</p>
-
-<h6 id="toc_14">使用场景</h6>
-
+<h6><a id="%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用场景</h6>
 <ol>
 <li>大规模多用户在线（MMO）游戏可以使用它来处理排行榜更新等全局事件</li>
 <li>体育新闻网站可以用它来近乎实时地将比分更新分发给移动客户端</li>
 <li>分发系统使用它来广播各种状态和配置更新</li>
-<li>在群聊的时候，它被用来分发消息给参与群聊的用户
-<img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fvezmy6siyj20ih0cbdhh.jpg" alt=""/></li>
+<li>在群聊的时候，它被用来分发消息给参与群聊的用户<br />
+<img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fvezmy6siyj20ih0cbdhh.jpg" alt="" /></li>
 </ol>
-
-<h5 id="toc_15">Topic  Exchange Type （主体交换类型）</h5>
-
-<h6 id="toc_16">工作原理如下：</h6>
-
+<h5><a id="topic-exchange-type%EF%BC%88%E4%B8%BB%E4%BD%93%E4%BA%A4%E6%8D%A2%E7%B1%BB%E5%9E%8B%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Topic  Exchange Type （主体交换类型）</h5>
+<h6><a id="%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%A6%82%E4%B8%8B%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>工作原理如下：</h6>
 <ol>
 <li>消息队列使用路由模式P绑定到交换机。</li>
 <li>发布者向交换机发送带有路由密钥R的消息。</li>
-<li>如果R匹配P，则将消息传递到消息队列<br/>
-###### 路由规则：<br/>
-&gt;路由模式遵循与路由密钥相同的规则，并且*匹配单个路由密钥单词和＃匹配零个或多个单词。因此路由模式*.stock.#匹配路由密钥usd.stock和eur.stock.db但不是stock.nasdaq<br/>
-###### 使用场景</li>
+<li>如果R匹配P，则将消息传递到消息队列</li>
+</ol>
+<h6><a id="%E8%B7%AF%E7%94%B1%E8%A7%84%E5%88%99%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>路由规则：</h6>
+<blockquote>
+<p>路由模式遵循与路由密钥相同的规则，并且*匹配单个路由密钥单词和＃匹配零个或多个单词。因此路由模式*.stock.#匹配路由密钥usd.stock和eur.stock.db但不是stock.nasdaq</p>
+</blockquote>
+<h6><a id="%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用场景</h6>
+<ol>
 <li>分发有关于特定地理位置的数据，例如销售点</li>
 <li>由多个工作者（workers）完成的后台任务，每个工作者负责处理某些特定的任务</li>
 <li>股票价格更新（以及其他类型的金融数据更新）</li>
@@ -234,16 +218,13 @@
 <li>云端的不同种类服务的协调</li>
 <li>分布式架构/基于系统的软件封装，其中每个构建者仅能处理一个特定的架构或者系统。</li>
 </ol>
-
-<h5 id="toc_17">Headers Exchange Type （头交换类型）</h5>
-
-<h6 id="toc_18">工作原理如下：</h6>
-
+<h5><a id="headers-exchange-type%EF%BC%88%E5%A4%B4%E4%BA%A4%E6%8D%A2%E7%B1%BB%E5%9E%8B%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Headers Exchange Type （头交换类型）</h5>
+<h6><a id="%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%A6%82%E4%B8%8B%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>工作原理如下：</h6>
 <ol>
 <li>消息队列绑定到交换机，其中包含要包含标头的参数表匹配该绑定以及它们应该保留的值。不使用路由密钥。</li>
-<li>发布者向交易所发送消息，其中&#39;headers&#39;属性包含一个表<br/>
+<li>发布者向交易所发送消息，其中'headers'属性包含一个表<br />
 名称和价值观。</li>
-<li>如果headers属性与使用的参数匹配，则消息将传递到队列<br/>
+<li>如果headers属性与使用的参数匹配，则消息将传递到队列<br />
 队列绑定了</li>
 </ol>
 
@@ -321,11 +302,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -340,8 +325,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

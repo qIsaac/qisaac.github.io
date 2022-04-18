@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Java 内存模型</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/12/29 15:09 下午</span>
+          <span class="date">2020/12/29</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,20 +145,13 @@
 
       <div class="article-content">
       <p>解决Java并发编程中的有关可见性和有序性问题 --- Java 内存模型</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">Java 内存模型</h2>
-
+<h2><a id="java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Java 内存模型</h2>
 <p>Java 内存模型规范了JVM如何按需禁用缓存和编译器优化的方法；包括三个关键字volatile、synchronized、final以及Happens-Before规则</p>
-
-<h3 id="toc_1">volatile</h3>
-
+<h3><a id="volatile" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>volatile</h3>
 <p>在C语言中原始定义就是禁止使用CPU缓存；对于volatile修饰的变量读写，不能使用CPU缓存，必须从内存中读取或者是写入</p>
-
-<h4 id="toc_2">示例代码</h4>
-
-<pre class="line-numbers"><code class="language-java">// 以下代码来源于【参考1】
+<h4><a id="%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>示例代码</h4>
+<pre><code class="language-java">// 以下代码来源于【参考1】
 class VolatileExample {
   int x = 0;
   volatile boolean v = false;
@@ -171,40 +166,28 @@ class VolatileExample {
   }
 }
 </code></pre>
-
 <p>运行结果：Java 1.5 之前可能是 42 或者 0 ，1.5之后是 42  </p>
-
-<h4 id="toc_3">实现原理</h4>
-
+<h4><a id="%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>实现原理</h4>
 <ol>
 <li>Lock 前缀指令会引起处理器缓存回写到内存中</li>
 <li>一个处理器的缓存回写内存会导致其他处理器的缓存无效 </li>
 </ol>
-
-<h4 id="toc_4">volatile 内存语义的实现</h4>
-
+<h4><a id="volatile%E5%86%85%E5%AD%98%E8%AF%AD%E4%B9%89%E7%9A%84%E5%AE%9E%E7%8E%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>volatile 内存语义的实现</h4>
 <ol>
 <li>在volatile变量写操作之前插入StoreStore屏障 --- 禁止变量之前的普通写操作与变量的写操作重排序</li>
 <li>在volatile变量写操作之后插入StoreLoad屏障 --- 禁止变量之后的可能的volatile写重排序（保守设置）</li>
 <li>在volatile变量读操作之前插入LoadLoad屏障 ---  禁止变量之后的普通读操作与修饰的变量重排序</li>
 <li>在volatile变量读操作之前插入LoadStore屏障 --- 禁止变量之后的可能的volatile变量读操作重排序（保守设置） </li>
 </ol>
-
-<h4 id="toc_5">volatile使用优化</h4>
-
+<h4><a id="volatile%E4%BD%BF%E7%94%A8%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>volatile使用优化</h4>
 <p>针对缓存行是64字节，并且对共享变量频繁的写在使用volatile变量时要补充64字节 </p>
-
-<h3 id="toc_6">Happens-Before 原则 </h3>
-
-<h4 id="toc_7">定义</h4>
-
+<h3><a id="happens-before%E5%8E%9F%E5%88%99%E2%80%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Happens-Before 原则 </h3>
+<h4><a id="%E5%AE%9A%E4%B9%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>定义</h4>
 <ol>
 <li>如果一个操作Happens-Before另一个操作，那么前面一个操作的结果对后一个操作可见，而且第一个操作的顺序在第二操作之前</li>
 <li>如果重排序后执行结果不会导致Happens-Before 语义变化那么允许这种重排序 </li>
 </ol>
-
-<h4 id="toc_8">六条规则</h4>
-
+<h4><a id="%E5%85%AD%E6%9D%A1%E8%A7%84%E5%88%99" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>六条规则</h4>
 <ol>
 <li>程序的顺序性：一个线程中，按照程序顺序，前面的操作Happens-Before之后的操作</li>
 <li>volatile规则：读一个volatile变量的写操作，Happens-Before之后对这个变量的读操作</li>
@@ -213,15 +196,14 @@ class VolatileExample {
 <li>线程start规则：如果线程A调用线程B的 start() 方法，那么该start方法操作Happens-Before线程B中的任意操作</li>
 <li>线程Join规则：如果线程A调用线程B的join方法并成功返回，那么线程B中的任意操作Happens-Before于该join操作的返回 </li>
 </ol>
-
-<h3 id="toc_9">final</h3>
-
+<h3><a id="final" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>final</h3>
 <ol>
 <li>在构造器内对一个final域的写入，与随后把这个构造对象的引用赋值给一个引用变量，之间的操作不能重排序
 <ul>
 <li>JMM禁止将对final域的写排序到构造求之外</li>
 <li>编译器会在final写之后，构造函数return之前插入StoreStore屏障</li>
-</ul></li>
+</ul>
+</li>
 <li>初次读一个包含final域的对象的引用，与随后读这个final域不能重排序</li>
 </ol>
 
@@ -299,11 +281,15 @@ class VolatileExample {
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -318,8 +304,6 @@ class VolatileExample {
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>缓存异常</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/02/19 15:10 下午</span>
+          <span class="date">2021/02/19</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,125 +145,84 @@
 
       <div class="article-content">
       <p>使用Redis为缓存是会存在一些异常问题，缓存中的数据和数据库不一致、缓存雪崩、缓存穿透、缓存击穿</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">缓存数据与数据库不一致</h2>
-
-<h3 id="toc_1">数据一致性</h3>
-
+<h2><a id="%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8D%E4%B8%80%E8%87%B4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存数据与数据库不一致</h2>
+<h3><a id="%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>数据一致性</h3>
 <ol>
 <li>缓存中有数据，那么缓存的数据和数据库中的数据保持一致</li>
 <li>缓存中没有数据，那么数据库中的数据必须是最新的</li>
 </ol>
-
-<h3 id="toc_2">读写缓存和只读缓存</h3>
-
+<h3><a id="%E8%AF%BB%E5%86%99%E7%BC%93%E5%AD%98%E5%92%8C%E5%8F%AA%E8%AF%BB%E7%BC%93%E5%AD%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>读写缓存和只读缓存</h3>
 <p>但是不同的写回策略，决定数据不一致的问题</p>
-
-<h4 id="toc_3">读写缓存</h4>
-
+<h4><a id="%E8%AF%BB%E5%86%99%E7%BC%93%E5%AD%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>读写缓存</h4>
 <ol>
 <li>同步直写策略：写缓存时，也不同步写数据库，二者数据一致</li>
 <li>异步写会策略：写缓存时，不写回数据库，等到数据从缓存中淘汰时，再写回数据库，如果在写回数据库时出现异常，则不能保证数据一致  对于读写缓存保证数据一致，只能使用同步直写策略，同时保证事务的机制保证数据库和缓存数据的原子性</li>
 </ol>
-
-<h4 id="toc_4">只读缓存</h4>
-
+<h4><a id="%E5%8F%AA%E8%AF%BB%E7%BC%93%E5%AD%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>只读缓存</h4>
 <p>针对新增数据，直接写入数据库；如果是删改则标记缓存中的数据无效</p>
-
 <ol>
 <li>新增数据：不对缓存做任何操作，而且数据库是最新的数据所以是一致</li>
-<li>删改数据：应用需要更新数据库，并且删除缓存中的数据<br/>
-   <img src="media/16137186214875/16137253029695.jpg" alt=""/><br/>
+<li>删改数据：应用需要更新数据库，并且删除缓存中的数据<br />
+   <img src="media/16137186214875/16137253029695.jpg" alt="" /><br />
  </li>
 </ol>
-
-<h2 id="toc_5">解决数据不一致问题</h2>
-
-<h3 id="toc_6">重试机制</h3>
-
+<h2><a id="%E8%A7%A3%E5%86%B3%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%80%E8%87%B4%E9%97%AE%E9%A2%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>解决数据不一致问题</h2>
+<h3><a id="%E9%87%8D%E8%AF%95%E6%9C%BA%E5%88%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>重试机制</h3>
 <p>把要删除或者修改的数据放到消息队列中，当没有删除应用值或者是没有成功更新数据库时，可以从消息队列中重新读取数据，再次进行更新或者是删除；如果成功删除消息队列中的值，如果多次没有成功则向业务层发送信息</p>
-
-<h4 id="toc_7">先删除缓存，再更新数据库</h4>
-
-<p><img src="media/16137186214875/16137256159341.jpg" alt=""/></p>
-
+<h4><a id="%E5%85%88%E5%88%A0%E9%99%A4%E7%BC%93%E5%AD%98%EF%BC%8C%E5%86%8D%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE%E5%BA%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>先删除缓存，再更新数据库</h4>
+<p><img src="media/16137186214875/16137256159341.jpg" alt="" /></p>
 <p>解决方法：在线程A更新完数据后吗，先让线程A Sleep 一小段时间，在进行一次缓存删除</p>
-
-<h4 id="toc_8">先更新数据库，再删除缓存值</h4>
-
-<p><img src="media/16137186214875/16137257636514.jpg" alt=""/></p>
-
-<h3 id="toc_9">解决方法</h3>
-
+<h4><a id="%E5%85%88%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C%E5%86%8D%E5%88%A0%E9%99%A4%E7%BC%93%E5%AD%98%E5%80%BC" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>先更新数据库，再删除缓存值</h4>
+<p><img src="media/16137186214875/16137257636514.jpg" alt="" /></p>
+<h3><a id="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>解决方法</h3>
 <ol>
 <li>删除缓存或者是更新数据库失败导致的不一致：使用重试或者是更新成功操作</li>
-<li>在删除缓存值，更新数据库这两步操作中，其他线程的并发读操作，可以使用延迟双删<br/>
+<li>在删除缓存值，更新数据库这两步操作中，其他线程的并发读操作，可以使用延迟双删<br />
  </li>
 </ol>
-
-<h2 id="toc_10">缓存雪崩</h2>
-
+<h2><a id="%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存雪崩</h2>
 <p>缓存雪崩 ： 大量的请求无法在Redis缓存中进行处理，紧接着大量的请求发送到数据库层，导致数据库增压力聚增</p>
-
-<h3 id="toc_11">原因一 ： 缓存中的大量数据同时过期，导致缓存无法进行处理</h3>
-
-<p><img src="media/16137186214875/16139743225197.jpg" alt=""/></p>
-
-<h4 id="toc_12">解决办法</h4>
-
+<h3><a id="%E5%8E%9F%E5%9B%A0%E4%B8%80%EF%BC%9A%E7%BC%93%E5%AD%98%E4%B8%AD%E7%9A%84%E5%A4%A7%E9%87%8F%E6%95%B0%E6%8D%AE%E5%90%8C%E6%97%B6%E8%BF%87%E6%9C%9F%EF%BC%8C%E5%AF%BC%E8%87%B4%E7%BC%93%E5%AD%98%E6%97%A0%E6%B3%95%E8%BF%9B%E8%A1%8C%E5%A4%84%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原因一 ： 缓存中的大量数据同时过期，导致缓存无法进行处理</h3>
+<p><img src="media/16137186214875/16139743225197.jpg" alt="" /></p>
+<h4><a id="%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>解决办法</h4>
 <ol>
 <li>为数据设置不同的缓存过期时间</li>
 <li>服务降级
 <ol>
 <li>非核心数据 ：暂停从缓存个中读取，放回预设值，空值，错误信心</li>
 <li>核心数据 ：继续从缓存中获取，如果缺失从数据库中读取</li>
-</ol></li>
 </ol>
-
-<h3 id="toc_13">原因二 ： Redis宕机导致雪崩</h3>
-
+</li>
+</ol>
+<h3><a id="%E5%8E%9F%E5%9B%A0%E4%BA%8C%EF%BC%9Aredis%E5%AE%95%E6%9C%BA%E5%AF%BC%E8%87%B4%E9%9B%AA%E5%B4%A9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原因二 ： Redis宕机导致雪崩</h3>
 <p>Redis 宕机，导致短时间内大量的请求积压到数据库层，发生雪崩</p>
-
-<h4 id="toc_14">解决办法</h4>
-
+<h4><a id="%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>解决办法</h4>
 <ol>
 <li>在业务系统中实现服务熔断或者请求限流</li>
-<li>通过主从节点搭建高可用Redis集群<br/>
-## 缓存击穿<br/>
-缓存击穿：针对某个访问非常频繁的热点数据的请求，无法在缓存中进行处理，之后大量的访问请求，发送到后端数据库中，导致数据库压力急增影响其他的数据库请求处理</li>
+<li>通过主从节点搭建高可用Redis集群</li>
 </ol>
-
-<p><img src="media/16137186214875/16139750289265.jpg" alt=""/></p>
-
-<h3 id="toc_15">解决办法</h3>
-
+<h2><a id="%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存击穿</h2>
+<p>缓存击穿：针对某个访问非常频繁的热点数据的请求，无法在缓存中进行处理，之后大量的访问请求，发送到后端数据库中，导致数据库压力急增影响其他的数据库请求处理</p>
+<p><img src="media/16137186214875/16139750289265.jpg" alt="" /></p>
+<h3><a id="%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>解决办法</h3>
 <p>对于热点数据不设置过期时间</p>
-
-<h2 id="toc_16">缓存穿透</h2>
-
-<p>缓存穿透：访问的数据既不在缓存中，也不在数据库中，导致访问缓存缺失，之后访问数据库数据也不存，这样缓存基本无用，如果持续大量的请求就会导致缓存和数据库服务压力大增<br/>
-<img src="media/16137186214875/16139752292178.jpg" alt=""/></p>
-
-<h3 id="toc_17">原因</h3>
-
+<h2><a id="%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存穿透</h2>
+<p>缓存穿透：访问的数据既不在缓存中，也不在数据库中，导致访问缓存缺失，之后访问数据库数据也不存，这样缓存基本无用，如果持续大量的请求就会导致缓存和数据库服务压力大增<br />
+<img src="media/16137186214875/16139752292178.jpg" alt="" /></p>
+<h3><a id="%E5%8E%9F%E5%9B%A0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原因</h3>
 <ol>
 <li>业务层误操作：缓存中的数据和数据库中的数据被误删除</li>
 <li>恶意攻击：故意访问数据库中不存在的数据</li>
 </ol>
-
-<h3 id="toc_18">解决方法</h3>
-
+<h3><a id="%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>解决方法</h3>
 <ol>
 <li>缓存空值或者是缺省值</li>
 <li>使用布隆过滤器快速判断数据是否存在</li>
 <li>前端进行接口的恶意访问检测  </li>
 </ol>
-
-<h3 id="toc_19">总结</h3>
-
-<p><img src="media/16137186214875/16139756141456.jpg" alt=""/></p>
+<h3><a id="%E6%80%BB%E7%BB%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>总结</h3>
+<p><img src="media/16137186214875/16139756141456.jpg" alt="" /></p>
 
 
     
@@ -337,11 +298,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -356,8 +321,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

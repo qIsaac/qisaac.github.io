@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>ACID+CAP+BASE</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/11/27 16:22 下午</span>
+          <span class="date">2020/11/27</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,62 +145,66 @@
 
       <div class="article-content">
       <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">ACID</h2>
-
+<h2><a id="acid" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ACID</h2>
 <ol>
-<li><p>A (Atomicity) 原子性</p>
-<p>原子性很容易理解，也就是说事务里的所有操作要么全部做完，要么都不做，事务成功的条件是事务里的所有操作都成功，只要有一个操作失败，整个事务就失败，需要回滚。比如银行转账，从A账户转100元至B账户，分为两个步骤：1）从A账户取100元；2）存入100元至B账户。这两步要么一起完成，要么一起不完成，如果只完成第一步，第二步失败，钱会莫名其妙少了100元。</p></li>
-<li><p>C (Consistency) 一致性</p>
-<p>一致性也比较容易理解，也就是说数据库要一直处于一致的状态，事务的运行不会改变数据库原本的一致性约束。</p></li>
-<li><p>I (Isolation) 独立性</p>
-<p>所谓的独立性是指并发的事务之间不会互相影响，如果一个事务要访问的数据正在被另外一个事务修改，只要另外一个事务未提交，它所访问的数据就不受未提交事务的影响。比如现有有个交易是从A账户转100元至B账户，在这个交易还未完成的情况下，如果此时B查询自己的账户，是看不到新增加的100元的</p></li>
-<li><p>D (Durability) 持久性</p>
-<p>持久性是指一旦事务提交后，它所做的修改将会永久的保存在数据库上，即使出现宕机也不会丢失。</p></li>
+<li>
+<p>A (Atomicity) 原子性</p>
+<p>原子性很容易理解，也就是说事务里的所有操作要么全部做完，要么都不做，事务成功的条件是事务里的所有操作都成功，只要有一个操作失败，整个事务就失败，需要回滚。比如银行转账，从A账户转100元至B账户，分为两个步骤：1）从A账户取100元；2）存入100元至B账户。这两步要么一起完成，要么一起不完成，如果只完成第一步，第二步失败，钱会莫名其妙少了100元。</p>
+</li>
+<li>
+<p>C (Consistency) 一致性</p>
+<p>一致性也比较容易理解，也就是说数据库要一直处于一致的状态，事务的运行不会改变数据库原本的一致性约束。</p>
+</li>
+<li>
+<p>I (Isolation) 独立性</p>
+<p>所谓的独立性是指并发的事务之间不会互相影响，如果一个事务要访问的数据正在被另外一个事务修改，只要另外一个事务未提交，它所访问的数据就不受未提交事务的影响。比如现有有个交易是从A账户转100元至B账户，在这个交易还未完成的情况下，如果此时B查询自己的账户，是看不到新增加的100元的</p>
+</li>
+<li>
+<p>D (Durability) 持久性</p>
+<p>持久性是指一旦事务提交后，它所做的修改将会永久的保存在数据库上，即使出现宕机也不会丢失。</p>
+</li>
 </ol>
-
-<h2 id="toc_1">CAP</h2>
-
+<h2><a id="cap" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CAP</h2>
 <p>Consistency（强一致性），Availability （可用性），Partition Tolerance（分区容错性）</p>
-
-<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fytt4esygqj20i10fjt9g.jpg" alt=""/></p>
-
+<p><img src="http://ww1.sinaimg.cn/large/bf2a0df6ly1fytt4esygqj20i10fjt9g.jpg" alt="" /></p>
 <ol>
 <li>CA - 单点集群，满足一致性，可用性的系统，通常在可扩展性上不太强大。</li>
 <li>CP - 满足一致性，分区容忍必的系统，通常性能不是特别高。</li>
 <li>AP - 满足可用性，分区容忍性的系统，通常可能对一致性要求低一些。</li>
 </ol>
-
-<h3 id="toc_2">CAP 3选2</h3>
-
+<h3><a id="cap-3%E9%80%892" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CAP 3选2</h3>
 <p>在分布式存储系统中，最多只能实现其中的两种，而由于网络的延迟和丢包，多以<strong>分区容错性</strong>是必须要实现的，所以必须在<strong>一致性</strong>和<strong>可用性</strong>进行权衡</p>
-
 <ol>
 <li>CA 传统的Oracle数据库实现</li>
 <li>AP 大多数网站架构的选择</li>
-<li> CP Redis Zookeeper</li>
+<li>CP Redis Zookeeper</li>
 </ol>
-
-<h3 id="toc_3">一致性和可用性的抉择</h3>
-
+<h3><a id="%E4%B8%80%E8%87%B4%E6%80%A7%E5%92%8C%E5%8F%AF%E7%94%A8%E6%80%A7%E7%9A%84%E6%8A%89%E6%8B%A9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>一致性和可用性的抉择</h3>
 <ol>
-<li><p>数据库事务一致性需求 </p>
-<p>很多web实时系统并不要求严格的数据库事务，对读一致性的要求很低， 有些场合对写一致性要求并不高，允许实现最终一致性。</p></li>
-<li><p>数据库的写实时性和读实时性需求</p>
-<p>对关系数据库来说，插入一条数据之后立刻查询，是肯定可以读出来这条数据的，但是对于很多web应用来说，并不要求这么高的实时性，比方说发一条消息之 后，过几秒乃至十几秒之后，我的订阅者才看到这条动态是完全可以接受的。</p></li>
-<li><p>对复杂的SQL查询，特别是多表关联查询的需求 </p>
-<p>任何大数据量的web系统，都非常忌讳多个大表的关联查询，以及复杂的数据分析类型的报表查询，特别是SNS类型的网站，从需求以及产品设计角 度，就避免了这种情况的产生。往往更多的只是单表的主键查询，以及单表的简单条件分页查询，SQL的功能被极大的弱化了。</p></li>
+<li>
+<p>数据库事务一致性需求</p>
+<p>很多web实时系统并不要求严格的数据库事务，对读一致性的要求很低， 有些场合对写一致性要求并不高，允许实现最终一致性。</p>
+</li>
+<li>
+<p>数据库的写实时性和读实时性需求</p>
+<p>对关系数据库来说，插入一条数据之后立刻查询，是肯定可以读出来这条数据的，但是对于很多web应用来说，并不要求这么高的实时性，比方说发一条消息之 后，过几秒乃至十几秒之后，我的订阅者才看到这条动态是完全可以接受的。</p>
+</li>
+<li>
+<p>对复杂的SQL查询，特别是多表关联查询的需求</p>
+<p>任何大数据量的web系统，都非常忌讳多个大表的关联查询，以及复杂的数据分析类型的报表查询，特别是SNS类型的网站，从需求以及产品设计角 度，就避免了这种情况的产生。往往更多的只是单表的主键查询，以及单表的简单条件分页查询，SQL的功能被极大的弱化了。</p>
+</li>
 </ol>
-
-<h2 id="toc_4">BASE</h2>
-
+<h2><a id="base" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>BASE</h2>
 <blockquote>
 <p>基本可用（Basically Available，软状态（Soft state），最终一致（Eventually consistent）</p>
 </blockquote>
-
 <ol>
-<li><p>BASE就是为了解决关系数据库强一致性引起的问题而引起的可用性降低而提出的解决方案。</p></li>
-<li><p>它的思想是通过让系统放松对某一时刻数据一致性的要求来换取系统整体伸缩性和性能上改观。为什么这么说呢，缘由就在于大型系统往往由于地域分布和极高性能的要求，不可能采用分布式事务来完成这些指标，要想获得这些指标，我们必须采用另外一种方式来完成，这里BASE就是解决这个问题的办法</p></li>
+<li>
+<p>BASE就是为了解决关系数据库强一致性引起的问题而引起的可用性降低而提出的解决方案。</p>
+</li>
+<li>
+<p>它的思想是通过让系统放松对某一时刻数据一致性的要求来换取系统整体伸缩性和性能上改观。为什么这么说呢，缘由就在于大型系统往往由于地域分布和极高性能的要求，不可能采用分布式事务来完成这些指标，要想获得这些指标，我们必须采用另外一种方式来完成，这里BASE就是解决这个问题的办法</p>
+</li>
 </ol>
 
 
@@ -275,11 +281,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -294,8 +304,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

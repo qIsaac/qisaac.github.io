@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>GEO 实现</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/25 21:27 下午</span>
+          <span class="date">2021/01/25</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,34 +145,24 @@
 
       <div class="article-content">
       <p>基于位置信息服务的LBS应用访问数据是和人或者是物的一组经纬度信息，而且要能查询相邻的经纬度范围，GEO 就适合应用这样的场景</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">底层结构</h2>
-
+<h2><a id="%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>底层结构</h2>
 <p>GEO 底层就是采用Sorted Set 实现的，通过 GeoHash 编码方式对经纬度进行GeoHash编码，然后再将经纬度各自的编码组合成一个最终编码。GEO 类型吧经纬度所在的区间最为Sorted Set 中元素的权重分数，把和经纬度相关的信息作为Sorted Set 中的元素本身的值保存下来</p>
-
-<h2 id="toc_1">GEO 操作</h2>
-
+<h2><a id="geo%E6%93%8D%E4%BD%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>GEO 操作</h2>
 <ol>
 <li>GEOADD 命令：把经纬度信息和对应的一个ID记录到GEO类型中</li>
 <li>GEORADIUS 命令：根据输入的经纬度位置，查找以这个经纬度为中心的一定范围内的其他元素。</li>
 </ol>
-
-<h3 id="toc_2">GEO操作实例</h3>
-
+<h3><a id="geo%E6%93%8D%E4%BD%9C%E5%AE%9E%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>GEO操作实例</h3>
 <ol>
-<li>将 ID 为 33 的车辆当前的经纬度存入GEO中 </li>
+<li>将 ID 为 33 的车辆当前的经纬度存入GEO中</li>
 </ol>
-
-<pre class="line-numbers"><code class="language-shell">    GEOADD cars:locations 116.034579 39.030452 33
+<pre><code class="language-shell">    GEOADD cars:locations 116.034579 39.030452 33
 </code></pre>
-
 <ol>
 <li>查找以(116.054579，39.030452)经纬度为中心的 5 公里内的车辆信息</li>
 </ol>
-
-<pre class="line-numbers"><code class="language-shell">GEORADIUS cars:locations 116.054579 39.030452 5 km ASC COUNT 10
+<pre><code class="language-shell">GEORADIUS cars:locations 116.054579 39.030452 5 km ASC COUNT 10
 </code></pre>
 
 
@@ -247,11 +239,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -266,8 +262,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>哨兵集群</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/19 21:56 下午</span>
+          <span class="date">2021/01/19</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,49 +145,31 @@
 
       <div class="article-content">
       <p>哨兵集群能保证及时有哨兵实例宕机，其他哨兵也能协作完成判断主库下线，选择新主库以及通知从库和客户端</p>
-
-<pre class="line-numbers"><code class="language-shell"> ** 哨兵集群部署命令
+<pre><code class="language-shell"> ** 哨兵集群部署命令
  sentinel monitor &lt;master-name&gt; &lt;ip&gt; &lt;redis-port&gt; &lt;quorum&gt; 
  
 </code></pre>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">基于 pub/sub 机制的哨兵组成机制</h2>
-
+<h2><a id="%E5%9F%BA%E4%BA%8Epubsub%E6%9C%BA%E5%88%B6%E7%9A%84%E5%93%A8%E5%85%B5%E7%BB%84%E6%88%90%E6%9C%BA%E5%88%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基于 pub/sub 机制的哨兵组成机制</h2>
 <p>哨兵只要和主库建立连接，就可以在主库上发布消息，同时它也可以在主库上订阅消息，获取其他哨兵的连接信息，当多个哨兵实例都在主库上订阅发布消息，这样多个哨兵实例之间就可以建立连接，在主从集群中，主库上有一个名为 <em><strong>sentinel</strong>:hello</em> 的频道，不同哨兵就是通过它来相互发现，实现互相通信的。</p>
-
-<p><img src="media/16110645751252/16110660994001.jpg" alt=""/></p>
-
-<h3 id="toc_1">哨兵如何知道从库</h3>
-
+<p><img src="media/16110645751252/16110660994001.jpg" alt="" /></p>
+<h3><a id="%E5%93%A8%E5%85%B5%E5%A6%82%E4%BD%95%E7%9F%A5%E9%81%93%E4%BB%8E%E5%BA%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>哨兵如何知道从库</h3>
 <p>哨兵向主库发送 <em>INFO</em> 命令，主库收到命令后会把从库列表返回给哨兵，之后哨兵就可以从列表中获取连接信息，并和从库建立连接，之后这个连接上持续的监控</p>
-
-<h2 id="toc_2">基于 pub/sub 机制的客户端通知机制</h2>
-
-<p>客户端读取哨兵的配置文件，获取哨兵的连接信息，和哨兵建立网络来连接后，客户端从哨兵订阅消息获取不同的事件消息。<br/>
+<h2><a id="%E5%9F%BA%E4%BA%8Epubsub%E6%9C%BA%E5%88%B6%E7%9A%84%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%80%9A%E7%9F%A5%E6%9C%BA%E5%88%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基于 pub/sub 机制的客户端通知机制</h2>
+<p>客户端读取哨兵的配置文件，获取哨兵的连接信息，和哨兵建立网络来连接后，客户端从哨兵订阅消息获取不同的事件消息。<br />
 哨兵选出新的主库后，客户端就能看到 <em>switch-master</em> 事件，其中包含新的连接信息</p>
-
-<p><img src="media/16110645751252/16110667431788.jpg" alt=""/></p>
-
-<h2 id="toc_3">哨兵的选主</h2>
-
+<p><img src="media/16110645751252/16110667431788.jpg" alt="" /></p>
+<h2><a id="%E5%93%A8%E5%85%B5%E7%9A%84%E9%80%89%E4%B8%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>哨兵的选主</h2>
 <p>任何一个哨兵实例只要判断主库是 <em>主观下线</em>，就会给其他实例发送 <em>is-master-down-by-addr</em> ,之后其它实例根据自己和主库的连接，做出 <em>Y</em> 或者是 <em>N</em> 的响应，一个实例获得了仲裁所需的赞成票后，就可以标记为 <em>客观下线</em></p>
-
-<p><img src="media/16110645751252/16110671429617.jpg" alt=""/></p>
-
+<p><img src="media/16110645751252/16110671429617.jpg" alt="" /></p>
 <p>投票</p>
-
 <ol>
 <li>半数以上的赞成票</li>
 <li>赞成票数要大于等于配置文件中的quorum值</li>
 </ol>
-
-<p>选主过程<br/>
-<img src="media/16110645751252/16110672609837.jpg" alt=""/></p>
-
-<h2 id="toc_4">注意</h2>
-
+<p>选主过程<br />
+<img src="media/16110645751252/16110672609837.jpg" alt="" /></p>
+<h2><a id="%E6%B3%A8%E6%84%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>注意</h2>
 <p>保证哨兵实例的配置一致，尤其是主观下线的判断值 down-after-milliseconds</p>
 
 
@@ -262,11 +246,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -281,8 +269,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Redis 数据同步</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/19 14:18 下午</span>
+          <span class="date">2021/01/19</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,69 +145,43 @@
 
       <div class="article-content">
       <p>Redis 的高可靠性通过减少数据的丢失，以及减少服务的中断实现，为保证减少数据的丢失通过AOF和RDB 保证，而减少服务中断通过增加副本冗余保证；Redis 提供了主从模式，保证数据副本的一致，主从库之间使用读写分离；对于读操作，主从都可接受，而写操作则首先主库执行然后同步到从库</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">从主第一个次同步</h2>
-
+<h2><a id="%E4%BB%8E%E4%B8%BB%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%AC%A1%E5%90%8C%E6%AD%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>从主第一个次同步</h2>
 <p>Redis 多个实例之间可以通过replicaof 命令 （5.0 之前slaveof）形成主库和从库。</p>
-
-<p><img src="media/16110371253411/16110387733520.jpg" alt=""/></p>
-
-<h3 id="toc_1">第一阶段</h3>
-
+<p><img src="media/16110371253411/16110387733520.jpg" alt="" /></p>
+<h3><a id="%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>第一阶段</h3>
 <p>主从库之间建立连接，协商同步的过程，为全量同步做准备。从库和主库之间建立连接，并与主库通信将要开始同步，主库确认恢复后，主从之间可以进行同步。</p>
-
 <ol>
-<li>从库给主库发送 psync 命令，表示要进行同步，主库根据 psync 来启动复制，此时不知道从库的runID 设置为&#39;?&#39;,offset 设置为 -1，表示第一次复制</li>
+<li>从库给主库发送 psync 命令，表示要进行同步，主库根据 psync 来启动复制，此时不知道从库的runID 设置为'?',offset 设置为 -1，表示第一次复制</li>
 <li>主库收到 psync 命令后，使用 FULLRESYNC 带两个参数 主库runID和主库目前的offset，返回给从库，从库收到响应后记录两个参数  </li>
 </ol>
-
-<h3 id="toc_2">第二阶段</h3>
-
+<h3><a id="%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>第二阶段</h3>
 <p>主库将所有的数据发送给从库，从库收到数据后在本地完成数据的加载。这个过程依赖于RDB文件</p>
-
 <ol>
 <li>主库还行 <em>bgsave</em> 命令，生成RDB文件，接着将文件发送给从库</li>
 <li>从库收到RDB文件后，先清空当前数据库，然后加载RDB文件</li>
 <li>主库保存RDB文件生成后所有的写命令在内存中的replication buffer中   </li>
 </ol>
-
-<h3 id="toc_3">第三阶段</h3>
-
+<h3><a id="%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>第三阶段</h3>
 <p>主库把<em>replication buffer</em>中的修改操作送给从库，从库再重新执行这些操作  </p>
-
-<h2 id="toc_4">主从级联模式</h2>
-
+<h2><a id="%E4%B8%BB%E4%BB%8E%E7%BA%A7%E8%81%94%E6%A8%A1%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>主从级联模式</h2>
 <p>在部署主从集群的时候，可以手动选择一个从库，用于级联其他从库。这样这些从库不再和主库进行同步，而是和级联的从库进行写操作同步。</p>
-
-<p><img src="media/16110371253411/16110403123205.jpg" alt=""/></p>
-
-<h2 id="toc_5">主从风险</h2>
-
+<p><img src="media/16110371253411/16110403123205.jpg" alt="" /></p>
+<h2><a id="%E4%B8%BB%E4%BB%8E%E9%A3%8E%E9%99%A9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>主从风险</h2>
 <p>主从是基于长连接的命令传播，如果网络断连那么主从之间就无法进行命令传播，会导致主从不一致</p>
-
-<h3 id="toc_6">网络断连</h3>
-
+<h3><a id="%E7%BD%91%E7%BB%9C%E6%96%AD%E8%BF%9E" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>网络断连</h3>
 <ol>
 <li>2.8 之前出现网络断连后会执行一次全量同步</li>
-<li>2.8 之后进行增量同步<br/>
+<li>2.8 之后进行增量同步<br />
  </li>
 </ol>
-
-<h4 id="toc_7">增量同步</h4>
-
+<h4><a id="%E5%A2%9E%E9%87%8F%E5%90%8C%E6%AD%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>增量同步</h4>
 <p>主库会把断期间的写操作写入<strong>replication buffer</strong> ，同时把这些命令写入到 <em>repl_backlog_buffer, repl_backlog_buffer</em> 是一个环形缓存区，主库会记录自己写的位置，从库会记录读的位置。主库通过<em>master_repl_offset</em> 记录写的偏移量,从库通过 <em>slave_repl_offset</em> 记录读的偏移量</p>
-
-<p><img src="media/16110371253411/16110415054434.jpg" alt=""/></p>
-
-<h5 id="toc_8">增量流程</h5>
-
-<p><img src="media/16110371253411/16110415933554.jpg" alt=""/></p>
-
+<p><img src="media/16110371253411/16110415054434.jpg" alt="" /></p>
+<h5><a id="%E5%A2%9E%E9%87%8F%E6%B5%81%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>增量流程</h5>
+<p><img src="media/16110371253411/16110415933554.jpg" alt="" /></p>
 <p>从库读取数据速度比较慢，导致主库的写覆盖<em>repl_backlog_buffer</em>。导致主从不一致，通过<em>repl_backlog_size</em>控制。</p>
-
-<h3 id="toc_9">阻塞</h3>
+<h3><a id="%E9%98%BB%E5%A1%9E" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>阻塞</h3>
 
 
     
@@ -281,11 +257,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -300,8 +280,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

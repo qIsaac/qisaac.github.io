@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Executor</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/08 13:54 下午</span>
+          <span class="date">2021/01/08</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,14 +145,10 @@
 
       <div class="article-content">
       <p>目前线程池的使用模式是生产者-消费者模式，线程池的使用方是生产者，线程池本身是消费者</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">Java中的线程池</h2>
-
+<h2><a id="java%E4%B8%AD%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%B1%A0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Java中的线程池</h2>
 <p>Java中最核心的就是ThreadPoolExecutor，他强调的是Executor不是池化</p>
-
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 ThreadPoolExecutor(
   int corePoolSize,
   int maximumPoolSize,
@@ -160,24 +158,33 @@ ThreadPoolExecutor(
   ThreadFactory threadFactory,
   RejectedExecutionHandler handler) 
 </code></pre>
-
 <ul>
-<li>corePoolSize : 表示线程池保有的最小线程数。</li>
-<li>maximumPoolSize : 表示线程池创建的最大线程数。线程不能无限制的增加，最多增加到maximumPoolSize个，闲暇时不能减少个数少于corePoolSize；</li>
-<li>keepAliveTime &amp; unit : 一个线程空闲了keepAliveTime &amp; unit 这么久没有执行任务，而且线程数大于corePoolSize 那么这个线程就会被回收</li>
-<li>workQueue : 工作队列</li>
-<li>threadFactory : 如何自定义如何创建线程</li>
-<li><p>handler : 通过这个参数可以自定义拒绝策略，如果线程池中的所有线程都在工作，并且工作队列已经满了，此时提交任务就会被决绝接受，ThreadPoolExecutor 四种执行策略</p>
+<li>
+<p>corePoolSize : 表示线程池保有的最小线程数。</p>
+</li>
+<li>
+<p>maximumPoolSize : 表示线程池创建的最大线程数。线程不能无限制的增加，最多增加到maximumPoolSize个，闲暇时不能减少个数少于corePoolSize；</p>
+</li>
+<li>
+<p>keepAliveTime &amp; unit : 一个线程空闲了keepAliveTime &amp; unit 这么久没有执行任务，而且线程数大于corePoolSize 那么这个线程就会被回收</p>
+</li>
+<li>
+<p>workQueue : 工作队列</p>
+</li>
+<li>
+<p>threadFactory : 如何自定义如何创建线程</p>
+</li>
+<li>
+<p>handler : 通过这个参数可以自定义拒绝策略，如果线程池中的所有线程都在工作，并且工作队列已经满了，此时提交任务就会被决绝接受，ThreadPoolExecutor 四种执行策略</p>
 <ul>
 <li>CallerRunsPolicy : 提交任务的线程自己去执行</li>
 <li>AbortPolicy : 默认决绝策略，会抛出RejectedExecutionException</li>
 <li>DiscardPolicy : 直接丢弃任务</li>
 <li>DiscardOldestPolicy : 丢弃最老的任务，把最早进入工作队列的任务丢弃    </li>
-</ul></li>
 </ul>
-
-<h3 id="toc_1">线程池使用注意</h3>
-
+</li>
+</ul>
+<h3><a id="%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>线程池使用注意</h3>
 <ol>
 <li>不建议使用 Executors 创建线程池 使用的工作队列是无界，容易导致OOM</li>
 <li>默认拒绝策略要慎重使用</li>
@@ -258,11 +265,15 @@ ThreadPoolExecutor(
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -277,8 +288,6 @@ ThreadPoolExecutor(
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

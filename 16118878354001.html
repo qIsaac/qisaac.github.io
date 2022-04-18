@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Redis 缓冲区</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/29 10:37 上午</span>
+          <span class="date">2021/01/29</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,107 +145,90 @@
 
       <div class="article-content">
       <p>缓冲区用一块内存空间来暂时存放命令，以免出现因为数据和命令处理速度慢于发送速度而导致数据的丢失和性能问题。Redis 客户端和服务端之间进行通信，暂存客户端命令或者服务端返回给客户端的数据结果，还有一个就是主从节点之间的数据同步，用来暂存主节点接受的写命令和数据</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">客户端输入和输出缓冲区</h2>
-
-<p>服务端给每个连接的客户端都设置了一个输入缓冲区和输出缓冲区，输入缓冲区先把客户端发过来的命令暂存，Redis 主线程再从输入缓冲区读取命令进行处理。当Redis 处理完命令后，会把结果写入到输出缓冲区，在通过输出缓冲区返回给客户端。<br/>
-<img src="media/16118878354001/16118890407812.jpg" alt=""/></p>
-
-<h3 id="toc_1">输入缓冲区溢出</h3>
-
-<h4 id="toc_2">导致缓冲区溢出的原因</h4>
-
+<h2><a id="%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BE%93%E5%85%A5%E5%92%8C%E8%BE%93%E5%87%BA%E7%BC%93%E5%86%B2%E5%8C%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>客户端输入和输出缓冲区</h2>
+<p>服务端给每个连接的客户端都设置了一个输入缓冲区和输出缓冲区，输入缓冲区先把客户端发过来的命令暂存，Redis 主线程再从输入缓冲区读取命令进行处理。当Redis 处理完命令后，会把结果写入到输出缓冲区，在通过输出缓冲区返回给客户端。<br />
+<img src="media/16118878354001/16118890407812.jpg" alt="" /></p>
+<h3><a id="%E8%BE%93%E5%85%A5%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>输入缓冲区溢出</h3>
+<h4><a id="%E5%AF%BC%E8%87%B4%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA%E7%9A%84%E5%8E%9F%E5%9B%A0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>导致缓冲区溢出的原因</h4>
 <p>由于输入缓冲区是暂存客户端发送命令所以，导致的原因可能是：</p>
-
 <ol>
 <li>写入bigkey， 例如：一次性写入过个百万级集合类型的数据</li>
 <li>服务端处理请求速度过慢，例如：Redis 主线程出现了间歇性阻塞 </li>
 </ol>
-
-<h4 id="toc_3">如何查看缓冲区使用</h4>
-
+<h4><a id="%E5%A6%82%E4%BD%95%E6%9F%A5%E7%9C%8B%E7%BC%93%E5%86%B2%E5%8C%BA%E4%BD%BF%E7%94%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如何查看缓冲区使用</h4>
 <p>查看输入缓冲区内存使用情况，可以使用CLIENT LIST 命令</p>
-
-<pre class="line-numbers"><code class="language-shell">CLIENT LIST
+<pre><code class="language-shell">CLIENT LIST
 id=5 addr=127.0.0.1:50487 fd=9 name= age=4 idle=0 flags=N db=0 sub=0 psub=0 multi=-1 qbuf=26 qbuf-free=32742 obl=0 oll=0 omem=0 events=r cmd=client
 </code></pre>
-
 <p>其中有两类信息需要关注</p>
-
 <ol>
 <li>与服务器连接的客户端信息，例如：127.0.0.1:50487</li>
 <li>输入缓冲区有关
 <ul>
 <li>cmd : 表示客户端最新执行的命令</li>
 <li>qbuf :  表示输入缓冲区已经使用的大小</li>
-<li>qbuf-free : 表示输入缓冲区尚未使用的大小 </li>
-</ul></li>
+<li>qbuf-free : 表示输入缓冲区尚未使用的大小</li>
+</ul>
+</li>
 </ol>
-
-<h4 id="toc_4">如何避免溢出</h4>
-
-<p>因为Redis服务器不止一个客户端，当多个客户端连接占用的内存总量，超过Redis的maxmemory 配置项时，就会触发淘汰，这回降低应用访问性能。如果多个客户端导致Redis 内存占用过多，导致内存溢出，Redis崩溃。<br/>
+<h4><a id="%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E6%BA%A2%E5%87%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如何避免溢出</h4>
+<p>因为Redis服务器不止一个客户端，当多个客户端连接占用的内存总量，超过Redis的maxmemory 配置项时，就会触发淘汰，这回降低应用访问性能。如果多个客户端导致Redis 内存占用过多，导致内存溢出，Redis崩溃。<br />
 因为Redis 没有提供参数调节客户端输入缓冲区大小，所以只能通过数据命令的发送和处理速度入手。</p>
-
-<h3 id="toc_5">输出缓冲区溢出</h3>
-
+<h3><a id="%E8%BE%93%E5%87%BA%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>输出缓冲区溢出</h3>
 <p>Redis的输出缓冲区包括两部分：</p>
-
 <ol>
 <li>大小为16KB 的固定缓冲空间，用来暂存OK响应和出错信息</li>
 <li>可以动态增加的缓冲，用来暂存大小可变的响应结果 </li>
 </ol>
-
 <p>导致输出缓冲区溢出的因素：</p>
-
 <ol>
 <li>服务端返回bigkey的大量结果</li>
 <li>执行了MONITOR 命令</li>
 <li>缓冲区大小设置的不合理</li>
 </ol>
-
 <p>由于bigkey 本身占用大量的内存空间，所以只看执行MONITOR 和 设置缓冲区大小</p>
-
 <ol>
-<li>执行MONITOR 命令会持续占用输出缓冲区，所以建议MONITOR 在生产环境少用，甚至不用</li>
-<li>设置输出缓冲区大小
+<li>
+<p>执行MONITOR 命令会持续占用输出缓冲区，所以建议MONITOR 在生产环境少用，甚至不用</p>
+</li>
+<li>
+<p>设置输出缓冲区大小</p>
 <ul>
 <li>设置缓冲区大小的上限</li>
 <li>设置输出缓冲区持续写入数据的数量上限阈值，和持续写入数据的时间的上限阈值   </li>
-</ul></li>
-<li><p>设置普通客户端</p>
-<pre class="line-numbers"><code class="language-shell">client-output-buffer-limit normal 0 0 0
-</code></pre></li>
-<li><p>设置订阅客户端</p>
-<pre class="line-numbers"><code class="language-shell">client-output-buffer-limit pubsub 8mb 2mb 60
-</code></pre></li>
-</ol>
-
-<h2 id="toc_6">主从集群中的缓冲区</h2>
-
-<h3 id="toc_7">复制缓冲区溢出</h3>
-
-<p><img src="media/16118878354001/16119028400546.jpg" alt=""/></p>
-
-<p>主从同步是全量复制时，从节点接受和加载RDB较慢，同时主节点接受了大量的写命令，写命令在复制缓冲区中就会越积越多，导致溢出。<br/>
-如何避免复制缓冲区溢出</p>
-
-<ol>
-<li>控制主节点保存的数量的大小，通常设置在 2~4GB</li>
-<li><p>使用client-output-buffer-limit 设置合理的复制缓冲区大小</p>
-<pre class="line-numbers"><code class="language-shell">config set client-output-buffer-limit slave 512mb 128mb 60
+</ul>
+</li>
+<li>
+<p>设置普通客户端</p>
+<pre><code class="language-shell">client-output-buffer-limit normal 0 0 0
 </code></pre>
-<p>slave 参数表明该配置项是针对复制缓冲区的。512mb 代表将缓冲区大小的上限设置为 512MB；128mb 和 60 代表的设置是，如果连续 60 秒内的写入量超过 128MB 的话，也会触发缓冲区溢出   </p></li>
+</li>
+<li>
+<p>设置订阅客户端</p>
+<pre><code class="language-shell">client-output-buffer-limit pubsub 8mb 2mb 60
+</code></pre>
+</li>
 </ol>
-
-<h3 id="toc_8">复制积压缓冲区的溢出问题</h3>
-
-<p><img src="media/16118878354001/16119037779060.jpg" alt=""/></p>
-
+<h2><a id="%E4%B8%BB%E4%BB%8E%E9%9B%86%E7%BE%A4%E4%B8%AD%E7%9A%84%E7%BC%93%E5%86%B2%E5%8C%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>主从集群中的缓冲区</h2>
+<h3><a id="%E5%A4%8D%E5%88%B6%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>复制缓冲区溢出</h3>
+<p><img src="media/16118878354001/16119028400546.jpg" alt="" /></p>
+<p>主从同步是全量复制时，从节点接受和加载RDB较慢，同时主节点接受了大量的写命令，写命令在复制缓冲区中就会越积越多，导致溢出。<br />
+如何避免复制缓冲区溢出</p>
+<ol>
+<li>
+<p>控制主节点保存的数量的大小，通常设置在 2~4GB</p>
+</li>
+<li>
+<p>使用client-output-buffer-limit 设置合理的复制缓冲区大小</p>
+<pre><code class="language-shell">config set client-output-buffer-limit slave 512mb 128mb 60
+</code></pre>
+<p>slave 参数表明该配置项是针对复制缓冲区的。512mb 代表将缓冲区大小的上限设置为 512MB；128mb 和 60 代表的设置是，如果连续 60 秒内的写入量超过 128MB 的话，也会触发缓冲区溢出</p>
+</li>
+</ol>
+<h3><a id="%E5%A4%8D%E5%88%B6%E7%A7%AF%E5%8E%8B%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E6%BA%A2%E5%87%BA%E9%97%AE%E9%A2%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>复制积压缓冲区的溢出问题</h3>
+<p><img src="media/16118878354001/16119037779060.jpg" alt="" /></p>
 <p>主从在增量复制时，主节点在把接受到的写命令同步给从节点，同时把这些写命令写入复制积压缓冲区。</p>
-
 <ol>
 <li>复制积压缓冲区是一个环形缓冲区</li>
 <li>调整复制积压缓冲区的大小</li>
@@ -323,11 +308,15 @@ id=5 addr=127.0.0.1:50487 fd=9 name= age=4 idle=0 flags=N db=0 sub=0 psub=0 mult
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -342,8 +331,6 @@ id=5 addr=127.0.0.1:50487 fd=9 name= age=4 idle=0 flags=N db=0 sub=0 psub=0 mult
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

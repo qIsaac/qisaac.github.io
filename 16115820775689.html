@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>如何自定义数据类型</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/25 21:41 下午</span>
+          <span class="date">2021/01/25</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,13 +145,9 @@
 
       <div class="article-content">
       <p>我们需要一个数据类型符合自己的查询但是Redis本身不支持，此时，我们之前学习的这些数据类型就无法满足需求了。那么，自定义的数据类型是一个很好的解决方法</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">Redis 的基本对象结构</h2>
-
+<h2><a id="redis%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%AF%B9%E8%B1%A1%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 的基本对象结构</h2>
 <p>RedisObject 内部包括 type、encoding、lru、refcount 四个元数据以及一个 *ptr 指针</p>
-
 <ul>
 <li>type : 表示值类型，涵盖基本 5 大类型</li>
 <li>encoding : 值的编码方式，表示实行基本类型的底层数据结构</li>
@@ -157,53 +155,38 @@
 <li>refconut : 记录对象的引用计数</li>
 <li>*ptr : 指向数据的指针，通过该指针指向不同的数据类型</li>
 </ul>
-
-<h2 id="toc_1">开发一个新数据类型</h2>
-
+<h2><a id="%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E6%96%B0%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>开发一个新数据类型</h2>
 <ol>
 <li>定义一个新数据类型底层结构、type、encoding 属性值</li>
 <li>实现新数据类型的创建，释放函数和基本操作命令</li>
 </ol>
-
-<p><img src="media/16115820775689/16115826764684.jpg" alt=""/></p>
-
-<h2 id="toc_2">定义一个新类型 NewTypeNode</h2>
-
-<h3 id="toc_3">定义新数据类型的底层结构</h3>
-
+<p><img src="media/16115820775689/16115826764684.jpg" alt="" /></p>
+<h2><a id="%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA%E6%96%B0%E7%B1%BB%E5%9E%8Bnewtypenode" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>定义一个新类型 NewTypeNode</h2>
+<h3><a id="%E5%AE%9A%E4%B9%89%E6%96%B0%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>定义新数据类型的底层结构</h3>
 <p>使用newtype.h 定义新类型结构，代码如下</p>
-
-<pre class="line-numbers"><code class="language-c">struct NewTypeObject {
+<pre><code class="language-C">struct NewTypeObject {
     struct NewTypeNode *head; 
     size_t len; 
 }NewTypeObject;
 </code></pre>
-
 <p>其中 NewTypeNode 结构就是自定义的新类型底层结构，包含一个Long类型的value，保存实际数据；一个 *next 指针，指向下一个 NewTypeNode 结构</p>
-
-<pre class="line-numbers"><code class="language-c">struct NewTypeNode {
+<pre><code class="language-C">struct NewTypeNode {
     long value;
     struct NewTypeNode *next;
 };
 </code></pre>
-
-<h3 id="toc_4">在RedisObject 的 type 属性中增加新类型的定义</h3>
-
+<h3><a id="%E5%9C%A8redisobject%E7%9A%84-type%E5%B1%9E%E6%80%A7%E4%B8%AD%E5%A2%9E%E5%8A%A0%E6%96%B0%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%AE%9A%E4%B9%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>在RedisObject 的 type 属性中增加新类型的定义</h3>
 <p>定义在Redis中的 server.h 文件中,定义一个 OBJ_NEWTYPE 的宏指代NewTypeObject</p>
-
-<pre class="line-numbers"><code class="language-c">#define OBJ_STRING 0    /* String object. */
+<pre><code class="language-C">#define OBJ_STRING 0    /* String object. */
 #define OBJ_LIST 1      /* List object. */
 #define OBJ_SET 2       /* Set object. */
 #define OBJ_ZSET 3      /* Sorted set object. */
 …
 #define OBJ_NEWTYPE 7
 </code></pre>
-
-<h3 id="toc_5">开发新类型的创建和释放函数</h3>
-
+<h3><a id="%E5%BC%80%E5%8F%91%E6%96%B0%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%88%9B%E5%BB%BA%E5%92%8C%E9%87%8A%E6%94%BE%E5%87%BD%E6%95%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>开发新类型的创建和释放函数</h3>
 <p>创建函数</p>
-
-<pre class="line-numbers"><code class="language-c">robj *createNewTypeObject(void){
+<pre><code class="language-c">robj *createNewTypeObject(void){
    // 初始化内存机构
    NewTypeObject *h = newtypeNew(); 
    // RedisObject 默认的创建函数
@@ -211,20 +194,16 @@
    return o;
 }
 </code></pre>
-
-<p>初始化内存结构，通过使用zmalloc做底层的结构分配，Redis 默认会为每个数据结构定义一个默认的单独文件 t_newtype.c </p>
-
-<pre class="line-numbers"><code class="language-c">NewTypeObject *newtypeNew(void){
+<p>初始化内存结构，通过使用zmalloc做底层的结构分配，Redis 默认会为每个数据结构定义一个默认的单独文件 t_newtype.c</p>
+<pre><code class="language-C">NewTypeObject *newtypeNew(void){
     NewTypeObject *n = zmalloc(sizeof(*n));
     n-&gt;head = NULL;
     n-&gt;len = 0;
     return n;
 }
 </code></pre>
-
 <p>createObject 是 Redis 本身提供的 RedisObject 创建函数，它的参数是数据类型的 type 和指向数据类型实现的指针*ptr</p>
-
-<pre class="line-numbers"><code class="language-c">
+<pre><code class="language-C">
 robj *createObject(int type, void *ptr) {
     robj *o = zmalloc(sizeof(*o));
     o-&gt;type = type;
@@ -233,32 +212,24 @@ robj *createObject(int type, void *ptr) {
     return o;
 }
 </code></pre>
-
 <p>释放函数，是创建函数的反过程，使用 zfree 释放内存空间</p>
-
-<h3 id="toc_6">开发新类型的命令操作</h3>
-
+<h3><a id="%E5%BC%80%E5%8F%91%E6%96%B0%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%91%BD%E4%BB%A4%E6%93%8D%E4%BD%9C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>开发新类型的命令操作</h3>
 <ul>
-<li>在 t_newtype.c 文件中增加命令操作的实现 </li>
+<li>在 t_newtype.c 文件中增加命令操作的实现</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-c">void ntinsertCommand(client *c){
+<pre><code class="language-c">void ntinsertCommand(client *c){
   //基于客户端传递的参数，实现在NewTypeObject链表头插入元素
 }
 </code></pre>
-
 <ul>
 <li>在 server.h 文件中，声明我们已经实现的命令，以便在 server.c 文件引用这个命令</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-c">void ntinsertCommand(client *c)
+<pre><code class="language-c">void ntinsertCommand(client *c)
 </code></pre>
-
 <ul>
 <li>在 server.c 文件中的 redisCommandTable 里面，把新增命令和实现函数关联起来</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-c">struct redisCommand redisCommandTable[] = { 
+<pre><code class="language-c">struct redisCommand redisCommandTable[] = { 
 ...
 {&quot;ntinsert&quot;,ntinsertCommand,2,&quot;m&quot;,...}
 }
@@ -338,11 +309,15 @@ robj *createObject(int type, void *ptr) {
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -357,8 +332,6 @@ robj *createObject(int type, void *ptr) {
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

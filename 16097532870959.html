@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Semaphore</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/04 17:41 下午</span>
+          <span class="date">2021/01/04</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,23 +145,17 @@
 
       <div class="article-content">
       <p>用来控制同时访问特定资源的线程数量，它通过协调线程，合理的使用公共资源</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">信号量模型</h2>
-
+<h2><a id="%E4%BF%A1%E5%8F%B7%E9%87%8F%E6%A8%A1%E5%9E%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>信号量模型</h2>
 <p>信号量模型：一个等待队列，一个计数器，三个方法</p>
-
-<p><img src="media/16097532870959/16097536691476.jpg" alt="" style="width:439px;"/></p>
-
+<p><img src="media/16097532870959/16097536691476.jpg" alt="" style="width:439px;" /></p>
 <ul>
 <li>init : 设置计数器的初始值</li>
 <li>down : 计数器的值减一，如果此时计数器的值小于0，则当前线程被阻塞，否则当前线程可以继续执行</li>
-<li>up : 计数器的值增一，如果此时计数器的值小于等于0，唤醒等待队列中的一个线程，并将线程删除<br/>
+<li>up : 计数器的值增一，如果此时计数器的值小于等于0，唤醒等待队列中的一个线程，并将线程删除<br />
  </li>
 </ul>
-
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 class Semaphore{
   // 计数器
   int count;
@@ -186,10 +182,8 @@ class Semaphore{
   }
 }
 </code></pre>
-
-<h2 id="toc_1">限流器 - 允许多个线程访问临界资源</h2>
-
-<pre class="line-numbers"><code class="language-java">
+<h2><a id="%E9%99%90%E6%B5%81%E5%99%A8%E5%85%81%E8%AE%B8%E5%A4%9A%E4%B8%AA%E7%BA%BF%E7%A8%8B%E8%AE%BF%E9%97%AE%E4%B8%B4%E7%95%8C%E8%B5%84%E6%BA%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>限流器 - 允许多个线程访问临界资源</h2>
+<pre><code class="language-java">
 class ObjPool&lt;T, R&gt; {
   final List&lt;T&gt; pool;
   // 用信号量实现限流器
@@ -299,11 +293,15 @@ pool.exec(t -&gt; {
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -318,8 +316,6 @@ pool.exec(t -&gt; {
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

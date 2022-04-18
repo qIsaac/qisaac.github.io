@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -129,7 +131,7 @@
                       
                       <div class="a-content-text">
                         
-                        	<p>基于链表的阻塞队列，其底层数据结构是链表；列表维护先入先出； 链表的大小在初始化时可以设置，默认是Integer的最大值； 可以使用Collection 和 Iterator两个接口所有的操作 <br/>
+                        	<p>基于链表的阻塞队列，其底层数据结构是链表；列表维护先入先出； 链表的大小在初始化时可以设置，默认是Integer的最大值； 可以使用Collection 和 Iterator两个接口所有的操作 </p>
 
                         
                       </div>
@@ -138,7 +140,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16103467981057.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/11 14:33 下午</span>
+                    <span class="date">2021/01/11</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8.html'>并发容器</a></span>
@@ -166,7 +168,6 @@
                         
                         	<p>JDK 提供一种线程安全的List，多线程环境下可以直接使用，通过锁 + 数组拷贝 + volatile 保证线程的安全，所有的操作都是线程安全的，每次数组操作都是拷贝一分出来，在新数组上进行操作，之后再赋值回去；迭代过程不会影响原来的数组</p>
 
-
                         
                       </div>
                   </div>
@@ -174,7 +175,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16103315438929.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/11 10:19 上午</span>
+                    <span class="date">2021/01/11</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8.html'>并发容器</a></span>
@@ -202,7 +203,6 @@
                         
                         	<p>CompletionService 的实现原理也是内部维护了一个阻塞队列，当任务执行结束就把任务的执行结果加入到阻塞队列中，不同的是 CompletionService 是把任务执行结果的 Future 对象加入到阻塞队列中</p>
 
-
                         
                       </div>
                   </div>
@@ -210,7 +210,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16100954943713.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/08 16:44 下午</span>
+                    <span class="date">2021/01/08</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -238,7 +238,6 @@
                         
                         	<p>异步化是并发实施的的基础吗，，利用多线程优化性能这个核心方案得以实施的基础，Java 在 1.8 版本提供了 CompletableFuture 来支持异步编程，CompletableFuture 有可能是你见过的最复杂的工具类</p>
 
-
                         
                       </div>
                   </div>
@@ -246,7 +245,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16100892494209.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/08 15:00 下午</span>
+                    <span class="date">2021/01/08</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -274,7 +273,6 @@
                         
                         	<p>目前线程池的使用模式是生产者-消费者模式，线程池的使用方是生产者，线程池本身是消费者</p>
 
-
                         
                       </div>
                   </div>
@@ -282,7 +280,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16100852986565.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/08 13:54 下午</span>
+                    <span class="date">2021/01/08</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -310,7 +308,6 @@
                         
                         	<p>对于简单的原子性问题，JDK包装了一系列的实现原子类，相对于互斥方案，无锁类性能高，解决了互斥问题，没有加锁和解锁的操作，以及对线程切换的性能损耗</p>
 
-
                         
                       </div>
                   </div>
@@ -318,7 +315,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16100710819489.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/08 09:58 上午</span>
+                    <span class="date">2021/01/08</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -346,7 +343,6 @@
                         
                         	<p>线程不安全的情况下使用Map,可以使用ConcurrentHashMap,内部封装了锁和各种数据结构来保证访问Map是线程安全的</p>
 
-
                         
                       </div>
                   </div>
@@ -354,7 +350,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16099873811948.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/07 10:43 上午</span>
+                    <span class="date">2021/01/07</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8.html'>并发容器</a></span>
@@ -388,7 +384,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16099156548354.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/06 14:47 下午</span>
+                    <span class="date">2021/01/06</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -416,7 +412,6 @@
                         
                         	<p>CountDownLatch允许一个或多个线程等待其他线程完成操作。CyclicBarrier它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续运行</p>
 
-
                         
                       </div>
                   </div>
@@ -424,7 +419,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16099032097782.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/06 11:20 上午</span>
+                    <span class="date">2021/01/06</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -452,7 +447,6 @@
                         
                         	<p>读多写少的场景中，还有没有更快的技术方案,Java 在 1.8 这个版本里，提供了一种叫 StampedLock 的锁，它的性能就比读写锁还要好。</p>
 
-
                         
                       </div>
                   </div>
@@ -460,7 +454,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16098398611234.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/05 17:44 下午</span>
+                    <span class="date">2021/01/05</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -488,7 +482,6 @@
                         
                         	<p>针对读多写少，JDK提供了ReadWriteLock，容易使用且性能较好；读写锁允许多个线程读共享变量，只允许一个线程写共享变量，如果一个线程写共享变量时，禁止读线程读共享变量</p>
 
-
                         
                       </div>
                   </div>
@@ -496,7 +489,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16098106819138.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/05 09:38 上午</span>
+                    <span class="date">2021/01/05</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -524,7 +517,6 @@
                         
                         	<p>用来控制同时访问特定资源的线程数量，它通过协调线程，合理的使用公共资源</p>
 
-
                         
                       </div>
                   </div>
@@ -532,7 +524,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16097532870959.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2021/01/04 17:41 下午</span>
+                    <span class="date">2021/01/04</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -560,7 +552,6 @@
                         
                         	<p>队列同步器AbstractQueuedSynchronizer，用来构建锁或其他同步组件的基础框架，使用int变量表示同步状态，通过内置的FIFO队列来完成资源获取线程的排队工作</p>
 
-
                         
                       </div>
                   </div>
@@ -568,7 +559,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16093849133175.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/12/31 11:21 上午</span>
+                    <span class="date">2020/12/31</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -596,7 +587,6 @@
                         
                         	<p>Java 通过Lock和Condition 两个接口实现管程，Lock解决互斥问题，Condition解决同步问题</p>
 
-
                         
                       </div>
                   </div>
@@ -604,7 +594,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16093806501511.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/12/31 10:10 上午</span>
+                    <span class="date">2020/12/31</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
@@ -632,7 +622,6 @@
                         
                         	<p>Java领域实现并发的主要手段就是多线程，而线程是有生命周期的，要学好他需要搞懂生命周期中各个节点的的转态转化机制。同时针对多线程如何配置合适的线程数，以及具体的使用场景</p>
 
-
                         
                       </div>
                   </div>
@@ -640,7 +629,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16092911429731.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/12/30 09:19 上午</span>
+                    <span class="date">2020/12/30</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%9F%BA%E7%A1%80.html'>并发基础</a></span>
@@ -668,7 +657,6 @@
                         
                         	<p>管程就是一把解决并发问题的万能钥匙</p>
 
-
                         
                       </div>
                   </div>
@@ -676,7 +664,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16092384945381.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/12/29 18:41 下午</span>
+                    <span class="date">2020/12/29</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%9F%BA%E7%A1%80.html'>并发基础</a></span>
@@ -704,7 +692,6 @@
                         
                         	<p>并发编程的问题总结 -- 安全性、活跃性和性能</p>
 
-
                         
                       </div>
                   </div>
@@ -712,7 +699,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16092367109872.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/12/29 18:11 下午</span>
+                    <span class="date">2020/12/29</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%9F%BA%E7%A1%80.html'>并发基础</a></span>
@@ -740,7 +727,6 @@
                         
                         	<p>互斥锁 -- 解决并发的原子性问题</p>
 
-
                         
                       </div>
                   </div>
@@ -748,7 +734,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16092333136558.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/12/29 17:15 下午</span>
+                    <span class="date">2020/12/29</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%9F%BA%E7%A1%80.html'>并发基础</a></span>
@@ -776,7 +762,6 @@
                         
                         	<p>解决Java并发编程中的有关可见性和有序性问题 --- Java 内存模型</p>
 
-
                         
                       </div>
                   </div>
@@ -784,7 +769,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16092257882619.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/12/29 15:09 下午</span>
+                    <span class="date">2020/12/29</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%9F%BA%E7%A1%80.html'>并发基础</a></span>
@@ -810,7 +795,7 @@
                       
                       <div class="a-content-text">
                         
-                        	<p>并发领域核心问题： 分工、同步、互斥，前两者强调性能，后者强调执行的正确性<br/>
+                        	<p>并发领域核心问题： 分工、同步、互斥，前两者强调性能，后者强调执行的正确性</p>
 
                         
                       </div>
@@ -819,7 +804,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16091231713116.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/12/28 10:39 上午</span>
+                    <span class="date">2020/12/28</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%9F%BA%E7%A1%80.html'>并发基础</a></span>
@@ -847,7 +832,6 @@
                         
                         	<p>并发的核心矛盾便是CPU、内存、I/O之间的速度差异。</p>
 
-
                         
                       </div>
                   </div>
@@ -855,7 +839,7 @@
                 <div class="read-more clearfix">
                   <div class="more-left left">
                    <a href="16091230646230.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/12/28 10:37 上午</span>
+                    <span class="date">2020/12/28</span>
                     <span>posted in&nbsp;</span> 
           				  
           					    <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%9F%BA%E7%A1%80.html'>并发基础</a></span>
@@ -927,11 +911,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -946,8 +934,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

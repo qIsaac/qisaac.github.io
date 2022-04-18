@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>分片集群</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/20 09:53 上午</span>
+          <span class="date">2021/01/20</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -142,52 +144,35 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <p>启动多个Redis实例组成一个集群，按照一定的规则，把收到的数据划分成多份。每一份用一个实例保存<br/>
-<img src="media/16111075871272/16111078962978.jpg" alt=""/></p>
-
+      <p>启动多个Redis实例组成一个集群，按照一定的规则，把收到的数据划分成多份。每一份用一个实例保存<br />
+<img src="media/16111075871272/16111078962978.jpg" alt="" /></p>
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">Redis 扩展</h2>
-
+<h2><a id="redis%E6%89%A9%E5%B1%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 扩展</h2>
 <ol>
 <li>纵向扩展：升级单个Redis实例的资源配置</li>
 <li>横向扩展：增加当前Redis实例的个数  </li>
 </ol>
-
-<h3 id="toc_1">扩展对比 <img src="media/16111075871272/16111081719210.jpg" alt=""/></h3>
-
-<p>纵向扩展：实施方便；但是如果数据增加，会对内存需求提升，主线程fork子线程时会出现阻塞，同时受硬件和成本的约束<br/>
+<h3><a id="%E6%89%A9%E5%B1%95%E5%AF%B9%E6%AF%94%E2%80%A8media1611107587127216111081719210-jpg" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>扩展对比 <img src="media/16111075871272/16111081719210.jpg" alt="" /></h3>
+<p>纵向扩展：实施方便；但是如果数据增加，会对内存需求提升，主线程fork子线程时会出现阻塞，同时受硬件和成本的约束<br />
 横向扩展：不用担心单个实例的成本；但是需要解决数据分片后实例如何分布，客户端如何确定访问哪个实例   </p>
-
-<h2 id="toc_2">数据切片和实例对应</h2>
-
+<h2><a id="%E6%95%B0%E6%8D%AE%E5%88%87%E7%89%87%E5%92%8C%E5%AE%9E%E4%BE%8B%E5%AF%B9%E5%BA%94" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>数据切片和实例对应</h2>
 <p>3.0 开始官方提供Redis Cluster方案实现切片集群，Redis Cluster采用哈希槽处理数据和实例之间的关系，在 Redis Cluster 方案中，一个切片集群共有 16384 个哈希槽，这些哈希槽类似于数据分区，每个键值对都会根据它的 key，被映射到一个哈希槽中</p>
-
 <ol>
 <li>根据键值对的 key，按照CRC16 算法计算一个 16 bit 的值；</li>
 <li>再用这个 16bit 值对 16384 取模，得到 0~16383 范围内的模数，每个模数代表一个相应编号的哈希槽</li>
 </ol>
-
-<p><img src="media/16111075871272/16111093515990.jpg" alt=""/></p>
-
-<h3 id="toc_3">手动分配哈希槽</h3>
-
-<pre class="line-numbers"><code class="language-shell">redis-cli -h 172.16.19.3 –p 6379 cluster addslots 0,1
+<p><img src="media/16111075871272/16111093515990.jpg" alt="" /></p>
+<h3><a id="%E6%89%8B%E5%8A%A8%E5%88%86%E9%85%8D%E5%93%88%E5%B8%8C%E6%A7%BD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>手动分配哈希槽</h3>
+<pre><code class="language-shell">redis-cli -h 172.16.19.3 –p 6379 cluster addslots 0,1
 redis-cli -h 172.16.19.4 –p 6379 cluster addslots 2,3
 redis-cli -h 172.16.19.5 –p 6379 cluster addslots 4
 </code></pre>
-
 <p>在手动分配哈希槽时，需要把 16384 个槽都分配完，否则 Redis 集群无法正常工作。</p>
-
-<h2 id="toc_4">客户端定位实例</h2>
-
+<h2><a id="%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%9A%E4%BD%8D%E5%AE%9E%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>客户端定位实例</h2>
 <p>Redis 实例会把自己的哈希槽信息发送给和它相连的其他实例，完成哈希槽配置信息的扩散，客户端收到信息后会把信息缓存在本地，如果实例个数变化或者需要负载均衡，则通过重定向寻找</p>
-
-<p><img src="media/16111075871272/16111100039787.jpg" alt=""/></p>
-
+<p><img src="media/16111075871272/16111100039787.jpg" alt="" /></p>
 <p>如果存在部分数据迁移的问题客户端会收到ASK的error信息，ASK表明数据在迁移，把客户端请求的最新实例数据返回给客户端，ASK 命令不会更新客户端本地缓存</p>
-
-<p><img src="media/16111075871272/16111104257656.jpg" alt=""/></p>
+<p><img src="media/16111075871272/16111104257656.jpg" alt="" /></p>
 
 
     
@@ -263,11 +248,15 @@ redis-cli -h 172.16.19.5 –p 6379 cluster addslots 4
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -282,8 +271,6 @@ redis-cli -h 172.16.19.5 –p 6379 cluster addslots 4
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

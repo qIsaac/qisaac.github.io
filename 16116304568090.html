@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>MongoDB</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/26 11:07 上午</span>
+          <span class="date">2021/01/26</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,18 +145,12 @@
 
       <div class="article-content">
       <span id="more"></span><!-- more -->
-
-<h1 id="toc_0">MongoDB 服务启动</h1>
-
-<h2 id="toc_1">新下载的数据库</h2>
-
-<h3 id="toc_2">1. 配置ymal</h3>
-
+<h1><a id="mongodb%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>MongoDB 服务启动</h1>
+<h2><a id="%E6%96%B0%E4%B8%8B%E8%BD%BD%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>新下载的数据库</h2>
+<h3><a id="1%E9%85%8D%E7%BD%AE-ymal" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. 配置ymal</h3>
 <p>文件格式<strong>config{端口号}.ymal</strong> ，配置几个副本集写几个文件，注意<em>端口号</em></p>
-
 <p>内容如下</p>
-
-<pre class="line-numbers"><code class="language-yml">systemLog:
+<pre><code class="language-yml">systemLog:
   destination: file
   path: &quot;./logs/mongodb.log&quot;
   logAppend: true
@@ -175,13 +171,10 @@ setParameter:
   maxTransactionLockRequestTimeoutMillis: 3000
 
 </code></pre>
-
-<h3 id="toc_3">2. 启动服务 --start.bat</h3>
-
-<p>执行 start.bat 脚本<br/>
- 添加几个复制集 添加几个 ymal</p>
-
-<pre class="line-numbers"><code class="language-bat">@echo off
+<h3><a id="2%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1-start-bat" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. 启动服务 --start.bat</h3>
+<p>执行 start.bat 脚本<br />
+添加几个复制集 添加几个 ymal</p>
+<pre><code class="language-bat">@echo off
 md data\db
 md data\db1
 md data\db2
@@ -192,25 +185,17 @@ path=%path%;.\bin\;
 @start mongod.exe --config config28019.yaml
 pause
 </code></pre>
-
-<h3 id="toc_4">3. 启动复制集 -- replset.bat</h3>
-
+<h3><a id="3%E5%90%AF%E5%8A%A8%E5%A4%8D%E5%88%B6%E9%9B%86-replset-bat" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. 启动复制集 -- replset.bat</h3>
 <p>执行replset.bat</p>
-
-<p>replset.js<br/>
+<p>replset.js<br />
 注意 <em>host  必须是对外开发的 ip</em></p>
-
-<pre class="line-numbers"><code class="language-javascript">rs.initiate({ _id: &quot;rs0&quot;,members: [{_id: 0,host: &quot;192.168.3.183:28017&quot;},{ _id: 1,host: &quot;192.168.3.183:28018&quot;},{ _id: 2,host: &quot;192.168.3.183:28019&quot;}]})
+<pre><code class="language-js">rs.initiate({ _id: &quot;rs0&quot;,members: [{_id: 0,host: &quot;192.168.3.183:28017&quot;},{ _id: 1,host: &quot;192.168.3.183:28018&quot;},{ _id: 2,host: &quot;192.168.3.183:28019&quot;}]})
 </code></pre>
-
-<h3 id="toc_5">4. 创建数据库和用户名 -- createdb.bat</h3>
-
+<h3><a id="4%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8C%E7%94%A8%E6%88%B7%E5%90%8D-createdb-bat" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. 创建数据库和用户名 -- createdb.bat</h3>
 <p>执行 createdb.bat</p>
-
-<p>createdb.js<br/>
+<p>createdb.js<br />
 url 为复制集 url</p>
-
-<pre class="line-numbers"><code class="language-javascript">var url = &quot;mongodb://192.168.3.183:28017,192.168.3.183:28018,192.168.3.183:28019/?replicaSet=rs0&quot;;
+<pre><code class="language-js">var url = &quot;mongodb://192.168.3.183:28017,192.168.3.183:28018,192.168.3.183:28019/?replicaSet=rs0&quot;;
 var db = connect(url);
 db.getSiblingDB(&quot;cobot&quot;).runCommand( {
        createUser: &quot;cobot&quot;,
@@ -220,62 +205,48 @@ db.getSiblingDB(&quot;cobot&quot;).runCommand( {
               ]
 });
 </code></pre>
-
-<h3 id="toc_6">5. 从旧的复制集导出数据并导入新复制集  --backup.bat</h3>
-
+<h3><a id="5%E4%BB%8E%E6%97%A7%E7%9A%84%E5%A4%8D%E5%88%B6%E9%9B%86%E5%AF%BC%E5%87%BA%E6%95%B0%E6%8D%AE%E5%B9%B6%E5%AF%BC%E5%85%A5%E6%96%B0%E5%A4%8D%E5%88%B6%E9%9B%86-backup-bat" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>5. 从旧的复制集导出数据并导入新复制集  --backup.bat</h3>
 <ul>
 <li>先执行backup.bat</li>
 </ul>
-
 <p>--host 旧复制集的 ip --port 旧复制集的端口 --db 要导出的数据库  --out 导出文件位置</p>
-
-<pre class="line-numbers"><code class="language-bat">@echo off
+<pre><code class="language-bat">@echo off
 path=%path%;.\bin\;
 mongodump.exe --host 192.168.1.193  --port 28017 --db cobot --out ./data\backup
 pause
 </code></pre>
-
 <ul>
 <li>执行完成后执行restore.bat</li>
 </ul>
-
 <p>--host 本地服务 ip:port  --db cobot --dir 上一步导出文件位置</p>
-
-<pre class="line-numbers"><code class="language-bat">@echo off
+<pre><code class="language-bat">@echo off
 path=%path%;.\bin\;
 mongorestore.exe --host 127.0.0.1:28017 --db cobot --dir ./data\backup\cobot
 pause
 </code></pre>
-
-<h3 id="toc_7">6. 删除旧数据</h3>
-
-<p>执行removeCol.bat<br/>
+<h3><a id="6%E5%88%A0%E9%99%A4%E6%97%A7%E6%95%B0%E6%8D%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. 删除旧数据</h3>
+<p>执行removeCol.bat<br />
 remove.js</p>
-
-<pre class="line-numbers"><code class="language-javascript">var url = &quot;mongodb://cobot:serc1727@192.168.3.183:28017,192.168.3.183:28018,192.168.3.183:28019/cobot?replicaSet=rs0&quot;;
+<pre><code class="language-javascript">var url = &quot;mongodb://cobot:serc1727@192.168.3.183:28017,192.168.3.183:28018,192.168.3.183:28019/cobot?replicaSet=rs0&quot;;
 var db = connect(url);
 var collections = db.getCollectionNames();
 for(var i = 0; i&lt; collections.length; i++){  
-    var   collName = collections[i];
-    var  reatain = [&quot;systemLogMongo&quot;,&quot;excludeFile&quot;,&quot;fileSuffix&quot;,&quot;userMongo&quot;,&quot;userRoleMongo&quot;,&quot;menuMongo&quot;,&quot;codeRule&quot;,&quot;codeRuleClass&quot;,&quot;codeRulePackage&quot;,&quot;commonConfig&quot;,&quot;commonDict&quot;,&quot;compileConfig&quot;,&quot;compilerConfig&quot;,&quot;configFather&quot;,&quot;configLibrary&quot;,&quot;deptMongo&quot;,&quot;detector&quot;,&quot;expireData&quot;,&quot;globalLogEntity&quot;,&quot;languageConfigC&quot;,&quot;languageConfigEntity&quot;,&quot;loginLogMongo&quot;,&quot;roleMenuMongo&quot;,&quot;roleMongo&quot;,&quot;roleMongo&quot;,&quot;userRoleMong&quot;];
-    var col = db.getCollection(collName);
-    var index = reatain.indexOf(collName);
-    if (index &lt;0 ){
-        print(&#39; remove collectiion start: &#39; + collName);
-         var col = db.getCollection(collName);
-         col.remove({});
-         print(&#39;remove collectiion end : &#39; + collName);
-    }
+	var   collName = collections[i];
+	var  reatain = [&quot;systemLogMongo&quot;,&quot;excludeFile&quot;,&quot;fileSuffix&quot;,&quot;userMongo&quot;,&quot;userRoleMongo&quot;,&quot;menuMongo&quot;,&quot;codeRule&quot;,&quot;codeRuleClass&quot;,&quot;codeRulePackage&quot;,&quot;commonConfig&quot;,&quot;commonDict&quot;,&quot;compileConfig&quot;,&quot;compilerConfig&quot;,&quot;configFather&quot;,&quot;configLibrary&quot;,&quot;deptMongo&quot;,&quot;detector&quot;,&quot;expireData&quot;,&quot;globalLogEntity&quot;,&quot;languageConfigC&quot;,&quot;languageConfigEntity&quot;,&quot;loginLogMongo&quot;,&quot;roleMenuMongo&quot;,&quot;roleMongo&quot;,&quot;roleMongo&quot;,&quot;userRoleMong&quot;];
+ 	var col = db.getCollection(collName);
+	var index = reatain.indexOf(collName);
+	if (index &lt;0 ){
+		print(' remove collectiion start: ' + collName);
+		 var col = db.getCollection(collName);
+		 col.remove({});
+		 print('remove collectiion end : ' + collName);
+	}
 }
 </code></pre>
-
-<h2 id="toc_8">如果是旧的数据库需要导出必要数据</h2>
-
-<h3 id="toc_9">重复 1 、 2 、3 步骤</h3>
-
-<h3 id="toc_10">执行export.bat</h3>
-
-<pre class="line-numbers"><code class="language-bat">@echo off
+<h2><a id="%E5%A6%82%E6%9E%9C%E6%98%AF%E6%97%A7%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E9%9C%80%E8%A6%81%E5%AF%BC%E5%87%BA%E5%BF%85%E8%A6%81%E6%95%B0%E6%8D%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如果是旧的数据库需要导出必要数据</h2>
+<h3><a id="%E9%87%8D%E5%A4%8D1%E3%80%81-2%E3%80%81-3%E6%AD%A5%E9%AA%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>重复 1 、 2 、3 步骤</h3>
+<h3><a id="%E6%89%A7%E8%A1%8Cexport-bat" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>执行export.bat</h3>
+<pre><code class="language-bat">@echo off
 path=%path%;.\bin\;
 echo remove rule start
 mongo.exe --nodb removeRule.js
@@ -409,11 +380,15 @@ pause
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -428,8 +403,6 @@ pause
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

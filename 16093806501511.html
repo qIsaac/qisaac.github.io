@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Lock & Condition</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/12/31 10:10 上午</span>
+          <span class="date">2020/12/31</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,22 +145,16 @@
 
       <div class="article-content">
       <p>Java 通过Lock和Condition 两个接口实现管程，Lock解决互斥问题，Condition解决同步问题</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">再造管程</h2>
-
+<h2><a id="%E5%86%8D%E9%80%A0%E7%AE%A1%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>再造管程</h2>
 <p>解决死锁时，针对不可抢占条件，synchronized没有办法解决</p>
-
-<h2 id="toc_1">解决不可抢占方案</h2>
-
+<h2><a id="%E8%A7%A3%E5%86%B3%E4%B8%8D%E5%8F%AF%E6%8A%A2%E5%8D%A0%E6%96%B9%E6%A1%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>解决不可抢占方案</h2>
 <ol>
 <li>能够响应中断：给阻塞的线程发送中断信号后，阻塞线程能够被唤醒</li>
 <li>支持超时：如果一个线程在一段时间之内没有获取锁，不是进入阻塞状态，而是返回一个错误</li>
 <li>非阻塞获取锁：如果一个线程尝试获取锁失败，并不进入阻塞状态，而是直接返回</li>
 </ol>
-
-<pre class="line-numbers"><code class="language-java">// 支持中断的API
+<pre><code class="language-java">// 支持中断的API
 void lockInterruptibly() 
   throws InterruptedException;
 // 支持超时的API
@@ -167,37 +163,27 @@ boolean tryLock(long time, TimeUnit unit)
 // 支持非阻塞获取锁的API
 boolean tryLock(); 
 </code></pre>
-
-<h2 id="toc_2">锁实现的原理</h2>
-
+<h2><a id="%E9%94%81%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%8E%9F%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>锁实现的原理</h2>
 <p>Java中ReentrantLock,内部持有volatile变量state，获取锁和解锁都会读取state的值</p>
-
 <ol>
 <li>顺序性规则：对于线程T1， value+=1 Happens-Before释放锁的unlock</li>
 <li>volatile规则：由于state = 1 会先读取state，所以T1的unlock 操作Happens-Before T2的lock操作</li>
 <li>传递性规则：线程T1的 value += 1 Happens-Before T2的lock</li>
 </ol>
-
-<h2 id="toc_3">可重入锁、公平锁和非公平锁</h2>
-
+<h2><a id="%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81%E3%80%81%E5%85%AC%E5%B9%B3%E9%94%81%E5%92%8C%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>可重入锁、公平锁和非公平锁</h2>
 <ol>
 <li>可重入锁：同一线程可以重复获取同个锁</li>
 <li>公平锁和非公平锁：提供保证谁等待的时间长唤醒谁的就是公平的</li>
 </ol>
-
-<h2 id="toc_4">用锁最佳实践</h2>
-
+<h2><a id="%E7%94%A8%E9%94%81%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>用锁最佳实践</h2>
 <ol>
 <li>永远只在更新对象的成员变量时加锁</li>
 <li>永远只在访问可变的成员变量时加锁</li>
 <li>永远不在调用其他对象的方法时加锁 </li>
 </ol>
-
-<h2 id="toc_5">Condition</h2>
-
-<h3 id="toc_6">实现阻塞队列</h3>
-
-<pre class="line-numbers"><code class="language-java">public class BlockedQueue&lt;T&gt;{
+<h2><a id="condition" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Condition</h2>
+<h3><a id="%E5%AE%9E%E7%8E%B0%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>实现阻塞队列</h3>
+<pre><code class="language-java">public class BlockedQueue&lt;T&gt;{
   final Lock lock =
     new ReentrantLock();
   // 条件变量：队列不满  
@@ -239,9 +225,7 @@ boolean tryLock();
   }
 }
 </code></pre>
-
-<h2 id="toc_7">异步方法和异步调用</h2>
-
+<h2><a id="%E5%BC%82%E6%AD%A5%E6%96%B9%E6%B3%95%E5%92%8C%E5%BC%82%E6%AD%A5%E8%B0%83%E7%94%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>异步方法和异步调用</h2>
 <ol>
 <li>异步调用：调用发创建一个子线程，在子线程中执行方法调用</li>
 <li>异步方法：方法实现时，创建一个新线程执行主要逻辑，主线程返回</li>
@@ -321,11 +305,15 @@ boolean tryLock();
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -340,8 +328,6 @@ boolean tryLock();
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

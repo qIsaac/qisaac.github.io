@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>秒杀系统架构原则</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/04/01 10:17 上午</span>
+          <span class="date">2021/04/01</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,58 +145,39 @@
 
       <div class="article-content">
       <p>秒杀本质是一个满足大并发、高性能、高可用的分布式系统</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">架构原则：4 要 1 不要</h2>
-
-<h3 id="toc_1">数据量尽量少</h3>
-
+<h2><a id="%E6%9E%B6%E6%9E%84%E5%8E%9F%E5%88%99%EF%BC%9A4%E8%A6%81-1%E4%B8%8D%E8%A6%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>架构原则：4 要 1 不要</h2>
+<h3><a id="%E6%95%B0%E6%8D%AE%E9%87%8F%E5%B0%BD%E9%87%8F%E5%B0%91" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>数据量尽量少</h3>
 <ol>
 <li>用户请求的数据能少就少：包括用户上传的数据以及请求返回的数据</li>
 <li>系统依赖的数据能少就少：包括系统完成业务逻辑需要读取和保存的数据 </li>
 </ol>
-
-<h3 id="toc_2">请求数量少</h3>
-
+<h3><a id="%E8%AF%B7%E6%B1%82%E6%95%B0%E9%87%8F%E5%B0%91" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>请求数量少</h3>
 <p>减少页面返回后，浏览器渲染的页面包含的额外请求，包括CSS、JS、Ajax请求等</p>
-
-<h3 id="toc_3">路径要尽量短</h3>
-
-<p>用户从发出请求到返回响应，中间经过的节点数，缩短请求路径，不仅可以增加可用性，同时提高性能，并减少延时<br/>
+<h3><a id="%E8%B7%AF%E5%BE%84%E8%A6%81%E5%B0%BD%E9%87%8F%E7%9F%AD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>路径要尽量短</h3>
+<p>用户从发出请求到返回响应，中间经过的节点数，缩短请求路径，不仅可以增加可用性，同时提高性能，并减少延时<br />
 其中一个途径就是多个相互强依赖的应用合并部署在一起，把远程过程调用（RPC）变成 JVM 内部之间的方法调用</p>
-
-<h3 id="toc_4">依赖尽量少</h3>
-
-<p>所谓依赖，指的是要完成一次用户请求必须依赖的系统或者服务，这里的依赖指的是强依赖<br/>
+<h3><a id="%E4%BE%9D%E8%B5%96%E5%B0%BD%E9%87%8F%E5%B0%91" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>依赖尽量少</h3>
+<p>所谓依赖，指的是要完成一次用户请求必须依赖的系统或者服务，这里的依赖指的是强依赖<br />
 可以对服务分级，必要的情况下对次要服务进行降级</p>
-
-<h3 id="toc_5">消除单点</h3>
-
+<h3><a id="%E6%B6%88%E9%99%A4%E5%8D%95%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>消除单点</h3>
 <p>单点意味着没有备份，风险不可控，解决的关键点是避免将服务的状态和机器绑定，即把服务无状态化，这样服务就可以在机器中随意移动；如把和机器相关的配置动态化，这些参数可以通过配置中心来动态推送；冗余多个备份的方式。</p>
-
-<h2 id="toc_6">架构案例</h2>
-
-<h3 id="toc_7">初始版本</h3>
-
+<h2><a id="%E6%9E%B6%E6%9E%84%E6%A1%88%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>架构案例</h2>
+<h3><a id="%E5%88%9D%E5%A7%8B%E7%89%88%E6%9C%AC" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>初始版本</h3>
 <ol>
 <li>把秒杀系统独立出来单独的一个系统，</li>
 <li>系统部署独立做一个集群</li>
 <li>将热点数据单独放在一个缓存中，增加读效率</li>
 <li>增加秒杀答题，防止秒杀器抢单</li>
 </ol>
-
-<p><img src="media/16172434231303/16172461857957.jpg" alt=""/></p>
-
-<h3 id="toc_8">改进版本</h3>
-
+<p><img src="media/16172434231303/16172461857957.jpg" alt="" /></p>
+<h3><a id="%E6%94%B9%E8%BF%9B%E7%89%88%E6%9C%AC" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>改进版本</h3>
 <ol>
 <li>对页面进行动静分离，用户秒杀不需要刷新整个页面，只需要点击抢的按钮</li>
 <li>服务端对秒杀的产品进行本地缓存，不需要再调用依赖系统的后台服务获取数据，甚至不需要去公共的缓存集群中查询数据</li>
 <li>增加系统限流保护，防止最坏情况发生</li>
 </ol>
-
-<p><img src="media/16172434231303/16172464769768.jpg" alt=""/></p>
+<p><img src="media/16172434231303/16172464769768.jpg" alt="" /></p>
 
 
     
@@ -270,11 +253,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -289,8 +276,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

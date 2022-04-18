@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Redis 延迟响应</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/28 14:57 下午</span>
+          <span class="date">2021/01/28</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,102 +145,75 @@
 
       <div class="article-content">
       <p>Redis 延迟响应会影响其他服务，带来一系列的连锁反应。因此，从问题认定，系统排查和应对方案这三个方面可分析延迟响应的问题</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">如何判断 Redis 变慢</h2>
-
+<h2><a id="%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%ADredis%E5%8F%98%E6%85%A2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如何判断 Redis 变慢</h2>
 <ol>
 <li>查看Redis 响应延迟</li>
-<li><p>基于当前环境下的Redis基线性能，如果Redis 运行时延是其基线性能的2倍</p>
+<li>基于当前环境下的Redis基线性能，如果Redis 运行时延是其基线性能的2倍
 <ol>
-<li><p>2.8.7 版本开始 提供了 -intrinsic-latency 选项，可以用来检测和统计测试期间内的最大延迟</p>
-<pre class="line-numbers"><code class="language-shell">./redis-cli --intrinsic-latency 120
-Max latency so far: 17 microseconds.<br/>
-Max latency so far: 44 microseconds.<br/>
-Max latency so far: 94 microseconds.<br/>
-Max latency so far: 110 microseconds.<br/>
-Max latency so far: 119 microseconds.<br/>
-36481658 total runs (avg latency: 3.2893 microseconds / 3289.32 nanoseconds per run).<br/>
+<li>
+<p>2.8.7 版本开始 提供了 -intrinsic-latency 选项，可以用来检测和统计测试期间内的最大延迟</p>
+<pre><code class="language-shell">./redis-cli --intrinsic-latency 120
+Max latency so far: 17 microseconds.
+Max latency so far: 44 microseconds.
+Max latency so far: 94 microseconds.
+Max latency so far: 110 microseconds.
+Max latency so far: 119 microseconds.
+
+36481658 total runs (avg latency: 3.2893 microseconds / 3289.32 nanoseconds per run).
 Worst run took 36x longer than the average latency.
 </code></pre>
-<p>  </p></li>
-</ol></li>
+<p>  </p>
+</li>
 </ol>
-
-<h2 id="toc_1">Redis 性能诊断</h2>
-
+</li>
+</ol>
+<h2><a id="redis%E6%80%A7%E8%83%BD%E8%AF%8A%E6%96%AD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 性能诊断</h2>
 <p>Redis 自身的操作特性、文件系统和操作系统</p>
-
-<p><img src="media/16118170429623/16118182804325.jpg" alt=""/></p>
-
-<h3 id="toc_2">自身操作特性</h3>
-
-<p>Redis 提供的键值对命令操作对延迟的影响，慢查询命令、过期key值 </p>
-
-<h4 id="toc_3">慢查询命令</h4>
-
+<p><img src="media/16118170429623/16118182804325.jpg" alt="" /></p>
+<h3><a id="%E8%87%AA%E8%BA%AB%E6%93%8D%E4%BD%9C%E7%89%B9%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>自身操作特性</h3>
+<p>Redis 提供的键值对命令操作对延迟的影响，慢查询命令、过期key值</p>
+<h4><a id="%E6%85%A2%E6%9F%A5%E8%AF%A2%E5%91%BD%E4%BB%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>慢查询命令</h4>
 <p>慢查询命令就是在Redis中执行速度慢的命令，导致Redis 延迟增加，可以通过Redis 日志，或者是latency monitor 工具查询变慢请求</p>
-
 <ol>
 <li>用其他高效命令代替：比如不使用 SMEMBERS ，使用SSCAN 多次迭代返回</li>
 <li>当需要排序、交集、并集操作时，可以在客户端完成。</li>
 <li>使用keys 需要遍历键值对，高延时，所以不在生产环境使用</li>
 </ol>
-
-<h4 id="toc_4">过期key值</h4>
-
+<h4><a id="%E8%BF%87%E6%9C%9Fkey%E5%80%BC" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>过期key值</h4>
 <p>过期 key 的自动删除机制，是Redis 用来回收内存空间的常用机制，但是本身会引起Redis 操作阻塞导致变慢。</p>
-
-<p>Redis 过期默认情况下没100毫秒会删除一些过期key，删除算法如下： </p>
-
+<p>Redis 过期默认情况下没100毫秒会删除一些过期key，删除算法如下：</p>
 <ol>
 <li>采用ACTIVE_EXPIRE_CYCLE_LOOKUPS_PER_LOOP 个数的key, 并将其中过期的key 全部删除</li>
 <li>超过25%的key过期了，则重复删除过程，知道过期key 比例下降到25%以下</li>
 </ol>
-
 <p>如果触发第二条则会一直执行删除，删除操作是阻塞的，而导致第二条触发的重要原因就是频繁使用带有相同时间参数的EXPIREAT 命令设置过期key</p>
-
 <p>查找是否使用了相同的时间戳，以及实际业务对过期时间的设置，可以通过在过期时间上加一定大小范围的随机数，这样保证邻近时间范围数据被删除，但是不至于同时过期</p>
-
-<h3 id="toc_5">文件系统 ： AOF 模式</h3>
-
+<h3><a id="%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%9Aaof%E6%A8%A1%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>文件系统 ： AOF 模式</h3>
 <p>AOF 的三种日志写会策略 no 、 everysec 、always,依赖文件系统的两个write 和 fsync 系统调用完成. write 把日志写回到内核缓存区就可以返回了，fsync  需要日志写回磁盘才能返回时间较长。</p>
-
-<p><img src="media/16118170429623/16118204590205.jpg" alt=""/></p>
-
+<p><img src="media/16118170429623/16118204590205.jpg" alt="" /></p>
 <ol>
 <li>everysec :  Redis 会使用后台子线程异步完后fsync 操作</li>
 <li>always : Redis  不会使用后台子线程异步执行</li>
 <li>aof 重写 : Redis 如果AOF 重写磁盘压力大，会导致fsync阻塞，这样主线程也会阻塞</li>
 </ol>
-
 <p>由于 fsync 后台子线程和 AOF 重写子进程的存在，主 IO 线程一般不会被阻塞。但是，如果在重写日志时，AOF 重写子进程的写入量比较大，fsync 线程也会被阻塞，进而阻塞主线程，导致延迟增加</p>
-
-<h3 id="toc_6">操作系统</h3>
-
-<h4 id="toc_7">swap</h4>
-
+<h3><a id="%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>操作系统</h3>
+<h4><a id="swap" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>swap</h4>
 <p>内存 swap 是操作系统里将内存数据在内存和磁盘间来回换入和换出的机制，涉及到磁盘的读写，所以，一旦触发 swap，无论是被换入数据的进程，还是被换出数据的进程，其性能都会受到慢速磁盘读写的影响。Redis 触发swap 主要是物理机内存不足</p>
-
 <ol>
 <li>Redis 实例自身使用了大量内存，导致物理机内存不足</li>
-<li><p>同一台机器上的其他进程，在进行大量的读写，这样Redis的实例内存量变少会导致swap</p></li>
+<li>同一台机器上的其他进程，在进行大量的读写，这样Redis的实例内存量变少会导致swap</li>
 </ol>
-
 <ul>
 <li>解决办法是使用集群，或者是增加机器的内存</li>
 </ul>
-
-<h4 id="toc_8">内存大页</h4>
-
+<h4><a id="%E5%86%85%E5%AD%98%E5%A4%A7%E9%A1%B5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内存大页</h4>
 <p>内存大页会给Redis 带来收益，但是也会导致Redis 客户端修改小的数据，也得拷贝内存大页，这会影响Redis正常的访问操作</p>
-
 <ul>
 <li>解决办法 关闭内存大页</li>
 </ul>
-
-<pre class="line-numbers"><code class="language-shell"> echo never /sys/kernel/mm/transparent_hugepage/enabled
+<pre><code class="language-shell"> echo never /sys/kernel/mm/transparent_hugepage/enabled
 </code></pre>
 
 
@@ -315,11 +290,15 @@ Worst run took 36x longer than the average latency.
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -334,8 +313,6 @@ Worst run took 36x longer than the average latency.
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

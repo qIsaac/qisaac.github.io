@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Redis 缓存替换策略</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/02/04 14:29 下午</span>
+          <span class="date">2021/02/04</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,69 +145,48 @@
 
       <div class="article-content">
       <p>保证合适的性价比，缓存大小一定是小于后端数据库的数据总量，通过缓存数据淘汰策略，即通过根据一定策略筛选出“不重要”的数据，然后删除这些数据，为新空间腾出空间的策略</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">缓存大小设置</h2>
-
-<p><img src="media/16124201772659/16124209926438.jpg" alt=""/></p>
-
+<h2><a id="%E7%BC%93%E5%AD%98%E5%A4%A7%E5%B0%8F%E8%AE%BE%E7%BD%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存大小设置</h2>
+<p><img src="media/16124201772659/16124209926438.jpg" alt="" /></p>
 <p>蓝线符合 二八特征，而红线 显示的重尾效应比较明显</p>
-
 <p>应用数据实际访问特征和成本开销来综合考虑，大容量设置调高性能，但是成本高，而小容量则不一定能起到加速作用，一般建议设置为总数据量的15%到30%，兼顾访问性能和内存开销</p>
-
-<pre class="line-numbers"><code class="language-shell">CONFIG SET maxmemory 4gb
+<pre><code class="language-shell">CONFIG SET maxmemory 4gb
 </code></pre>
-
 <p>缓存写满是不可避免的，及时确定了容量也难避免缓存写满的替换操作，而缓存替换需要解决淘汰哪些数据，以及如何处理淘汰的数据</p>
-
-<h2 id="toc_1">缓存策略</h2>
-
+<h2><a id="%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存策略</h2>
 <p>Redis 4.0 之前有 6种，4.0 之后又增加了2种。</p>
-
 <ul>
 <li>不进行数据淘汰：noeviction</li>
 <li>在设置了过期时间数据中淘汰：volatile-random,volatile-ttl,volatile-lru,volatile-lfu</li>
 <li>在所有的数据范围内淘汰：allkeys-random,allkeys-lru,allkeys-lfu</li>
 </ul>
-
-<p><img src="media/16124201772659/16125058587942.jpg" alt=""/></p>
-
+<p><img src="media/16124201772659/16125058587942.jpg" alt="" /></p>
 <p>无论是过期时间到了，还是内存达到了最大的maxmemory ，都会进行淘汰,被选中数据即使过期时间没到，也会被删除</p>
-
-<h3 id="toc_2">设置了过期时间键</h3>
-
+<h3><a id="%E8%AE%BE%E7%BD%AE%E4%BA%86%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E9%94%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>设置了过期时间键</h3>
 <ul>
 <li>volatile-ttl : 根据过期时间的先后进行删除，越早越先删除</li>
 <li>volatile-random : 随机进行删除</li>
 <li>volatile-lru : 使用LRU算法筛选</li>
 <li>volatile-lfu : 使用LFU算法筛选</li>
 </ul>
-
-<h3 id="toc_3">所有键</h3>
-
+<h3><a id="%E6%89%80%E6%9C%89%E9%94%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>所有键</h3>
 <ul>
 <li>allkeys-random : 从所有的键中随机选择进行删除</li>
 <li>allkeys-lru : 使用LRU算法在所有的数据中进行筛选</li>
-<li>allkeys-lfu : 使用LFU算法在所有的数据中进行筛选  <br/>
-### Redis中的LRU算法<br/>
-Redis 会记录每个数据最近一次被访问的时间戳。然后Redis 决定淘汰数据时第一次会随机选择出N个数据，把他作为一个集合。之后Redis会比较这N个数据中。lru字段最小的淘汰</li>
+<li>allkeys-lfu : 使用LFU算法在所有的数据中进行筛选  </li>
 </ul>
-
-<pre class="line-numbers"><code class="language-shell">CONFIG SET maxmemory-samples 100
+<h3><a id="redis%E4%B8%AD%E7%9A%84lru%E7%AE%97%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis中的LRU算法</h3>
+<p>Redis 会记录每个数据最近一次被访问的时间戳。然后Redis 决定淘汰数据时第一次会随机选择出N个数据，把他作为一个集合。之后Redis会比较这N个数据中。lru字段最小的淘汰</p>
+<pre><code class="language-shell">CONFIG SET maxmemory-samples 100
 </code></pre>
-
-<h3 id="toc_4">策略使用意见</h3>
-
+<h3><a id="%E7%AD%96%E7%95%A5%E4%BD%BF%E7%94%A8%E6%84%8F%E8%A7%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>策略使用意见</h3>
 <ul>
 <li>优先使用allkeys-lru ： 可以有效的使用LRU算法的优势，让冷热数据进行区分</li>
 <li>如果业务中的数据访问频率相差不大，建议使用功能allkeys-random</li>
 <li>如果有置顶的需求，使用volatile-lru,同时不给置顶数据设置过期时间，这样被置顶的数据一致不会被删除，而其他数据则会根据LRU进行删除</li>
 </ul>
-
-<h2 id="toc_5">缓存淘汰数据处理 <img src="media/16124201772659/16125073048944.jpg" alt=""/></h2>
-
-<p>干净数据：和最初数据库中读取的值相比，没有被修改过；可以直接丢弃<br/>
+<h2><a id="%E7%BC%93%E5%AD%98%E6%B7%98%E6%B1%B0%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E2%80%A8media1612420177265916125073048944-jpg" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存淘汰数据处理 <img src="media/16124201772659/16125073048944.jpg" alt="" /></h2>
+<p>干净数据：和最初数据库中读取的值相比，没有被修改过；可以直接丢弃<br />
 脏数据：和最出数据库中的读取值相比被修改过；需要回写到数据库中</p>
 
 
@@ -282,11 +263,15 @@ Redis 会记录每个数据最近一次被访问的时间戳。然后Redis 决�
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -301,8 +286,6 @@ Redis 会记录每个数据最近一次被访问的时间戳。然后Redis 决�
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>单点登录</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/11/27 16:23 下午</span>
+          <span class="date">2020/11/27</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,14 +145,10 @@
 
       <div class="article-content">
       <span id="more"></span><!-- more -->
-
-<h3 id="toc_0">Redis+Cookie+Jackson+Filter实现单点登录</h3>
-
-<h3 id="toc_1">单点登录实现</h3>
-
-<h4 id="toc_2">封装Cookie</h4>
-
-<pre class="line-numbers"><code class="language-java">    //COOKIE_NAME cookie 的名字
+<h3><a id="redis-cookie-jackson-filter%E5%AE%9E%E7%8E%B0%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis+Cookie+Jackson+Filter实现单点登录</h3>
+<h3><a id="%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E5%AE%9E%E7%8E%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>单点登录实现</h3>
+<h4><a id="%E5%B0%81%E8%A3%85cookie" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>封装Cookie</h4>
+<pre><code class="language-java">    //COOKIE_NAME cookie 的名字
     //COOKIE_DOMAIN 要设置的域
     //写cookie
     public static void writeLoginToken(HttpServletResponse response, String token) {
@@ -195,9 +193,7 @@
         }
     }
 </code></pre>
-
-<h5 id="toc_3">domain 和cookie</h5>
-
+<h5><a id="domain%E5%92%8C-cookie" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>domain 和cookie</h5>
 <table>
 <thead>
 <tr>
@@ -205,7 +201,6 @@
 <th>cookie</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td style="text-align: left">a:A.xx.com</td>
@@ -229,14 +224,11 @@
 </tr>
 </tbody>
 </table>
-
 <blockquote>
 <p>注意：a、b不能互相拿到对方的cookie，c、d 可以共享a、e的cookie</p>
 </blockquote>
-
-<h4 id="toc_4">Redis包装</h4>
-
-<pre class="line-numbers"><code class="language-java">    //exTime seconds
+<h4><a id="redis%E5%8C%85%E8%A3%85" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis包装</h4>
+<pre><code class="language-java">    //exTime seconds
     public static String setEx(String key, String value, int exTime) {
         Jedis jedis = null;
         String result = null;
@@ -252,10 +244,8 @@
         return result;
     }
 </code></pre>
-
-<h4 id="toc_5">以登录为例实现</h4>
-
-<pre class="line-numbers"><code class="language-java">    @RequestMapping(value = &quot;login.do&quot;, method = RequestMethod.POST)
+<h4><a id="%E4%BB%A5%E7%99%BB%E5%BD%95%E4%B8%BA%E4%BE%8B%E5%AE%9E%E7%8E%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>以登录为例实现</h4>
+<pre><code class="language-java">    @RequestMapping(value = &quot;login.do&quot;, method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse&lt;User&gt; login(String username, String password, HttpSession session, HttpServletResponse httpServletResponse) {
         ServerResponse&lt;User&gt; response = iUserService.login(username, password);
@@ -266,23 +256,17 @@
         return response;
     }
 </code></pre>
-
-<h5 id="toc_6">流程：</h5>
-
+<h5><a id="%E6%B5%81%E7%A8%8B%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>流程：</h5>
 <ol>
 <li>获取session种到cookie中同时存user的json串到redis中</li>
 <li>对于需要验证登录的操作，首先获取cookie然后拿到token，以此为键获取redis中的数据</li>
 </ol>
-
-<h3 id="toc_7">session有效期的问题</h3>
-
+<h3><a id="session%E6%9C%89%E6%95%88%E6%9C%9F%E7%9A%84%E9%97%AE%E9%A2%98" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>session有效期的问题</h3>
 <blockquote>
 <p>登录后所有使用用户登录验证的操作都应重新设置session有效期，但是上述功能不能实现session的重置</p>
 </blockquote>
-
-<h3 id="toc_8">SessionExpireFilter 重置session有效期</h3>
-
-<pre class="line-numbers"><code class="language-java">@Override
+<h3><a id="sessionexpirefilter%E9%87%8D%E7%BD%AE-session%E6%9C%89%E6%95%88%E6%9C%9F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>SessionExpireFilter 重置session有效期</h3>
+<pre><code class="language-java">@Override
 public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String loginToken = CookieUtil.readLoginCookie(request);
@@ -296,11 +280,8 @@ public void doFilter(ServletRequest servletRequest, ServletResponse servletRespo
         filterChain.doFilter(servletRequest,servletResponse);
     }
 </code></pre>
-
 <p>如果有user则重新设置redis的过期时间</p>
-
-<h3 id="toc_9">总结</h3>
-
+<h3><a id="%E6%80%BB%E7%BB%93" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>总结</h3>
 <ol>
 <li>使用cookie的damain在一级域名下种下cookie</li>
 <li>使用redis的ex特性存储user信息，键为cookie的value值，值为user对象的json值</li>
@@ -382,11 +363,15 @@ public void doFilter(ServletRequest servletRequest, ServletResponse servletRespo
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -401,8 +386,6 @@ public void doFilter(ServletRequest servletRequest, ServletResponse servletRespo
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

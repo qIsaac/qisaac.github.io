@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Redis 实现消息队列</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/26 14:03 下午</span>
+          <span class="date">2021/01/26</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,32 +145,24 @@
 
       <div class="article-content">
       <p>消息队列要能支持组件通信消息的快速读写；消息队列的的存取需求：消息保序、处理重复消息、保证消息可靠；Redis 的 List 和 Streams 都能满足需求。</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">基于 List 的消息队列解决方案</h2>
-
+<h2><a id="%E5%9F%BA%E4%BA%8Elist%E7%9A%84%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基于 List 的消息队列解决方案</h2>
 <ol>
 <li>保证有序性 ：List  本身就是按先进先出的顺序进行存取的，所以可以保证消息的有序。生产者使用 LPUSH 写入数据，消费者使用 RPOP 消费消息，但是不能及时的通知消费者消费消息。可以通过 BRPOP 命令阻塞式读取，没有消息是阻塞，有新数据写入后开始执行</li>
 <li>保证幂等性：生产者发送消息前自身生成一个全局的ID，消费者对消息的ID和已经消费的ID保证幂等性</li>
-<li>保证消息的可靠性：List 提供了BRPOPLPUSH命令，从一个List消费消息，同时把另一个消息发送给另一个List </li>
+<li>保证消息的可靠性：List 提供了BRPOPLPUSH命令，从一个List消费消息，同时把另一个消息发送给另一个List</li>
 <li>但是存在消息积压的问题，Redis 内存压力大  </li>
 </ol>
-
-<h2 id="toc_1">基于 Streams 的消息队列的解决方案</h2>
-
+<h2><a id="%E5%9F%BA%E4%BA%8Estreams%E7%9A%84%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基于 Streams 的消息队列的解决方案</h2>
 <p>Streams 是Redis 专门为消息队列设计的数据结构类型，体用了丰富的消息队列操作命令</p>
-
 <ol>
 <li>XADD ： 插入消息，保证有序，可以自动生成全局唯一ID</li>
 <li>XREAD ：读取消息，可以按ID读取数据</li>
 <li>XREADGROUP ： 按消费组形式读取消息</li>
 <li>XPENDING 和 XACK ： XPENDING查询每个消费组内所有已读取但是未确认的消息，XACK ： 用于向消息队列确认消息处理完成</li>
 </ol>
-
-<h2 id="toc_2">二者对比</h2>
-
-<p><img src="media/16116410255553/16116445411095.jpg" alt=""/></p>
+<h2><a id="%E4%BA%8C%E8%80%85%E5%AF%B9%E6%AF%94" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>二者对比</h2>
+<p><img src="media/16116410255553/16116445411095.jpg" alt="" /></p>
 
 
     
@@ -244,11 +238,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -263,8 +261,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

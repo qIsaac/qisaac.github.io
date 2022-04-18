@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>无锁工具类</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/08 09:58 上午</span>
+          <span class="date">2021/01/08</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,28 +145,20 @@
 
       <div class="article-content">
       <p>对于简单的原子性问题，JDK包装了一系列的实现原子类，相对于互斥方案，无锁类性能高，解决了互斥问题，没有加锁和解锁的操作，以及对线程切换的性能损耗</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">无锁方案实现原理</h2>
-
+<h2><a id="%E6%97%A0%E9%94%81%E6%96%B9%E6%A1%88%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>无锁方案实现原理</h2>
 <p>硬件支持，CPU为了解决并发问题，提供CAS指令，CAS指令包含3个参数：共享变量内存地址A，用于比较的值B，共享变量的新值C，只有当A地址的值为B时才能将A地址的值设置为C，作为CPU的一条指令CAS本身就能保证原子性</p>
-
-<h3 id="toc_1">Java 原子类实现 count += 1</h3>
-
+<h3><a id="java%E5%8E%9F%E5%AD%90%E7%B1%BB%E5%AE%9E%E7%8E%B0-count-1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Java 原子类实现 count += 1</h3>
 <p>使用 AtomicLong 的 getAndIncrement() 方法实现</p>
-
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 final long getAndIncrement() {
   // this 和 valueOffSet 唯一确定共享变量的内存地址
   return unsafe.getAndAddLong(
     this, valueOffset, 1L);
 }
 </code></pre>
-
 <p>unsafe.getAndAddLong 方法首先读取内存中的值，之后循环调用compareAndSwapLong() 方法来尝试设置共享变量的值，直到成功为止。</p>
-
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 public final long getAndAddLong(
   Object o, long offset, long delta){
   long v;
@@ -183,28 +177,20 @@ native boolean compareAndSwapLong(
   long expected,
   long x);
 </code></pre>
-
-<h3 id="toc_2">CAS 模板代码</h3>
-
-<pre class="line-numbers"><code class="language-java">do {
+<h3><a id="cas%E6%A8%A1%E6%9D%BF%E4%BB%A3%E7%A0%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>CAS 模板代码</h3>
+<pre><code class="language-java">do {
   // 获取当前值
   oldV = xxxx；
   // 根据当前值计算新值
   newV = ...oldV...
 }while(!compareAndSet(oldV,newV);
 </code></pre>
-
-<h2 id="toc_3">原子类概览</h2>
-
+<h2><a id="%E5%8E%9F%E5%AD%90%E7%B1%BB%E6%A6%82%E8%A7%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原子类概览</h2>
 <p>JDK中的原子类很丰富，可以分类为<em>原子化的基本类型</em>，<em>原子化的引用类型</em>，<em>原子化数组</em>，<em>原子化对象属性更新器</em>，<em>原子化累加</em> 五个类别提供的方法基本相似，并且都有若干的原子类</p>
-
-<p><img src="media/16100710819489/16100727380549.jpg" alt=""/></p>
-
-<h3 id="toc_4">原子化的基本类型</h3>
-
+<p><img src="media/16100710819489/16100727380549.jpg" alt="" /></p>
+<h3><a id="%E5%8E%9F%E5%AD%90%E5%8C%96%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原子化的基本类型</h3>
 <p>相关实现有 AtomicBoolean、AtomicInteger 和 AtomicLong，提供的方法主要有以下这些</p>
-
-<pre class="line-numbers"><code class="language-java">    getAndIncrement() //原子化i++
+<pre><code class="language-java">    getAndIncrement() //原子化i++
     getAndDecrement() //原子化的i--
     incrementAndGet() //原子化的++i
     decrementAndGet() //原子化的--i
@@ -221,22 +207,14 @@ native boolean compareAndSwapLong(
     getAndAccumulate(x,func)
     accumulateAndGet(x,func)
 </code></pre>
-
-<h3 id="toc_5">原子化的对象引用类型</h3>
-
-<p>相关实现有 AtomicReference、AtomicStampedReference 和 AtomicMarkableReference，利用它们可以实现对象引用的原子化更新<br/>
+<h3><a id="%E5%8E%9F%E5%AD%90%E5%8C%96%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原子化的对象引用类型</h3>
+<p>相关实现有 AtomicReference、AtomicStampedReference 和 AtomicMarkableReference，利用它们可以实现对象引用的原子化更新<br />
 AtomicStampedReference 和 AtomicMarkableReference 这两个原子类可以解决 ABA 问题</p>
-
-<h3 id="toc_6">原子化数组</h3>
-
+<h3><a id="%E5%8E%9F%E5%AD%90%E5%8C%96%E6%95%B0%E7%BB%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原子化数组</h3>
 <p>相关实现有 AtomicIntegerArray、AtomicLongArray 和 AtomicReferenceArray，利用这些原子类，我们可以原子化地更新数组里面的每一个元素。这些类提供的方法和原子化的基本数据类型的区别仅仅是：每个方法多了一个数组的索引参数</p>
-
-<h3 id="toc_7">原子化对象属性更新</h3>
-
+<h3><a id="%E5%8E%9F%E5%AD%90%E5%8C%96%E5%AF%B9%E8%B1%A1%E5%B1%9E%E6%80%A7%E6%9B%B4%E6%96%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原子化对象属性更新</h3>
 <p>相关实现有 AtomicIntegerFieldUpdater、AtomicLongFieldUpdater 和 AtomicReferenceFieldUpdater，利用它们可以原子化地更新对象的属性，这三个方法都是利用反射机制实现的，对象属性必须是 volatile 类型的，只有这样才能保证可见性</p>
-
-<h3 id="toc_8">原子化累加器</h3>
-
+<h3><a id="%E5%8E%9F%E5%AD%90%E5%8C%96%E7%B4%AF%E5%8A%A0%E5%99%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原子化累加器</h3>
 <p>DoubleAccumulator、DoubleAdder、LongAccumulator 和 LongAdder，这四个类仅仅用来执行累加操作，相比原子化的基本数据类型，速度更快，但是不支持 compareAndSet() 方法</p>
 
 
@@ -313,11 +291,15 @@ AtomicStampedReference 和 AtomicMarkableReference 这两个原子类可以解�
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -332,8 +314,6 @@ AtomicStampedReference 和 AtomicMarkableReference 这两个原子类可以解�
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

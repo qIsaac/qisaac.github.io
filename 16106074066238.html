@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Redis 应用场景</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/14 14:56 下午</span>
+          <span class="date">2021/01/14</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,130 +145,95 @@
 
       <div class="article-content">
       <p>Redis的应用场景，以及Redis数据类型的各种可能的应用方式</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">缓存功能</h2>
-
+<h2><a id="%E7%BC%93%E5%AD%98%E5%8A%9F%E8%83%BD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存功能</h2>
 <ol>
 <li>Redis作为缓存，MySQL作为存储层，加速读写和降低后端压力</li>
 <li>实现</li>
 </ol>
-
-<p><img src="media/16106074066238/16106074834660.jpg" alt=""/></p>
-
-<h2 id="toc_1">计数功能</h2>
-
+<p><img src="media/16106074066238/16106074834660.jpg" alt="" /></p>
+<h2><a id="%E8%AE%A1%E6%95%B0%E5%8A%9F%E8%83%BD" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>计数功能</h2>
 <ol>
 <li>实现快速计数，查询缓存的功能，同时数据可以异步落地到其他数据源</li>
 <li>注意的问题：防作弊，不同维度计数，数据持久化到数据源</li>
 </ol>
-
-<h2 id="toc_2">共享Session</h2>
-
+<h2><a id="%E5%85%B1%E4%BA%ABsession" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>共享Session</h2>
 <ol>
 <li>分布式Web应用共享Session</li>
-<li>实现
-<img src="media/16106074066238/16106075337603.jpg" alt=""/></li>
+<li>实现<br />
+<img src="media/16106074066238/16106075337603.jpg" alt="" /></li>
 </ol>
-
-<h2 id="toc_3">限速</h2>
-
+<h2><a id="%E9%99%90%E9%80%9F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>限速</h2>
 <ol>
 <li>为了短信接口不被频繁访问，限制获取短信验证码的频率</li>
 </ol>
-
-<h2 id="toc_4">Redis 对象应用场景</h2>
-
-<h3 id="toc_5">哈希</h3>
-
+<h2><a id="redis%E5%AF%B9%E8%B1%A1%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 对象应用场景</h2>
+<h3><a id="%E5%93%88%E5%B8%8C" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>哈希</h3>
 <blockquote>
 <p>hgetall, 如果哈希数据较多会发生阻塞，如果获取部分则使用hmget,一定获取所有的则使用hscan</p>
 </blockquote>
-
-<h4 id="toc_6">内部编码</h4>
-
+<h4><a id="%E5%86%85%E9%83%A8%E7%BC%96%E7%A0%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内部编码</h4>
 <ul>
 <li>ziplist : 哈希元素个数小于hash-max-ziplist-entries(512),同时所有的值小于hash-max-ziplist-value(64)的值使用ziplist作为内部实现；减少内存使用</li>
-<li>hashtable : 无法满足ziplist的条件时 </li>
+<li>hashtable : 无法满足ziplist的条件时</li>
 </ul>
-
-<h3 id="toc_7">列表</h3>
-
+<h3><a id="%E5%88%97%E8%A1%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>列表</h3>
 <blockquote>
 <p>存储多个有序的字符串，Redis中可以同时在头和尾进行操作，可以充当栈和队列的角色</p>
 </blockquote>
-
 <p>操作图</p>
-
-<p><img src="media/16106074066238/16106074551318.jpg" alt=""/></p>
-
-<h4 id="toc_8">特点</h4>
-
+<p><img src="media/16106074066238/16106074551318.jpg" alt="" /></p>
+<h4><a id="%E7%89%B9%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>特点</h4>
 <ul>
 <li>元素有序</li>
 <li>元素可重复</li>
 </ul>
-
-<h4 id="toc_9">内部编码</h4>
-
+<h4><a id="%E5%86%85%E9%83%A8%E7%BC%96%E7%A0%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内部编码</h4>
 <ul>
 <li>ziplist : 哈希元素个数小于hash-max-ziplist-entries(512),同时所有的值小于hash-max-ziplist-value(64)的值使用ziplist作为内部实现；减少内存使用</li>
-<li>linkedList : 无法满足ziplist的条件时 </li>
+<li>linkedList : 无法满足ziplist的条件时</li>
 </ul>
-
-<h4 id="toc_10">使用场景</h4>
-
+<h4><a id="%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用场景</h4>
 <ul>
 <li>消息队列：lpush+brpop</li>
 <li>stack : lpush+lpop</li>
 <li>queue : lpush+rpop</li>
-<li>有限集合：lpush+ltrim </li>
+<li>有限集合：lpush+ltrim</li>
 </ul>
-
-<h3 id="toc_11">集合</h3>
-
+<h3><a id="%E9%9B%86%E5%90%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>集合</h3>
 <blockquote>
 <p>元素不重复，无序</p>
 </blockquote>
-
-<h4 id="toc_12">内部编码</h4>
-
+<h4><a id="%E5%86%85%E9%83%A8%E7%BC%96%E7%A0%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内部编码</h4>
 <ul>
 <li>intset : 元素都是整数并且元素个数小于set-intset-max-entries(512),减少内存使用</li>
 <li>hashtable : 无法满足intset时</li>
 </ul>
-
-<h4 id="toc_13">使用场景</h4>
-
+<h4><a id="%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用场景</h4>
 <ul>
 <li>标签 ：sadd</li>
-<li>生成随机数： spop/srandmember </li>
-<li>社交需求： sadd + sinter </li>
+<li>生成随机数： spop/srandmember</li>
+<li>社交需求： sadd + sinter</li>
 </ul>
-
-<h3 id="toc_14">有序集合</h3>
-
+<h3><a id="%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>有序集合</h3>
 <blockquote>
 <p>有序集合元素不能重复，但是score可以重复</p>
 </blockquote>
-
-<h4 id="toc_15">内部编码</h4>
-
+<h4><a id="%E5%86%85%E9%83%A8%E7%BC%96%E7%A0%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内部编码</h4>
 <ul>
 <li>ziplist : 哈希元素个数小于hash-max-ziplist-entries(128),同时所有的值小于hash-max-ziplist-value(64)的值使用ziplist作为内部实现；减少内存使用</li>
 <li>skiplist : 当ziplist不满足时</li>
 </ul>
-
-<h4 id="toc_16">使用场景</h4>
-
+<h4><a id="%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用场景</h4>
 <ol>
 <li>排行榜系统(点赞)</li>
+</ol>
+<ul>
 <li>zadd+zincrby 获得点赞</li>
 <li>zrem : 取消点赞</li>
 <li>zrevrange : 获取最多点赞数</li>
 <li>zsocre + zrank : 分数和排名</li>
-</ol>
+</ul>
 
 
     
@@ -342,11 +309,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -361,8 +332,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>ConcurrentHashMap</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/07 10:43 上午</span>
+          <span class="date">2021/01/07</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,31 +145,21 @@
 
       <div class="article-content">
       <p>线程不安全的情况下使用Map,可以使用ConcurrentHashMap,内部封装了锁和各种数据结构来保证访问Map是线程安全的</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">ConcurrentHashMap 设计演化</h2>
-
-<h3 id="toc_1">1.7 设计</h3>
-
+<h2><a id="concurrenthashmap%E8%AE%BE%E8%AE%A1%E6%BC%94%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>ConcurrentHashMap 设计演化</h2>
+<h3><a id="1-7%E8%AE%BE%E8%AE%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.7 设计</h3>
 <ol>
 <li>分离锁：将内部进行分段，里面是HashEntry数组，Hash相同的使用链表形式存放</li>
 <li>HashEntry内部使用了volatile修饰的value字段来保证可见性，利用不可变对象的机制改进利用了Unsafe提供的底层能力</li>
 </ol>
-
-<h4 id="toc_2">内部结构</h4>
-
-<p><img src="media/16099873811948/16099880479572.jpg" alt=""/></p>
-
+<h4><a id="%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内部结构</h4>
+<p><img src="media/16099873811948/16099880479572.jpg" alt="" /></p>
 <ol>
 <li>Segment的数量有 concurrentcyLevel 决定，默认16</li>
 </ol>
-
-<h4 id="toc_3">get源码分析</h4>
-
+<h4><a id="get%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>get源码分析</h4>
 <p>get操作需要保证可见性，不需要太多的同步操作逻辑</p>
-
-<pre class="line-numbers"><code class="language-java">public V get(Object key) {
+<pre><code class="language-java">public V get(Object key) {
         Segment&lt;K,V&gt; s; // manually integrate access methods to reduce overhead
         HashEntry&lt;K,V&gt;[] tab;
         int h = hash(key.hashCode());
@@ -182,12 +174,9 @@
         return null;
     }
 </code></pre>
-
-<h4 id="toc_4">put源码分析</h4>
-
+<h4><a id="put%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>put源码分析</h4>
 <p>put操作首先通过二次Hash解决Hash冲突问题，然后以Unsafe调用方式直接获取Segment，然后进行安全的线程操作</p>
-
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
  public V put(K key, V value) {
         Segment&lt;K,V&gt; s;
         if (value == null)
@@ -202,10 +191,8 @@
     }
 
 </code></pre>
-
 <p>put 核心代码</p>
-
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 final V put(K key, int hash, V value, boolean onlyIfAbsent) {
             // scanAndLockForPut会去查找是否有key相同Node
             // 无论如何，确保获取锁
@@ -233,19 +220,14 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
         }
 
 </code></pre>
-
 <ol>
 <li>ConcurrentHashMap 会获取再入锁，以保证数据一致性，Segment本身基于ReentrantLock 扩张实现，在并发修改期间是线程安全的</li>
 <li>进行重复性扫描，确定key是否在数组中，以此来决定是更新还是新增操作</li>
 <li>扩容是对Segment进行扩容</li>
 </ol>
-
-<h4 id="toc_5">size</h4>
-
+<h4><a id="size" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>size</h4>
 <p>ConcurrentHashMap 通过重试机制（RETRIES_BEFORE_LOCK，指定重试次数 2）试图获取可靠值，如果没有变化则返回，否则进行加锁操作</p>
-
-<h3 id="toc_6">1.8 设计</h3>
-
+<h3><a id="1-8%E8%AE%BE%E8%AE%A1" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>1.8 设计</h3>
 <ol>
 <li>内部仍然保持Segment，仅仅是为了保证序列化的兼容性，不再有结构作用</li>
 <li>初始化改为lazy-load方式</li>
@@ -253,15 +235,12 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
 <li>使用CAS操作，特定场合下进行无锁操作</li>
 <li>使用Unsafe和LongAdder 之类的底层，进行极端情况的优化 </li>
 </ol>
-
-<h4 id="toc_7">内部结构</h4>
-
+<h4><a id="%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内部结构</h4>
 <ol>
 <li>内部红黑数被拆分成两块,TreeNode负责维护属性和查找功能，TreeBin维护红黑树的结构，并负责红黑树的加锁和解锁</li>
 <li>新增转移节点 ForwardingNode 扩容时会用到，通过判断该节点，保证线程的安全性</li>
 </ol>
-
-<pre class="line-numbers"><code class="language-java"> static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; {
+<pre><code class="language-java"> static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; {
         final int hash;
         // 不可变
         final K key;
@@ -271,10 +250,8 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
         // … 
     }
 </code></pre>
-
-<h4 id="toc_8">get方法</h4>
-
-<pre class="line-numbers"><code class="language-java">
+<h4><a id="get%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>get方法</h4>
+<pre><code class="language-java">
     public V get(Object key) {
         Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; e, p; int n, eh; K ek;
         // 计算hashcode
@@ -301,18 +278,15 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
         return null;
     }
 </code></pre>
-
-<h4 id="toc_9">put方法</h4>
-
+<h4><a id="put%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>put方法</h4>
 <ol>
-<li>如果数组为空初始化，初始化完走 2 </li>
+<li>如果数组为空初始化，初始化完走 2</li>
 <li>计算当前槽点有没有值，如果没值CAS继续创建，失败继续自旋直到成功，槽点有值走 3</li>
 <li>如果槽点是转移节点，则一直自旋等待扩容完成后再走 4</li>
 <li>槽点有值锁定当前槽点，保证线程安全，添加到列表的结尾或者是红黑树</li>
 <li>新增完后判断是否需要扩容，如果需要扩容则去扩容</li>
 </ol>
-
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
 final V putVal(K key, V value, boolean onlyIfAbsent) {
         // key 和 value 不允许为空
         if (key == null || value == null) throw new NullPointerException();
@@ -392,14 +366,10 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
         return null;
     }
 </code></pre>
-
-<h4 id="toc_10">put 操作如何保证线程安全</h4>
-
-<h5 id="toc_11">数组初始化时的线程安全</h5>
-
+<h4><a id="put%E6%93%8D%E4%BD%9C%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>put 操作如何保证线程安全</h4>
+<h5><a id="%E6%95%B0%E7%BB%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%97%B6%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>数组初始化时的线程安全</h5>
 <p>这是一个典型的 CAS 使用场景，利用 volatile 的 sizeCtl 作为互斥手段：如果发现竞争性的初始化，就 spin 在那里，等待条件恢复；否则利用 CAS 设置排他标志。如果成功则进行初始化；否则重试</p>
-
-<pre class="line-numbers"><code class="language-java">// 初始化table, 通过 sizeCtl 的变量赋值保证数组只能初始化一次
+<pre><code class="language-java">// 初始化table, 通过 sizeCtl 的变量赋值保证数组只能初始化一次
 private final Node&lt;K,V&gt;[] initTable() {
         Node&lt;K,V&gt;[] tab; int sc;
         // 通过自旋保证初始化一定能成功
@@ -428,18 +398,14 @@ private final Node&lt;K,V&gt;[] initTable() {
         return tab;
     }
 </code></pre>
-
-<h5 id="toc_12">新增槽节点值时的线程安全</h5>
-
+<h5><a id="%E6%96%B0%E5%A2%9E%E6%A7%BD%E8%8A%82%E7%82%B9%E5%80%BC%E6%97%B6%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>新增槽节点值时的线程安全</h5>
 <ol>
-<li>通过自旋保证一定可以成功 for (Node<K,V>[] tab = table;;) </li>
+<li>通过自旋保证一定可以成功 for (Node&lt;K,V&gt;[] tab = table;;)</li>
 <li>当槽点为空时，通过CAS新增</li>
 <li>当槽点不为空时，锁住当前节点</li>
 <li>红黑树旋转时，锁住红黑树根节点，保证同一时刻，被一个线程旋转 </li>
 </ol>
-
-<h5 id="toc_13">扩容时线程安全</h5>
-
+<h5><a id="%E6%89%A9%E5%AE%B9%E6%97%B6%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>扩容时线程安全</h5>
 <ol>
 <li>首先需要老数组的只拷贝到新数组中，从数组的末尾开始拷贝</li>
 <li>拷贝时将原数组的槽节点锁住，保证原数组槽点不能操作，成功拷贝到新数组后，把原数组槽节点复制为转移节点</li>
@@ -447,8 +413,7 @@ private final Node&lt;K,V&gt;[] initTable() {
 <li>从数组的尾部开始拷贝，拷贝完一个就设置成转移节点</li>
 <li>所有槽节点拷贝完成后，直接把新数组整个复制给数组容器  </li>
 </ol>
-
-<pre class="line-numbers"><code class="language-java">// ① 创建新的数组  ② 移动拷贝每个元素到新数组中
+<pre><code class="language-java">// ① 创建新的数组  ② 移动拷贝每个元素到新数组中
 // tab 为原数组 nextTab 为新数组
 private final void transfer(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt;[] nextTab) {
         // 老数组的长度
@@ -674,11 +639,15 @@ private final void transfer(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt;[] nextTab) {
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -693,8 +662,6 @@ private final void transfer(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt;[] nextTab) {
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

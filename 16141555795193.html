@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Codis VS Redis Cluster</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/02/24 16:32 下午</span>
+          <span class="date">2021/02/24</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,82 +145,58 @@
 
       <div class="article-content">
       <p>Redis 切片集群使用多个实例保存数据，能够很好地应对大数据使用场景。而Codis 也是一种提供切片集群的解决方案</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">Codis 整体架构和基本流程</h2>
-
-<h3 id="toc_1">Codis 包含四个组件</h3>
-
+<h2><a id="codis%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E5%92%8C%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Codis 整体架构和基本流程</h2>
+<h3><a id="codis%E5%8C%85%E5%90%AB%E5%9B%9B%E4%B8%AA%E7%BB%84%E4%BB%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Codis 包含四个组件</h3>
 <ul>
 <li>codis server : 进行二次开发的Redis实例，增加了额外的数据结构，支持数据迁移操作，主要负责具体的读写请求</li>
 <li>codis proxy : 接受客户端请求并吧请求转发到codis server</li>
 <li>Zookeeper 集群 : 保存集群元数据</li>
-<li>codis dashboard 和codis fe : 集群管理工具  <img src="media/16141555795193/16141560288393.jpg" alt=""/></li>
+<li>codis dashboard 和codis fe : 集群管理工具  <img src="media/16141555795193/16141560288393.jpg" alt="" /></li>
 </ul>
-
-<h3 id="toc_2">基本流程</h3>
-
+<h3><a id="%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基本流程</h3>
 <ol>
 <li>先使用codis dashboard 设置 codis server 和codis proxy 访问地址，设置完成后codis server 和codis proxy 才会接受访问</li>
 <li>客户端直接和codis proxy 连接</li>
-<li>codis proxy 接受到请求后，查询请求数据和codis server 映射关系，并把请求转发给相应的codis server  <img src="media/16141555795193/16141565586050.jpg" alt=""/></li>
+<li>codis proxy 接受到请求后，查询请求数据和codis server 映射关系，并把请求转发给相应的codis server  <img src="media/16141555795193/16141565586050.jpg" alt="" /></li>
 </ol>
-
-<h2 id="toc_3">Codis 关键技术原理</h2>
-
-<h3 id="toc_4">数据如何在集群中分布</h3>
-
+<h2><a id="codis%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF%E5%8E%9F%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Codis 关键技术原理</h2>
+<h3><a id="%E6%95%B0%E6%8D%AE%E5%A6%82%E4%BD%95%E5%9C%A8%E9%9B%86%E7%BE%A4%E4%B8%AD%E5%88%86%E5%B8%83" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>数据如何在集群中分布</h3>
 <p>Codis 数据如何分布式通过逻辑槽映射完成的</p>
-
 <ol>
-<li>Codis 一共有1024个Slot ，编号依次是0到1023，把1024个逻辑槽 手动或者是自动分配给codis server </li>
-<li>读取数据时，根据CRC32算法计算数据key的哈希值，并把Hash值对1024取模，取模的值就是Slot编号，然后根据之情的映射到codis server  <img src="media/16141555795193/16141586691566.jpg" alt=""/></li>
+<li>Codis 一共有1024个Slot ，编号依次是0到1023，把1024个逻辑槽 手动或者是自动分配给codis server</li>
+<li>读取数据时，根据CRC32算法计算数据key的哈希值，并把Hash值对1024取模，取模的值就是Slot编号，然后根据之情的映射到codis server  <img src="media/16141555795193/16141586691566.jpg" alt="" /></li>
 </ol>
-
 <p>Slot 和 codis server的映射关系称为数据路由表，路由表会缓存在本地同时保存在zookeeper 中</p>
-
-<p><img src="media/16141555795193/16141589204536.jpg" alt=""/></p>
-
-<h4 id="toc_5">数据分布Codis 和 Redis Cluster 区别</h4>
-
+<p><img src="media/16141555795193/16141589204536.jpg" alt="" /></p>
+<h4><a id="%E6%95%B0%E6%8D%AE%E5%88%86%E5%B8%83codis%E5%92%8C-redis-cluster%E5%8C%BA%E5%88%AB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>数据分布Codis 和 Redis Cluster 区别</h4>
 <ol>
 <li>Codis 中的路由表是通过 codis dashboard 分配和修改的，并保存在Zookeeper中，如果修改会重新发送给codis proxy</li>
 <li>Redis Cluster 中数据路由表是通过实例间相互通信传递的，最后在每个实例上都会保存一份</li>
 </ol>
-
-<h3 id="toc_6">集群扩容和数据迁移</h3>
-
-<h4 id="toc_7">Codis 集群扩容</h4>
-
+<h3><a id="%E9%9B%86%E7%BE%A4%E6%89%A9%E5%AE%B9%E5%92%8C%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>集群扩容和数据迁移</h3>
+<h4><a id="codis%E9%9B%86%E7%BE%A4%E6%89%A9%E5%AE%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Codis 集群扩容</h4>
 <p>Codis 扩容包含codis proxy 和 codis server 增加</p>
-
 <ol>
 <li>codis server 增加
 <ol>
 <li>启动新的codis server ，将他加入集群</li>
 <li>把数据迁移到新的server  </li>
-</ol></li>
 </ol>
-
-<h5 id="toc_8">数据迁移流程</h5>
-
+</li>
+</ol>
+<h5><a id="%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB%E6%B5%81%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>数据迁移流程</h5>
 <p>Codis 按照数据Slot粒度进行迁移</p>
-
 <ol>
 <li>在源server上，Codis 从要迁移的Slot上随机选择一个数据，发送给目的server</li>
 <li>目的确认收到消息后，会给源server返回确认消息。源server删除刚迁移的数据</li>
 <li>不断重复 步骤1 和步骤2 知道所有Slot 迁移完成</li>
 </ol>
-
-<p><img src="media/16141555795193/16141600514909.jpg" alt=""/></p>
-
-<p>同步迁移和异步迁移：区别在迁移过程中源server是否阻塞；异步迁移bigkey 采用拆分指令的方式进行迁移<br/>
+<p><img src="media/16141555795193/16141600514909.jpg" alt="" /></p>
+<p>同步迁移和异步迁移：区别在迁移过程中源server是否阻塞；异步迁移bigkey 采用拆分指令的方式进行迁移<br />
   </p>
-
-<h3 id="toc_9">切片集群方案</h3>
-
-<p><img src="media/16141555795193/16141606753197.jpg" alt=""/></p>
+<h3><a id="%E5%88%87%E7%89%87%E9%9B%86%E7%BE%A4%E6%96%B9%E6%A1%88" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>切片集群方案</h3>
+<p><img src="media/16141555795193/16141606753197.jpg" alt="" /></p>
 
 
     
@@ -294,11 +272,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -313,8 +295,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

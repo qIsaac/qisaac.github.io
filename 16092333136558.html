@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>互斥锁</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/12/29 17:15 下午</span>
+          <span class="date">2020/12/29</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,17 +145,12 @@
 
       <div class="article-content">
       <p>互斥锁 -- 解决并发的原子性问题</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">锁模型</h2>
-
-<p><img src="media/16092333136558/16092334389707.jpg" alt=""/><br/>
+<h2><a id="%E9%94%81%E6%A8%A1%E5%9E%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>锁模型</h2>
+<p><img src="media/16092333136558/16092334389707.jpg" alt="" /><br />
  </p>
-
-<h2 id="toc_1">synchronized</h2>
-
-<pre class="line-numbers"><code class="language-java">class X {
+<h2><a id="synchronized" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>synchronized</h2>
+<pre><code class="language-java">class X {
   // 修饰非静态方法 锁定当前的实例对象
   synchronized void foo() {
     // 临界区
@@ -171,52 +168,37 @@
   }
 }  
 </code></pre>
-
 <p></p>
-
-<h2 id="toc_2">锁和受保护资源之间的关系</h2>
-
+<h2><a id="%E9%94%81%E5%92%8C%E5%8F%97%E4%BF%9D%E6%8A%A4%E8%B5%84%E6%BA%90%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>锁和受保护资源之间的关系</h2>
 <p> 合理的关系是 ： 受保护资源和锁之间合理的关联关系应该是 N:1 的关系</p>
-
 <ol>
 <li>保护没有关联关系的资源：用不同的锁保护不同的资源，细化锁的粒度，提升性能</li>
-<li>保护有关联关系的资源：覆盖所有资源  <br/>
-## 原子性<br/>
-本质是中间状态对外不可见</li>
+<li>保护有关联关系的资源：覆盖所有资源  </li>
 </ol>
-
-<h2 id="toc_3">死锁</h2>
-
+<h2><a id="%E5%8E%9F%E5%AD%90%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>原子性</h2>
+<p>本质是中间状态对外不可见</p>
+<h2><a id="%E6%AD%BB%E9%94%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>死锁</h2>
 <blockquote>
 <p>一组相互竞争资源的线程因相互等待，导致永久性阻塞的问题 </p>
 </blockquote>
-
-<h2 id="toc_4">死锁产生原因</h2>
-
+<h2><a id="%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>死锁产生原因</h2>
 <ol>
 <li>互斥：共享资源X和Y只能被同一线程占用</li>
 <li>占有且等待：线程T1占有X资源，在等待获取资源Y的时候不释放X资源</li>
 <li>不可抢占：其他线程不能抢占线程T1所占资源</li>
 <li>循环等待：线程T1等待线程T2占有的资源，线程T2等待线程T1占有的资源  </li>
 </ol>
-
-<h2 id="toc_5">预防死锁</h2>
-
+<h2><a id="%E9%A2%84%E9%98%B2%E6%AD%BB%E9%94%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>预防死锁</h2>
 <p>互斥是目的不能破坏，其他三个破坏其中的一个就可以</p>
-
 <ol>
 <li>’占有且等待‘ ： 一次性申请所需的资源</li>
 <li>’不可抢占‘ ： 占有资源的线程申请时如果申请不到，则释放自己持有的资源</li>
 <li>’循环等待‘ ： 按序申请资源</li>
 </ol>
-
-<h2 id="toc_6">等待通知</h2>
-
+<h2><a id="%E7%AD%89%E5%BE%85%E9%80%9A%E7%9F%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>等待通知</h2>
 <p>如果线程不满足条件阻塞自己，进入等待状态，当线程满足条件时，通知等待的线程继续执行</p>
-
-<h3 id="toc_7">synchronized 实现等待-通知</h3>
-
-<p><img src="media/16092333136558/16092362786969.jpg" alt=""/></p>
+<h3><a id="synchronized%E5%AE%9E%E7%8E%B0%E7%AD%89%E5%BE%85%E9%80%9A%E7%9F%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>synchronized 实现等待-通知</h3>
+<p><img src="media/16092333136558/16092362786969.jpg" alt="" /></p>
 
 
     
@@ -292,11 +274,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -311,8 +297,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

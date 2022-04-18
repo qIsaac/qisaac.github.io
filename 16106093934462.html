@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Redis 持久化</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/14 15:29 下午</span>
+          <span class="date">2021/01/14</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,78 +145,50 @@
 
       <div class="article-content">
       <p>Redis 来说，实现数据的持久化，避免从后端数据库中进行恢复，是至关重要的。目前，Redis 的持久化主要有两大机制，即 AOF（Append Only File）日志和 RDB 快照；AOF 避免数据在宕机的情况下不丢失，RDB 保证在宕机后能够快速的恢复数据</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">AOF</h2>
-
-<h3 id="toc_1">AOF实现</h3>
-
+<h2><a id="aof" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AOF</h2>
+<h3><a id="aof%E5%AE%9E%E7%8E%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AOF实现</h3>
 <p>AOF中记录的是Redis收到的每一条命令，这些命令一文本形式保存。Redis在向 AOF 里面记录日志时不会验证命令的合法性，这样如果先保存再执行可能在恢复的时候出现错误，所以Redis 是先执行命令，把数据写入内存，然后才记录日志；同时这样也不会阻塞当前执行的命令</p>
-
-<h3 id="toc_2">AOF风险</h3>
-
+<h3><a id="aof%E9%A3%8E%E9%99%A9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AOF风险</h3>
 <ul>
 <li>如果执行完一个命令，还没来得及记日志就宕机，导致数据命令丢失（用作数据库）</li>
 <li>可能阻塞下一个操作命令 </li>
 </ul>
-
-<h3 id="toc_3">写回策略</h3>
-
+<h3><a id="%E5%86%99%E5%9B%9E%E7%AD%96%E7%95%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>写回策略</h3>
 <p>AOF风险都与AOF写会磁盘的时机有关，如果能够控制一个写命令执行后AOF日志写会磁盘的时机，风险就可避免，在Redis 中就是 AOF 配置项 appendfsync 的三个可选值</p>
-
 <ul>
 <li>Always，同步写回：每个写命令执行完，立马同步地将日志写回磁盘；</li>
 <li>Everysec，每秒写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，每隔一秒把缓冲区中的内容写入磁盘；</li>
 <li>No，操作系统控制的写回：每个写命令执行完，只是先把日志写到 AOF 文件的内存缓冲区，由操作系统决定何时将缓冲区内容写回磁盘。</li>
 </ul>
-
-<p>三种策略<br/>
-<img src="media/16106093934462/16106108616899.jpg" alt=""/></p>
-
-<h3 id="toc_4">AOF重写</h3>
-
-<h4 id="toc_5">AOF重写原因</h4>
-
+<p>三种策略<br />
+<img src="media/16106093934462/16106108616899.jpg" alt="" /></p>
+<h3><a id="aof%E9%87%8D%E5%86%99" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AOF重写</h3>
+<h4><a id="aof%E9%87%8D%E5%86%99%E5%8E%9F%E5%9B%A0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AOF重写原因</h4>
 <p>AOF文件过大的性能问题：文件系统自身的限制，无法保存过大的文件；如果文件过大后期追加会导致效率低下；如果故障恢复则会非常缓慢，针对此可是使用AOF重写来控制。</p>
-
-<h4 id="toc_6">AOF重写原理</h4>
-
+<h4><a id="aof%E9%87%8D%E5%86%99%E5%8E%9F%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AOF重写原理</h4>
 <p>通过将旧文件中的多个命令，重写为新文件中根据键值对的最新状态，为它生成的一条对应的新命令写入</p>
-
-<h4 id="toc_7">AOF非阻塞重写</h4>
-
-<p><img src="media/16106093934462/16106114715590.jpg" alt=""/></p>
-
-<h2 id="toc_8">RDB</h2>
-
+<h4><a id="aof%E9%9D%9E%E9%98%BB%E5%A1%9E%E9%87%8D%E5%86%99" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>AOF非阻塞重写</h4>
+<p><img src="media/16106093934462/16106114715590.jpg" alt="" /></p>
+<h2><a id="rdb" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>RDB</h2>
 <p>保证可靠性，并能在宕机后迅速恢复的持久化方法，RDB 记录的是某一时刻的数据，不是操作，恢复时可以直接读取文件内容到内存中，完成快速恢复</p>
-
-<h3 id="toc_9">RDB文件生成方式</h3>
-
+<h3><a id="rdb%E6%96%87%E4%BB%B6%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>RDB文件生成方式</h3>
 <ul>
 <li>save : 在主线程中执行，会导致阻塞</li>
 <li>bgsave : 创建一个子线程，专门用于写入 RDB 文件，避免了主线程的阻塞 ，默认的执行方式  </li>
 </ul>
-
-<h3 id="toc_10">RDB 写时复制</h3>
-
-<p>保证快照完整以及主线程同时对数据进行修改，避免对正常业务的影响<br/>
-<img src="media/16106093934462/16108767013319.jpg" alt=""/><br/>
+<h3><a id="rdb%E5%86%99%E6%97%B6%E5%A4%8D%E5%88%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>RDB 写时复制</h3>
+<p>保证快照完整以及主线程同时对数据进行修改，避免对正常业务的影响<br />
+<img src="media/16106093934462/16108767013319.jpg" alt="" /><br />
  </p>
-
-<h3 id="toc_11">频繁执行全量备份影响</h3>
-
+<h3><a id="%E9%A2%91%E7%B9%81%E6%89%A7%E8%A1%8C%E5%85%A8%E9%87%8F%E5%A4%87%E4%BB%BD%E5%BD%B1%E5%93%8D" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>频繁执行全量备份影响</h3>
 <ul>
 <li>频繁的执行回给磁盘带来很大的压力</li>
 <li>通过 fork 创建子进程过程会阻塞主进程，而且主进程内存越大，阻塞越久   </li>
 </ul>
-
-<h2 id="toc_12">混合使用 AOF &amp; RDB</h2>
-
+<h2><a id="%E6%B7%B7%E5%90%88%E4%BD%BF%E7%94%A8aof-rdb" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>混合使用 AOF &amp; RDB</h2>
 <p>快照不用频繁的执行，避免了频繁的 fork 操作；AOF 只记录两次快照期间的操作，不会导致文件过大的问题，避免了重写开销。</p>
-
-<p><img src="media/16106093934462/16108773368913.jpg" alt=""/></p>
+<p><img src="media/16106093934462/16108773368913.jpg" alt="" /></p>
 
 
     
@@ -290,11 +264,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -309,8 +287,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

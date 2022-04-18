@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>String 应用场景</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/22 14:57 下午</span>
+          <span class="date">2021/01/22</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,78 +145,51 @@
 
       <div class="article-content">
       <p>String 提供了 “键 - 单值” 的存储模式，可以使用与很多场景。而且可以保存二进制字节流。但是 String 存在保存的数据内存消耗比较多的问题。</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">String 类型内存开销大</h2>
-
+<h2><a id="string%E7%B1%BB%E5%9E%8B%E5%86%85%E5%AD%98%E5%BC%80%E9%94%80%E5%A4%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>String 类型内存开销大</h2>
 <p>除了实际存储的数据，String 类型还需要额外的内存空间记录字符长度，空空间使用等原数据信息。</p>
-
-<h3 id="toc_1">数据存储方式</h3>
-
+<h3><a id="%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>数据存储方式</h3>
 <ol>
 <li>int编码 ：在保存64位的有符号整数时，String 会保存为一个 8 字节的 Long类型整数</li>
 <li>SDS：String 保存包含字符的数据时，就会使用SDS</li>
 </ol>
-
-<h4 id="toc_2">SDS（Simple Dynamic String）</h4>
-
-<p><img src="media/16112986565516/16113068758448.jpg" alt="" style="width:355px;"/></p>
-
+<h4><a id="sds%EF%BC%88simple-dynamic-string%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>SDS（Simple Dynamic String）</h4>
+<p><img src="media/16112986565516/16113068758448.jpg" alt="" style="width:355px;" /></p>
 <ol>
 <li>buf : 字节数组保存实际的数据</li>
 <li>len : 4个字节，表示 buf 已用长度</li>
 <li>alloc : 也占4个字节，表示 buf 实际使用长度</li>
 </ol>
-
 <p>len 和 alloc 就是String一个内存额外消耗</p>
-
-<h3 id="toc_3">RedisObject 的结构消耗</h3>
-
-<p>Redis 有多种数据类型，不同的数据类型有相同的元素要记录，Redis 使用RedisObject 结构来同一记录这些元数据，同时指向实际数据; RedisObject 包含一个8字节的元数据和一个8字节的指针 </p>
-
-<p><img src="media/16112986565516/16113113413125.jpg" alt="" style="width:251px;"/></p>
-
+<h3><a id="redisobject%E7%9A%84%E7%BB%93%E6%9E%84%E6%B6%88%E8%80%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>RedisObject 的结构消耗</h3>
+<p>Redis 有多种数据类型，不同的数据类型有相同的元素要记录，Redis 使用RedisObject 结构来同一记录这些元数据，同时指向实际数据; RedisObject 包含一个8字节的元数据和一个8字节的指针</p>
+<p><img src="media/16112986565516/16113113413125.jpg" alt="" style="width:251px;" /></p>
 <ol>
 <li>如果保存的是Long类型的整数时，RedisObject 中的指针就直接被赋值为整数数值。</li>
 <li>embstr : 如果为是字符串，并且字符串小于，等于 <strong>44</strong> 字节时，RedisObject 中元数据、指针、SDS 是一个连续的内存空间</li>
 <li>raw : 如果字符串，大于 <strong>44</strong> 字节时，  RedisObject 给SDS配置独立的内存空间并让指针指向SDS</li>
 </ol>
-
-<p><img src="media/16112986565516/16113118747392.jpg" alt=""/></p>
-
-<h3 id="toc_4">Redis 结构</h3>
-
+<p><img src="media/16112986565516/16113118747392.jpg" alt="" /></p>
+<h3><a id="redis%E7%BB%93%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Redis 结构</h3>
 <p>Redis 使用一个全局的哈希表保存所有的键值对，哈希表的每一项都是一个dictEntity，dictEntity 结构中有三个 8 字节的指针，指向 key、value、dictEntity, 因为Redis 采用 jemalloc 分配内存空间，会根据申请的字节数 N ，找到一个比N大，但是接近N的2次幂整数作为分配空间的大小，所以一个 dictEntity 占用 32 个字节</p>
-
-<h2 id="toc_5">压缩列表</h2>
-
+<h2><a id="%E5%8E%8B%E7%BC%A9%E5%88%97%E8%A1%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>压缩列表</h2>
 <p>Redis 中的压缩列表非常省空间，表头有三个字段，zlbytes : 列表长度； zltail : 列表尾的偏移量；zlen : 列表中 entry 的个数。还有一个zlend : 表示列表结束。压缩列表省内存主要是它使用一系列连续的entry保存，连续存放不需要额外的指针，节省了指针空间。</p>
-
-<p><img src="media/16112986565516/16113221478284.jpg" alt="" style="width:731px;"/></p>
-
-<h3 id="toc_6">压缩类表的Entry</h3>
-
+<p><img src="media/16112986565516/16113221478284.jpg" alt="" style="width:731px;" /></p>
+<h3><a id="%E5%8E%8B%E7%BC%A9%E7%B1%BB%E8%A1%A8%E7%9A%84entry" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>压缩类表的Entry</h3>
 <ol>
 <li>prev_len : 表示前一个 entry 长度，当一个 entry 长度小于 254 为 1 否则为 5；</li>
 <li>encoding : 表示编码方式 1 字节</li>
 <li>len : 自身的长度 4 字节</li>
 <li>key : 保存实际数据</li>
 </ol>
-
-<h2 id="toc_7">如何使用集合保存单值键值对</h2>
-
+<h2><a id="%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E9%9B%86%E5%90%88%E4%BF%9D%E5%AD%98%E5%8D%95%E5%80%BC%E9%94%AE%E5%80%BC%E5%AF%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如何使用集合保存单值键值对</h2>
 <p>在保存单值键值对时，可以采取基于 Hash 类型的二级编码方式；把一个单值的数据拆成两部分，前一部分作为 Hash 的键，后一个部分作为 Hash 的值</p>
-
-<h3 id="toc_8">二级编码的拆分</h3>
-
+<h3><a id="%E4%BA%8C%E7%BA%A7%E7%BC%96%E7%A0%81%E7%9A%84%E6%8B%86%E5%88%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>二级编码的拆分</h3>
 <p>因为哈希有两种数据结构压缩表和哈希表；如果超过下面设置的阈值就会从压缩列表转为哈希表，而且不可逆转</p>
-
 <ol>
 <li><em>hash-max-zlist-entries</em> : 表示压缩链表保存时最大的元素个数</li>
 <li><em>hash-max-zlist-values</em> : 表示压缩链表保存时单个元素的最大长度</li>
 </ol>
-
 <p>基于以上特性，使用二级编码是确保哈希集合中的元素个数</p>
 
 
@@ -291,11 +266,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -310,8 +289,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

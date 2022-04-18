@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>队列同步器</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/12/31 11:21 上午</span>
+          <span class="date">2020/12/31</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,27 +145,18 @@
 
       <div class="article-content">
       <p>队列同步器AbstractQueuedSynchronizer，用来构建锁或其他同步组件的基础框架，使用int变量表示同步状态，通过内置的FIFO队列来完成资源获取线程的排队工作</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">实现</h2>
-
-<p><img src="media/16093849133175/16097247901345.jpg" alt=""/></p>
-
-<h3 id="toc_1">同步队列</h3>
-
+<h2><a id="%E5%AE%9E%E7%8E%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>实现</h2>
+<p><img src="media/16093849133175/16097247901345.jpg" alt="" /></p>
+<h3><a id="%E5%90%8C%E6%AD%A5%E9%98%9F%E5%88%97" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>同步队列</h3>
 <p>同步器依赖内部的同步队列完成同步状态的管理，当前线程获取锁失败后，同步器将当前线程和等待状态构建为一个节点并加入到同步队列中，同时阻塞当前线程，当同步状态释放后，将首节点中的线程唤醒并重新获取同步资源；</p>
-
 <ol>
 <li>同步添加尾结点：只有一个线程获取到同步在资源，多个线程需要添加到尾部位置，需要保证线程安全，同步队列提供一个CAS方法设置tail节点</li>
 <li>设置首节点：获取同步状态成共的的线程完成，由于只有一个线程获取到同步状态，不需要CAS方法  </li>
 </ol>
-
-<h3 id="toc_2">独占同步状态获取与释放</h3>
-
+<h3><a id="%E7%8B%AC%E5%8D%A0%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81%E8%8E%B7%E5%8F%96%E4%B8%8E%E9%87%8A%E6%94%BE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>独占同步状态获取与释放</h3>
 <p>独占同步获取状态流程图</p>
-
-<pre class="line-numbers"><code class="language-java">
+<pre><code class="language-java">
     public final void acquire(int arg) {
         //1. 通过调用tryAcquire完成线程安全的获取同步状态
         // 2. 如果获取失败则通过addWaiter方法将构造的节点放入同步对列尾部
@@ -175,12 +168,9 @@
     }
     
 </code></pre>
-
-<h4 id="toc_3">同步器的addWaiter()和enq()</h4>
-
+<h4><a id="%E5%90%8C%E6%AD%A5%E5%99%A8%E7%9A%84addwaiter%E5%92%8C-enq" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>同步器的addWaiter()和enq()</h4>
 <p>addWaiter()</p>
-
-<pre class="line-numbers"><code class="language-java">private Node addWaiter(Node mode) {
+<pre><code class="language-java">private Node addWaiter(Node mode) {
         Node node = new Node(Thread.currentThread(), mode);
         // Try the fast path of enq; backup to full enq on failure
         Node pred = tail;
@@ -196,10 +186,8 @@
         return node;
     }
 </code></pre>
-
 <p>enq()</p>
-
-<pre class="line-numbers"><code class="language-java">// 通过CAS将并发添加节点编程串行化
+<pre><code class="language-java">// 通过CAS将并发添加节点编程串行化
 private Node enq(final Node node) {
         for (;;) {
             Node t = tail;
@@ -217,10 +205,8 @@ private Node enq(final Node node) {
     }
     
 </code></pre>
-
-<h4 id="toc_4">acquireQueued方法</h4>
-
-<pre class="line-numbers"><code class="language-java">// 1. 头节点是获取同步状态的节点，释放同步状态后会唤醒其后继节点，而被唤醒的后继节点需要判断他的前驱节点是否是头节点
+<h4><a id="acquirequeued%E6%96%B9%E6%B3%95" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>acquireQueued方法</h4>
+<pre><code class="language-java">// 1. 头节点是获取同步状态的节点，释放同步状态后会唤醒其后继节点，而被唤醒的后继节点需要判断他的前驱节点是否是头节点
 // 2. 维护同步队列的FIFO原则
 final boolean acquireQueued(final Node node, int arg) {
         boolean failed = true;
@@ -321,11 +307,15 @@ final boolean acquireQueued(final Node node, int arg) {
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -340,8 +330,6 @@ final boolean acquireQueued(final Node node, int arg) {
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 

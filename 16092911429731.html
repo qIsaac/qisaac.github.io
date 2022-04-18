@@ -42,7 +42,7 @@
         
         <li id=""><a target="_self" href="archives.html">Archives</a></li>
         
-        <li id=""><a target="_self" href="about.html">About</a></li>
+        <li id=""><a target="_self" href="index.html">Home</a></li>
         
         </ul>
 
@@ -73,17 +73,21 @@
         
         <li><a target="_self" href="archives.html">Archives</a></li>
         
-        <li><a target="_self" href="about.html">About</a></li>
+        <li><a target="_self" href="index.html">Home</a></li>
         
 
     <li><label>Categories</label></li>
 
         
+            <li><a href="Java.html">Java</a></li>
+        
+            <li><a href="Nginx.html">Nginx</a></li>
+        
+            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
+        
             <li><a href="Kubernetes.html">Kubernetes</a></li>
         
             <li><a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html">系统架构</a></li>
-        
-            <li><a href="Nginx.html">Nginx</a></li>
         
             <li><a href="Redis.html">Redis</a></li>
         
@@ -98,8 +102,6 @@
             <li><a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html">分布式基础</a></li>
         
             <li><a href="%E5%B9%B6%E5%8F%91.html">并发</a></li>
-        
-            <li><a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html">消息队列</a></li>
          
 
       </ul>
@@ -125,7 +127,7 @@
           <h1>Java线程</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2020/12/30 09:19 上午</span>
+          <span class="date">2020/12/30</span>
 
           <span>posted in&nbsp;</span> 
           
@@ -143,13 +145,9 @@
 
       <div class="article-content">
       <p>Java领域实现并发的主要手段就是多线程，而线程是有生命周期的，要学好他需要搞懂生命周期中各个节点的的转态转化机制。同时针对多线程如何配置合适的线程数，以及具体的使用场景</p>
-
 <span id="more"></span><!-- more -->
-
-<h2 id="toc_0">Java生命周期</h2>
-
-<h3 id="toc_1">Java线程的状态</h3>
-
+<h2><a id="java%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Java生命周期</h2>
+<h3><a id="java%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Java线程的状态</h3>
 <table>
 <thead>
 <tr>
@@ -157,7 +155,6 @@
 <th style="text-align: left">说明</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td style="text-align: left">NEW</td>
@@ -185,23 +182,18 @@
 </tr>
 </tbody>
 </table>
-
-<h3 id="toc_2">Java线程转态的转化</h3>
-
-<p><img src="media/16092911429731/16092936912561.jpg" alt="" style="width:809px;"/></p>
-
-<h2 id="toc_3">Java多线程</h2>
-
+<h3><a id="java%E7%BA%BF%E7%A8%8B%E8%BD%AC%E6%80%81%E7%9A%84%E8%BD%AC%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Java线程转态的转化</h3>
+<p><img src="media/16092911429731/16092936912561.jpg" alt="" style="width:809px;" /></p>
+<h2><a id="java%E5%A4%9A%E7%BA%BF%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Java多线程</h2>
 <p>在并发编程领域，提升性能的本质是提升硬件的利用率，具体就是提升CPU和I/O的利用率，而并发编程要求解决CPU和I/O的综合利用率，解决方案就是多线程</p>
-
-<h3 id="toc_4">线程个数</h3>
-
+<h3><a id="%E7%BA%BF%E7%A8%8B%E4%B8%AA%E6%95%B0" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>线程个数</h3>
 <ol>
 <li>对于CPU密集型，理论上线程数等于CPU核数，工程中设置为线程数+1，这样当线程因为内存页失效或者是其他原因导致的阻塞时，额外的线程可以切换，保证CPU利用率</li>
 <li>对于I/O密集型，CPU耗时和I/O耗时有关具体位置，参考公式为
 <ol>
 <li>\(最佳线程数 = CPU核数*[1+\frac{I/O耗时}{CPU耗时}]\)</li>
-</ol></li>
+</ol>
+</li>
 </ol>
 
 
@@ -278,11 +270,15 @@
 
       	<p class="cat-list">
         
+            <a href="Java.html"><strong>Java</strong></a>
+        
+            <a href="Nginx.html"><strong>Nginx</strong></a>
+        
+            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
+        
             <a href="Kubernetes.html"><strong>Kubernetes</strong></a>
         
             <a href="%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84.html"><strong>系统架构</strong></a>
-        
-            <a href="Nginx.html"><strong>Nginx</strong></a>
         
             <a href="Redis.html"><strong>Redis</strong></a>
         
@@ -297,8 +293,6 @@
             <a href="%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80.html"><strong>分布式基础</strong></a>
         
             <a href="%E5%B9%B6%E5%8F%91.html"><strong>并发</strong></a>
-        
-            <a href="%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.html"><strong>消息队列</strong></a>
          
         </p>
 
