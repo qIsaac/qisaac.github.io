@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  Semaphore - Isaac Blog
+  MySQL-锁 - Isaac Blog
   
   </title>
   
@@ -124,14 +124,14 @@
       <div class="markdown-body article-wrap">
        <div class="article">
           
-          <h1>Semaphore</h1>
+          <h1>MySQL-锁</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/01/04</span>
+          <span class="date">2022/04/19</span>
 
           <span>posted in&nbsp;</span> 
           
-              <span class="posted-in"><a href='%E5%B9%B6%E5%8F%91%E5%B7%A5%E5%85%B7.html'>并发工具</a></span>
+              <span class="posted-in"><a href='%E9%94%81.html'>锁</a></span>
            
          
           <span class="comments">
@@ -144,81 +144,7 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <p>用来控制同时访问特定资源的线程数量，它通过协调线程，合理的使用公共资源</p>
-<span id="more"></span><!-- more -->
-<h2><a id="%E4%BF%A1%E5%8F%B7%E9%87%8F%E6%A8%A1%E5%9E%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>信号量模型</h2>
-<p>信号量模型：一个等待队列，一个计数器，三个方法</p>
-<p><img src="media/16097532870959/16097536691476.jpg" alt="" style="width:439px;" /></p>
-<ul>
-<li>init : 设置计数器的初始值</li>
-<li>down : 计数器的值减一，如果此时计数器的值小于0，则当前线程被阻塞，否则当前线程可以继续执行</li>
-<li>up : 计数器的值增一，如果此时计数器的值小于等于0，唤醒等待队列中的一个线程，并将线程删除<br />
- </li>
-</ul>
-<pre><code class="language-java">
-class Semaphore{
-  // 计数器
-  int count;
-  // 等待队列
-  Queue queue;
-  // 初始化操作
-  Semaphore(int c){
-    this.count=c;
-  }
-  // 
-  void down(){
-    this.count--;
-    if(this.count&lt;0){
-      //将当前线程插入等待队列
-      //阻塞当前线程
-    }
-  }
-  void up(){
-    this.count++;
-    if(this.count&lt;=0) {
-      //移除等待队列中的某个线程T
-      //唤醒线程T
-    }
-  }
-}
-</code></pre>
-<h2><a id="%E9%99%90%E6%B5%81%E5%99%A8%E5%85%81%E8%AE%B8%E5%A4%9A%E4%B8%AA%E7%BA%BF%E7%A8%8B%E8%AE%BF%E9%97%AE%E4%B8%B4%E7%95%8C%E8%B5%84%E6%BA%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>限流器 - 允许多个线程访问临界资源</h2>
-<pre><code class="language-java">
-class ObjPool&lt;T, R&gt; {
-  final List&lt;T&gt; pool;
-  // 用信号量实现限流器
-  final Semaphore sem;
-  // 构造函数
-  ObjPool(int size, T t){
-    pool = new Vector&lt;T&gt;(){};
-    for(int i=0; i&lt;size; i++){
-      pool.add(t);
-    }
-    sem = new Semaphore(size);
-  }
-  // 利用对象池的对象，调用func
-  R exec(Function&lt;T,R&gt; func) {
-    T t = null;
-    sem.acquire();
-    try {
-      t = pool.remove(0);
-      return func.apply(t);
-    } finally {
-      pool.add(t);
-      sem.release();
-    }
-  }
-}
-// 创建对象池
-ObjPool&lt;Long, String&gt; pool = 
-  new ObjPool&lt;Long, String&gt;(10, 2);
-// 通过对象池获取t，之后执行  
-pool.exec(t -&gt; {
-    System.out.println(t);
-    return t.toString();
-});
-</code></pre>
-
+      
 
     
 
@@ -228,16 +154,13 @@ pool.exec(t -&gt; {
         <div class="large-6 columns">
         <p class="text-left" style="padding:15px 0px;">
       
-          <a href="16098106819138.html" 
-          title="Previous Post: ReadWriteLock - 读写锁">&laquo; ReadWriteLock - 读写锁</a>
-      
         </p>
         </div>
         <div class="large-6 columns">
       <p class="text-right" style="padding:15px 0px;">
       
-          <a  href="16093849133175.html" 
-          title="Next Post: 队列同步器">队列同步器 &raquo;</a>
+          <a  href="16502834310091.html" 
+          title="Next Post: MySQL事务隔离级别和MVCC">MySQL事务隔离级别和MVCC &raquo;</a>
       
       </p>
         </div>
@@ -426,8 +349,6 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-
-<script src="asset/prism.js"></script>
 
 
 <style type="text/css">
