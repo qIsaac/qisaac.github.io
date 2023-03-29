@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  动静分离 - Isaac Blog
+  基于规则优化 - Isaac Blog
   
   </title>
   
@@ -124,14 +124,14 @@
       <div class="markdown-body article-wrap">
        <div class="article">
           
-          <h1>动静分离</h1>
+          <h1>基于规则优化</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/04/01</span>
+          <span class="date">2022/05/11</span>
 
           <span>posted in&nbsp;</span> 
           
-              <span class="posted-in"><a href='%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F.html'>秒杀系统</a></span>
+              <span class="posted-in"><a href='%E5%85%B6%E4%BB%96.html'>其他</a></span>
            
          
           <span class="comments">
@@ -144,79 +144,52 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <p>“快”抽象起来讲，就只有两点，一点是提高单次请求的效率，一点是减少没必要的请求</p>
-<span id="more"></span><!-- more -->
-<h2><a id="%E5%8A%A8%E9%9D%99%E6%95%B0%E6%8D%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>动静数据</h2>
-<p>“动态数据”和“静态数据”的主要区别就是看页面中输出的数据是否和 URL、浏览者、时间、地域相关，以及是否含有 Cookie 等私密数据</p>
-<h3><a id="%E7%BC%93%E5%AD%98%E9%9D%99%E6%80%81%E6%95%B0%E6%8D%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存静态数据</h3>
+      <h2><a id="%E6%9D%A1%E4%BB%B6%E5%8C%96%E7%AE%80" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>条件化简</h2>
+<ol>
+<li>移除不必要的括号</li>
+<li>常量传递：某个表达式是某个列和某个常量做等值匹配，当这个表达式和其他涉及该列的表达式使用AND连接起来时，可以将其他表达式中的该参数的值替换为常数;
+<blockquote>
+<p>eg: a=5 AND b&gt;a 可以替换为 a=5 AND b&gt;5</p>
+</blockquote>
+</li>
+<li>等值传递：多个列之间存在等值匹配的关系</li>
+<li>移除没用条件：明显是<em>TRUE</em>或者是<em>FALSE</em>的表达式可以移除</li>
+<li>表达式计算：表达式中只包含常量的话，它的值会被先计算出来</li>
+</ol>
+<h2><a id="having%E5%AD%90%E5%8F%A5%E5%92%8C-where%E5%AD%90%E5%8F%A5%E5%90%88%E5%B9%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>HAVING 子句和 WHERE 子句合并</h2>
+<p>如果查询语句中没有出现诸如SUM、MAX等等的聚集函数以及GROUP BY子句，优化器就把HAVING子句和WHERE子句合并起来</p>
+<h2><a id="%E5%B8%B8%E9%87%8F%E8%A1%A8%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>常量表优化</h2>
+<ol>
+<li>查询的表中一条记录也没有或者是只有一条记录</li>
+<li>使用主键等值匹配或者唯一二级索引等值匹配作为搜索条件来查询某个表</li>
+</ol>
+<h2><a id="%E5%A4%96%E8%BF%9E%E6%8E%A5%E6%B6%88%E9%99%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>外连接消除</h2>
+<p>外连接查询中，指定的WHERE子句中包含被驱动表中的列不为NULL值的条件称之为空值拒（英文名：reject-NULL）。在被驱动表的WHERE子句符合空值拒绝的条件后，外连接和内连接可以相互转换</p>
+<h2><a id="%E5%AD%90%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>子查询优化</h2>
 <ol>
 <li>
-<p>静态数据存放在离用户最近的地方：常见的就三种，用户浏览器里、CDN 上或者在服务端的 Cache 中</p>
+<p>标量子查询和行子查询</p>
+<ol>
+<li>不相关：先执行子查询，然后把上一步的结果当做外层参数进行查询</li>
+<li>相关：先执行外层查询获取到数据，把相关值作为子查询条件参数查询，如果存在值，保留该条记录。</li>
+</ol>
 </li>
 <li>
-<p>静态化改造就是直接缓存HTTP链接：静态化改造是直接缓存 HTTP 连接而不是仅仅缓存数据，如下图所示，Web 代理服务器根据请求 URL，直接取出对应的 HTTP 响应头和响应体然后直接返回，这个响应过程简单得连 HTTP 协议都不用重新组装，甚至连 HTTP 请求头也不需要解析。<br />
-<img src="media/16172471826209/16172476468581.jpg" alt="" /></p>
+<p>IN子查询优化：<br />
+不直接将不相关子查询的结果集当作外层查询的参数，而是将该结果集写入一个临时表里；如果结果集不大，基于内存使用Memory存储引擎建临时表；如果结果集太大，则使用基于磁盘存储引擎建立临时表；</p>
 </li>
 <li>
-<p>让谁来缓存静态数据也很重要，Web 服务器（如 Nginx、Apache、Varnish）也更擅长处理大并发的静态文件请求。 </p>
+<p>将子查询转换为semi-join</p>
+<ol>
+<li>Table pullout （子查询中的表上拉）：当子查询的查询列表处只有主键或者唯一索引列时，可以直接把子查询中的表上拉到外层查询的FROM子句中，并把子查询中的搜索条件合并到外层查询的搜索条件中</li>
+<li>Table pullout</li>
+<li>DuplicateWeedout</li>
+<li>LooseScan</li>
+<li>Materialization</li>
+<li>FirstMatch</li>
+</ol>
 </li>
 </ol>
-<h2><a id="%E5%A6%82%E4%BD%95%E5%81%9A%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如何做动静分离</h2>
-<ol>
-<li>URL 唯一化：可以让缓存HTTP连接时方便</li>
-<li>分离浏览器相关的因素。浏览者相关的因素包含是否已登录，以及登录身份的这些服务单独拆分</li>
-<li>分离时间因素：服务端输出的时间也通过动态请求获取</li>
-<li>异步化地域因素：详情页中的地域相关的信息可以通过异步获取</li>
-<li>去掉Cookie ：在缓存的静态数据中不含有Cookie  </li>
-</ol>
-<h2><a id="%E5%8A%A8%E6%80%81%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>动态数据处理</h2>
-<p>通过缓存处理静态的数据，动态数据可以通过ESI（Edge Side Include） 和 CSI （Client Side Include）方案</p>
-<ol>
-<li>ESI ：在Web代理服务器上做动态内容请求，并将请求插入到静态页面中，当用户拿到的页面就是一个完整的页面了</li>
-<li>CSI：单独发起异步的JavaScript请求，从服务器上获取动态资源  </li>
-</ol>
-<h2><a id="%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E7%9A%84%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>动静分离的服务架构</h2>
-<p>根据架构的复杂度，有三种方案可选</p>
-<ol>
-<li>实体机单机部署</li>
-<li>同一Cache层部署</li>
-<li>上CDN</li>
-</ol>
-<h3><a id="%E5%AE%9E%E4%BD%93%E6%9C%BA%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>实体机单机部署</h3>
-<p>将虚拟机改为实体机，以增大 Cache 的容量，并且采用了一致性 Hash 分组的方式来提升命中率<br />
-<img src="media/16172471826209/16172668040455.jpg" alt="" /></p>
-<p>优点</p>
-<ol>
-<li>没有网络瓶颈，能够使用大内存</li>
-<li>能提升命中率，减少Gzip</li>
-<li>减少Cache失效压力，采用定时失效的方式  </li>
-</ol>
-<h3><a id="%E5%90%8C%E4%B8%80cache%E5%B1%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>同一Cache层</h3>
-<p>将单机的Cache层同一分割出来。形成一个单独的Cache 集群</p>
-<p><img src="media/16172471826209/16172670095549.jpg" alt="" /></p>
-<p>优点：</p>
-<ol>
-<li>单独一个Cache层，可以减少多个应用接入时使用Cache成本</li>
-<li>同一Cache的方案更容易维护</li>
-<li>可以共享内存，最大化使用内存，不同系统之间的内存可以动态的切换，从而能够有效的应对各种攻击 </li>
-</ol>
-<p>缺点：</p>
-<ol>
-<li>Cache内部的交换网络成为瓶颈</li>
-<li>缓存服务器的网卡成为瓶颈</li>
-<li>机器少风险大 </li>
-</ol>
-<p>解决方案：</p>
-<pre><code class="language-plain_text">可以再对 Cache 做 Hash 分组，即一组 Cache 缓存的内容相同，这样能够避免热点数据过度集中导致新的瓶颈产生
-</code></pre>
-<h3><a id="%E4%B8%8Acnd" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>上CND</h3>
-<p>待解决问题</p>
-<ol>
-<li>失效问题：保证 CDN 可以在秒级时间内，让分布在全国各地的 Cache 同时失效，这对 CDN 的失效系统要求很高</li>
-<li>命中率问题：Cache 分散又会导致访问请求命中同一个 Cache 的可能性降低</li>
-<li>发布更新问题：如果一个业务系统每周都有日常业务需要发布，那么发布系统必须足够简洁高效，而且你还要考虑有问题时快速回滚和排查问题的简便性 </li>
-</ol>
-<p>基于此选择 CDN 的二级 Cache 比较合适，因为二级 Cache 数量偏少，容量也更大，让用户的请求先回源的 CDN 的二级 Cache 中，如果没命中再回源站获取数据 <img src="media/16172471826209/16172683012518.jpg" alt="" /></p>
 
 
     
@@ -227,16 +200,16 @@
         <div class="large-6 columns">
         <p class="text-left" style="padding:15px 0px;">
       
-          <a href="16502834310091.html" 
-          title="Previous Post: MySQL事务隔离级别和MVCC">&laquo; MySQL事务隔离级别和MVCC</a>
+          <a href="16526904328586.html" 
+          title="Previous Post: ">&laquo; </a>
       
         </p>
         </div>
         <div class="large-6 columns">
       <p class="text-right" style="padding:15px 0px;">
       
-          <a  href="16172434231303.html" 
-          title="Next Post: 秒杀系统架构原则">秒杀系统架构原则 &raquo;</a>
+          <a  href="16504395784693.html" 
+          title="Next Post: 连接">连接 &raquo;</a>
       
       </p>
         </div>
@@ -425,8 +398,6 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-
-<script src="asset/prism.js"></script>
 
 
 <style type="text/css">

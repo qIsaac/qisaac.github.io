@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  动静分离 - Isaac Blog
+  连接 - Isaac Blog
   
   </title>
   
@@ -124,14 +124,14 @@
       <div class="markdown-body article-wrap">
        <div class="article">
           
-          <h1>动静分离</h1>
+          <h1>连接</h1>
      
         <div class="read-more clearfix">
-          <span class="date">2021/04/01</span>
+          <span class="date">2022/04/20</span>
 
           <span>posted in&nbsp;</span> 
           
-              <span class="posted-in"><a href='%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F.html'>秒杀系统</a></span>
+              <span class="posted-in"><a href='%E5%85%B6%E4%BB%96.html'>其他</a></span>
            
          
           <span class="comments">
@@ -144,79 +144,35 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <p>“快”抽象起来讲，就只有两点，一点是提高单次请求的效率，一点是减少没必要的请求</p>
+      <p>连接的本质就是把各个连接表中的记录都取出来依次匹配的组合加入结果集并返回给用户</p>
 <span id="more"></span><!-- more -->
-<h2><a id="%E5%8A%A8%E9%9D%99%E6%95%B0%E6%8D%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>动静数据</h2>
-<p>“动态数据”和“静态数据”的主要区别就是看页面中输出的数据是否和 URL、浏览者、时间、地域相关，以及是否含有 Cookie 等私密数据</p>
-<h3><a id="%E7%BC%93%E5%AD%98%E9%9D%99%E6%80%81%E6%95%B0%E6%8D%AE" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缓存静态数据</h3>
+<h2><a id="%E8%BF%9E%E6%8E%A5%E8%BF%87%E7%A8%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>连接过程</h2>
 <ol>
-<li>
-<p>静态数据存放在离用户最近的地方：常见的就三种，用户浏览器里、CDN 上或者在服务端的 Cache 中</p>
+<li>首先确定第一个需要查询的表，这个表称之为 <em>驱动表</em> ；根据单表查询条件查询</li>
+<li>针对 <em>驱动表</em> 产生的结果集中的每一条记录，分别需要到 <em>被驱动表</em> 表中查找匹配的记录</li>
+</ol>
+<h2><a id="%E5%86%85%E8%BF%9E%E6%8E%A5%E5%92%8C%E5%A4%96%E8%BF%9E%E6%8E%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>内连接和外连接</h2>
+<ul>
+<li>内连接的两个表，驱动表中的记录在被驱动表中找不到匹配的记录，该记录不会加入到最后的结果集，我们上边提到的连接都是所谓的内连接</li>
+<li>对于外连接的两个表，驱动表中的记录即使在被驱动表中没有匹配的记录，也仍然需要加入到结果集
+<ul>
+<li>左外连接：选取左边的表为驱动表</li>
+<li>右外连接：选取右边的表为驱动表</li>
+</ul>
 </li>
-<li>
-<p>静态化改造就是直接缓存HTTP链接：静态化改造是直接缓存 HTTP 连接而不是仅仅缓存数据，如下图所示，Web 代理服务器根据请求 URL，直接取出对应的 HTTP 响应头和响应体然后直接返回，这个响应过程简单得连 HTTP 协议都不用重新组装，甚至连 HTTP 请求头也不需要解析。<br />
-<img src="media/16172471826209/16172476468581.jpg" alt="" /></p>
-</li>
-<li>
-<p>让谁来缓存静态数据也很重要，Web 服务器（如 Nginx、Apache、Varnish）也更擅长处理大并发的静态文件请求。 </p>
-</li>
-</ol>
-<h2><a id="%E5%A6%82%E4%BD%95%E5%81%9A%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如何做动静分离</h2>
+</ul>
+<p>涉及 <em>单表</em> 的过滤条件放到 <em>WHERE</em> 子句中，把涉及 <em>两表</em> 的过滤条件都放到 <em>ON</em> 子句中，我们也一般把放到 <strong>ON子句中的过滤条件也称之为连接条件</strong></p>
+<h2><a id="%E8%BF%9E%E6%8E%A5%E7%9A%84%E5%8E%9F%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>连接的原理</h2>
+<h3><a id="%E5%B5%8C%E5%A5%97%E5%BE%AA%E7%8E%AF%E8%BF%9E%E6%8E%A5%EF%BC%88nested-loop-join%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>嵌套循环连接（Nested-Loop Join）</h3>
+<blockquote>
+<p>驱动表只访问一次，但被驱动表却可能被多次访问，访问次数取决于对驱动表执行单表查询后的结果集中的记录条数的连接执行方式称之为嵌套循环连接（Nested-Loop Join） </p>
+</blockquote>
 <ol>
-<li>URL 唯一化：可以让缓存HTTP连接时方便</li>
-<li>分离浏览器相关的因素。浏览者相关的因素包含是否已登录，以及登录身份的这些服务单独拆分</li>
-<li>分离时间因素：服务端输出的时间也通过动态请求获取</li>
-<li>异步化地域因素：详情页中的地域相关的信息可以通过异步获取</li>
-<li>去掉Cookie ：在缓存的静态数据中不含有Cookie  </li>
+<li>在连接查询中对被驱动表使用主键值或者唯一二级索引列的值进行等值查找的查询执行方式称之为：eq_ref</li>
+<li>连接查询的查询列表和过滤条件中可能只涉及被驱动表的部分列，而这些列都是某个索引的一部分，这种情况下即使不能使用eq_ref、ref、ref_or_null或者range这些访问方法执行对被驱动表的查询的话，也可以使用索引扫描</li>
 </ol>
-<h2><a id="%E5%8A%A8%E6%80%81%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>动态数据处理</h2>
-<p>通过缓存处理静态的数据，动态数据可以通过ESI（Edge Side Include） 和 CSI （Client Side Include）方案</p>
-<ol>
-<li>ESI ：在Web代理服务器上做动态内容请求，并将请求插入到静态页面中，当用户拿到的页面就是一个完整的页面了</li>
-<li>CSI：单独发起异步的JavaScript请求，从服务器上获取动态资源  </li>
-</ol>
-<h2><a id="%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E7%9A%84%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>动静分离的服务架构</h2>
-<p>根据架构的复杂度，有三种方案可选</p>
-<ol>
-<li>实体机单机部署</li>
-<li>同一Cache层部署</li>
-<li>上CDN</li>
-</ol>
-<h3><a id="%E5%AE%9E%E4%BD%93%E6%9C%BA%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>实体机单机部署</h3>
-<p>将虚拟机改为实体机，以增大 Cache 的容量，并且采用了一致性 Hash 分组的方式来提升命中率<br />
-<img src="media/16172471826209/16172668040455.jpg" alt="" /></p>
-<p>优点</p>
-<ol>
-<li>没有网络瓶颈，能够使用大内存</li>
-<li>能提升命中率，减少Gzip</li>
-<li>减少Cache失效压力，采用定时失效的方式  </li>
-</ol>
-<h3><a id="%E5%90%8C%E4%B8%80cache%E5%B1%82" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>同一Cache层</h3>
-<p>将单机的Cache层同一分割出来。形成一个单独的Cache 集群</p>
-<p><img src="media/16172471826209/16172670095549.jpg" alt="" /></p>
-<p>优点：</p>
-<ol>
-<li>单独一个Cache层，可以减少多个应用接入时使用Cache成本</li>
-<li>同一Cache的方案更容易维护</li>
-<li>可以共享内存，最大化使用内存，不同系统之间的内存可以动态的切换，从而能够有效的应对各种攻击 </li>
-</ol>
-<p>缺点：</p>
-<ol>
-<li>Cache内部的交换网络成为瓶颈</li>
-<li>缓存服务器的网卡成为瓶颈</li>
-<li>机器少风险大 </li>
-</ol>
-<p>解决方案：</p>
-<pre><code class="language-plain_text">可以再对 Cache 做 Hash 分组，即一组 Cache 缓存的内容相同，这样能够避免热点数据过度集中导致新的瓶颈产生
-</code></pre>
-<h3><a id="%E4%B8%8Acnd" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>上CND</h3>
-<p>待解决问题</p>
-<ol>
-<li>失效问题：保证 CDN 可以在秒级时间内，让分布在全国各地的 Cache 同时失效，这对 CDN 的失效系统要求很高</li>
-<li>命中率问题：Cache 分散又会导致访问请求命中同一个 Cache 的可能性降低</li>
-<li>发布更新问题：如果一个业务系统每周都有日常业务需要发布，那么发布系统必须足够简洁高效，而且你还要考虑有问题时快速回滚和排查问题的简便性 </li>
-</ol>
-<p>基于此选择 CDN 的二级 Cache 比较合适，因为二级 Cache 数量偏少，容量也更大，让用户的请求先回源的 CDN 的二级 Cache 中，如果没命中再回源站获取数据 <img src="media/16172471826209/16172683012518.jpg" alt="" /></p>
+<h3><a id="%E5%9F%BA%E4%BA%8E%E5%9D%97%E7%9A%84%E5%B5%8C%E5%A5%97%E5%BE%AA%E7%8E%AF%E8%BF%9E%E6%8E%A5%EF%BC%88block-nested-loop-join%EF%BC%89" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>基于块的嵌套循环连接（Block Nested-Loop Join）</h3>
+<p>MySQL中这种加入了join buffer的嵌套循环连接算法称之为基于块的嵌套连接（Block Nested-Loop Join）算法，join buffer就是执行连接查询前申请的一块固定大小的内存，先把若干条驱动表结果集中的记录装在这个join buffer中，然后开始扫描被驱动表，每一条被驱动表的记录一次性和join buffer中的多条驱动表记录做匹配，因为匹配的过程都是在内存中完成的，所以这样可以显著减少被驱动表的I/O代价</p>
 
 
     
@@ -227,16 +183,16 @@
         <div class="large-6 columns">
         <p class="text-left" style="padding:15px 0px;">
       
-          <a href="16502834310091.html" 
-          title="Previous Post: MySQL事务隔离级别和MVCC">&laquo; MySQL事务隔离级别和MVCC</a>
+          <a href="16522625688962.html" 
+          title="Previous Post: 基于规则优化">&laquo; 基于规则优化</a>
       
         </p>
         </div>
         <div class="large-6 columns">
       <p class="text-right" style="padding:15px 0px;">
       
-          <a  href="16172434231303.html" 
-          title="Next Post: 秒杀系统架构原则">秒杀系统架构原则 &raquo;</a>
+          <a  href="16504371391925.html" 
+          title="Next Post: MySQL-单表访问方法">MySQL-单表访问方法 &raquo;</a>
       
       </p>
         </div>
@@ -425,8 +381,6 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
-
-<script src="asset/prism.js"></script>
 
 
 <style type="text/css">

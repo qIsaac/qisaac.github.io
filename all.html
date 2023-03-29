@@ -124,6 +124,190 @@
 		<div class="markdown-body home-categories">
 		
 			<div class="article">
+                <a class="clearlink" href="16526904328586.html">
+                
+                  <h1></h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2022/05/16</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E5%85%B6%E4%BB%96.html'>其他</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="16522625688962.html">
+                
+                  <h1>基于规则优化</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<h2><a id="%E6%9D%A1%E4%BB%B6%E5%8C%96%E7%AE%80" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>条件化简</h2>
+<ol>
+<li>移除不必要的括号</li>
+<li>常量传递：某个表达式是某个列和某个常量做等值匹配，当这个表达式和其他涉及该列的表达式使用AND连接起来时，可以将其他表达式中的该参数的值替换为常数;
+<blockquote>
+<p>eg: a=5 AND b&gt;a 可以替换为 a=5 AND b&gt;5</p>
+</blockquote>
+</li>
+<li>等值传递：多个列之间存在等值匹配的关系</li>
+<li>移除没用条件：明显是<em>TRUE</em>或者是<em>FALSE</em>的表达式可以移除</li>
+<li>表达式计算：表达式中只包含常量的话，它的值会被先计算出来</li>
+</ol>
+<h2><a id="having%E5%AD%90%E5%8F%A5%E5%92%8C-where%E5%AD%90%E5%8F%A5%E5%90%88%E5%B9%B6" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>HAVING 子句和 WHERE 子句合并</h2>
+<p>如果查询语句中没有出现诸如SUM、MAX等等的聚集函数以及GROUP BY子句，优化器就把HAVING子句和WHERE子句合并起来</p>
+<h2><a id="%E5%B8%B8%E9%87%8F%E8%A1%A8%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>常量表优化</h2>
+<ol>
+<li>查询的表中一条记录也没有或者是只有一条记录</li>
+<li>使用主键等值匹配或者唯一二级索引等值匹配作为搜索条件来查询某个表</li>
+</ol>
+<h2><a id="%E5%A4%96%E8%BF%9E%E6%8E%A5%E6%B6%88%E9%99%A4" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>外连接消除</h2>
+<p>外连接查询中，指定的WHERE子句中包含被驱动表中的列不为NULL值的条件称之为空值拒（英文名：reject-NULL）。在被驱动表的WHERE子句符合空值拒绝的条件后，外连接和内连接可以相互转换</p>
+<h2><a id="%E5%AD%90%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>子查询优化</h2>
+<ol>
+<li>
+<p>标量子查询和行子查询</p>
+<ol>
+<li>不相关：先执行子查询，然后把上一步的结果当做外层参数进行查询</li>
+<li>相关：先执行外层查询获取到数据，把相关值作为子查询条件参数查询，如果存在值，保留该条记录。</li>
+</ol>
+</li>
+<li>
+<p>IN子查询优化：<br />
+不直接将不相关子查询的结果集当作外层查询的参数，而是将该结果集写入一个临时表里；如果结果集不大，基于内存使用Memory存储引擎建临时表；如果结果集太大，则使用基于磁盘存储引擎建立临时表；</p>
+</li>
+<li>
+<p>将子查询转换为semi-join</p>
+<ol>
+<li>Table pullout （子查询中的表上拉）：当子查询的查询列表处只有主键或者唯一索引列时，可以直接把子查询中的表上拉到外层查询的FROM子句中，并把子查询中的搜索条件合并到外层查询的搜索条件中</li>
+<li>Table pullout</li>
+<li>DuplicateWeedout</li>
+<li>LooseScan</li>
+<li>Materialization</li>
+<li>FirstMatch</li>
+</ol>
+</li>
+</ol>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                  
+                    <span class="date">2022/05/11</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E5%85%B6%E4%BB%96.html'>其他</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="16504395784693.html">
+                
+                  <h1>连接</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>连接的本质就是把各个连接表中的记录都取出来依次匹配的组合加入结果集并返回给用户</p>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                   <a href="16504395784693.html">Read more</a>&nbsp;&nbsp; 
+                    <span class="date">2022/04/20</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E5%85%B6%E4%BB%96.html'>其他</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
+                <a class="clearlink" href="16504371391925.html">
+                
+                  <h1>MySQL-单表访问方法</h1>
+                  <div class="a-content">
+                      
+                      <div class="a-content-text">
+                        
+                        	<p>MySQL Server有一个称为查询优化器的模块，一条查询语句进行语法解析之后就会被交给查询优化器来进行优化，优化的结果就是生成一个所谓的执行计划，这个执行计划表明了应该使用哪些索引进行查询，表之间的连接顺序是啥样的，最后会按照执行计划中的步骤调用存储引擎提供的方法来真正的执行查询，并将查询结果返回给用户</p>
+
+                        
+                      </div>
+                  </div>
+                </a>
+                <div class="read-more clearfix">
+                  <div class="more-left left">
+                   <a href="16504371391925.html">Read more</a>&nbsp;&nbsp; 
+                    <span class="date">2022/04/20</span>
+                    <span>posted in&nbsp;</span> 
+          				  
+          					    <span class="posted-in"><a href='%E5%85%B6%E4%BB%96.html'>其他</a></span>
+          				   
+                    
+
+                  </div>
+                  <div class="more-right right">
+                  <span class="comments">
+                      
+
+                       
+                  </span>
+                  </div>
+                </div>
+              </div><!-- article -->
+        
+			<div class="article">
                 <a class="clearlink" href="16503476999105.html">
                 
                   <h1>MySQL-锁</h1>
@@ -2461,31 +2645,31 @@
 	      
 		      
 			      <li class="post">
+			        <a href="16526904328586.html"></a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16522625688962.html">基于规则优化</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16504395784693.html">连接</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
+			        <a href="16504371391925.html">MySQL-单表访问方法</a>
+			      </li>
+		     
+		  
+		      
+			      <li class="post">
 			        <a href="16503476999105.html">MySQL-锁</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="16502834310091.html">MySQL事务隔离级别和MVCC</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="16172471826209.html">动静分离</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="16172434231303.html">秒杀系统架构原则</a>
-			      </li>
-		     
-		  
-		      
-			      <li class="post">
-			        <a href="16157046811341.html">MySQL 高性能索引策略</a>
 			      </li>
 		     
 		  
