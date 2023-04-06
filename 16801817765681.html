@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  消息队列 - Isaac Blog
+  构造器注入和Setter 注入 - Isaac Blog
   
   </title>
   
@@ -115,99 +115,95 @@
        
 
  <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
 </script>
 <div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="16064653024829.html">
-                
-                  <h1>如何选择RabbitMQ和Kafka</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                   <a href="16064653024829.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/11/27</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-          				   
-                    
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>构造器注入和Setter 注入</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2023/03/30</span>
 
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='Spring%20IoC.html'>Spring IoC</a></span>
+           
+         
+          <span class="comments">
+            
 
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="16064652877153.html">
-                
-                  <h1>AMQ Model架构</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                   <a href="16064652877153.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/11/27</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-          				   
-                    
+            
+          </span>
 
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
+        </div>
+      </div><!-- article -->
 
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-              
+      <div class="article-content">
+      <p>构造器注入：Spring 团队推荐使用构造器注入方式，对象是不变的对象，依赖不能为空；保证完整化的初始化状态；会导致参数过多<br />
+Setter 注入：可选择注入；能够让对象变得更可配</p>
+<span id="more"></span><!-- more -->
+<h2><a id="setter%E6%B3%A8%E5%85%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setter 注入</h2>
+<h3><a id="%E4%BC%98%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>优点</h3>
+<ul>
+<li>对IDEs 比较友好</li>
+<li>属性是自文档模式</li>
+<li>通用类型的转化</li>
+</ul>
+<h3><a id="%E7%BC%BA%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缺点</h3>
+<ul>
+<li>setter 顺序没法确认</li>
+<li>并不是每个 setter 都需要调用</li>
+</ul>
+<h2><a id="%E6%9E%84%E9%80%A0%E5%99%A8%E6%B3%A8%E5%85%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>构造器注入</h2>
+<h3><a id="%E4%BC%98%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>优点</h3>
+<ul>
+<li>被管理的对象有个一致的状态</li>
+<li>减少 setter getter 方法</li>
+</ul>
+<h3><a id="%E7%BC%BA%E7%82%B9" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>缺点</h3>
 
 
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="16807837981060.html" 
+          title="Previous Post: Spring IoC">&laquo; Spring IoC</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="16801813115437.html" 
+          title="Next Post: 依赖注入和依赖查找">依赖注入和依赖查找 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
 
  <div class="large-4 medium-4 columns">
   <div class="hide-for-small">

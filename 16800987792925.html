@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  消息队列 - Isaac Blog
+  传统IoC 实现 - Isaac Blog
   
   </title>
   
@@ -115,99 +115,118 @@
        
 
  <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
 </script>
 <div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="16064653024829.html">
-                
-                  <h1>如何选择RabbitMQ和Kafka</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                   <a href="16064653024829.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/11/27</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-          				   
-                    
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>传统IoC 实现</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2023/03/29</span>
 
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='Spring%20IoC.html'>Spring IoC</a></span>
+           
+         
+          <span class="comments">
+            
 
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="16064652877153.html">
-                
-                  <h1>AMQ Model架构</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                   <a href="16064652877153.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/11/27</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-          				   
-                    
+            
+          </span>
 
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
+        </div>
+      </div><!-- article -->
 
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-              
+      <div class="article-content">
+      <p>Java Beans 最为IoC 容器</p>
+<span id="more"></span><!-- more -->
+<h2><a id="%E7%89%B9%E6%80%A7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>特性</h2>
+<ul>
+<li>依赖查询</li>
+<li>生命周期管理</li>
+<li>配置元信息</li>
+<li>事件</li>
+<li>自定义</li>
+<li>资源管理</li>
+<li>持久化</li>
+</ul>
+<h2><a id="%E8%A7%84%E8%8C%83" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>规范</h2>
+<ul>
+<li><a href="https://www.oracle.com/technetwork/java/javase/tech/index-jsp-138795.html">Java Beans</a></li>
+<li><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/beans/spec/beancontext.html">BeanContext</a></li>
+</ul>
+<h1><a id="%E8%BD%BB%E9%87%8F%E7%BA%A7%E5%AE%B9%E5%99%A8" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>轻量级容器</h1>
+<h2><a id="%E7%89%B9%E5%BE%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>特征</h2>
+<ul>
+<li>可以管理Application Code</li>
+<li>快速启动</li>
+<li>不需要一些特殊的配置来进行操作</li>
+<li>轻量级内存占用，最少API 依赖</li>
+<li>容器需要一些管控渠道，渠道能够部署和管理一些细粒度的对象，粗粒度的组件</li>
+</ul>
+<h2><a id="%E4%BC%98%E5%8A%BF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>优势</h2>
+<ul>
+<li>释放一些聚式容器</li>
+<li>最大化代码话复用</li>
+<li>更大程度上的面向对象</li>
+<li>更好的产品化</li>
+<li>更好的可测试化</li>
+</ul>
+<h2><a id="spring-ioc%E4%BC%98%E5%8A%BF" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Spring IoC 优势</h2>
+<ul>
+<li>典型的IoC管理，依赖查找和依赖注入</li>
+<li>AOP 抽象</li>
+<li>事务抽象</li>
+<li>事件机制</li>
+<li>SPI 扩展</li>
+<li>强大的第三方整合</li>
+<li>易于测试</li>
+<li>更好的面向对象</li>
+</ul>
 
 
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="16801813115437.html" 
+          title="Previous Post: 依赖注入和依赖查找">&laquo; 依赖注入和依赖查找</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="16526904328586.html" 
+          title="Next Post: "> &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
 
  <div class="large-4 medium-4 columns">
   <div class="hide-for-small">

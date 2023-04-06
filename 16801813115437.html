@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  消息队列 - Isaac Blog
+  依赖注入和依赖查找 - Isaac Blog
   
   </title>
   
@@ -115,99 +115,111 @@
        
 
  <script type="text/javascript">
-	$(function(){
-		$('#menu_item_index').addClass('is_active');
-	});
+  $(function(){
+    $('#menu_item_index').addClass('is_active');
+  });
 </script>
 <div class="row">
-	<div class="large-8 medium-8 columns">
-		<div class="markdown-body home-categories">
-		
-			<div class="article">
-                <a class="clearlink" href="16064653024829.html">
-                
-                  <h1>如何选择RabbitMQ和Kafka</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                   <a href="16064653024829.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/11/27</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-          				   
-                    
+  <div class="large-8 medium-8 columns">
+      <div class="markdown-body article-wrap">
+       <div class="article">
+          
+          <h1>依赖注入和依赖查找</h1>
+     
+        <div class="read-more clearfix">
+          <span class="date">2023/03/30</span>
 
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
+          <span>posted in&nbsp;</span> 
+          
+              <span class="posted-in"><a href='Spring%20IoC.html'>Spring IoC</a></span>
+           
+         
+          <span class="comments">
+            
 
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-			<div class="article">
-                <a class="clearlink" href="16064652877153.html">
-                
-                  <h1>AMQ Model架构</h1>
-                  <div class="a-content">
-                      
-                      <div class="a-content-text">
-                        
-                        	
-                        
-                      </div>
-                  </div>
-                </a>
-                <div class="read-more clearfix">
-                  <div class="more-left left">
-                   <a href="16064652877153.html">Read more</a>&nbsp;&nbsp; 
-                    <span class="date">2020/11/27</span>
-                    <span>posted in&nbsp;</span> 
-          				  
-          					    <span class="posted-in"><a href='RabbitMQ.html'>RabbitMQ</a></span>
-          				   
-                    
+            
+          </span>
 
-                  </div>
-                  <div class="more-right right">
-                  <span class="comments">
-                      
+        </div>
+      </div><!-- article -->
 
-                       
-                  </span>
-                  </div>
-                </div>
-              </div><!-- article -->
-        
-              
+      <div class="article-content">
+      <table>
+<thead>
+<tr>
+<th>类型</th>
+<th style="text-align: left">依赖处理</th>
+<th style="text-align: left">实现便利性</th>
+<th style="text-align: left">代码侵入性</th>
+<th>API 依赖性</th>
+<th>可读性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>依赖查找</td>
+<td style="text-align: left">主动获取</td>
+<td style="text-align: left">相对繁琐</td>
+<td style="text-align: left">侵入业务逻辑</td>
+<td>依赖容器API</td>
+<td>良好</td>
+</tr>
+<tr>
+<td>依赖注入</td>
+<td style="text-align: left">被动获取</td>
+<td style="text-align: left">相对便利</td>
+<td style="text-align: left">低侵入性</td>
+<td>不依赖容器API</td>
+<td>一般</td>
+</tr>
+</tbody>
+</table>
+<span id="more"></span><!-- more -->
+<h2><a id="%E4%BE%9D%E8%B5%96%E6%9F%A5%E6%89%BE%E5%92%8C%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>依赖查找和依赖注入</h2>
+<blockquote>
+<p>依赖查找是主动的或者是手动的依赖查找方式，通常需要容器或者标准API实现</p>
+</blockquote>
+<blockquote>
+<p>依赖注入是手动或者是自动依赖绑定，无序依赖特定容器乎或者API</p>
+</blockquote>
 
 
-			<div class="row">
-			  <div class="large-6 columns">
-			  <p class="text-left" style="padding-top:25px;">
-			   
-			  </p>
-			  </div>
-			  <div class="large-6 columns">
-			<p class="text-right" style="padding-top:25px;">
-			
-			</p>
-			  </div>
-			</div>
-		</div>
-	</div><!-- large 8 -->
+    
+
+      </div>
+
+      <div class="row">
+        <div class="large-6 columns">
+        <p class="text-left" style="padding:15px 0px;">
+      
+          <a href="16801817765681.html" 
+          title="Previous Post: 构造器注入和Setter 注入">&laquo; 构造器注入和Setter 注入</a>
+      
+        </p>
+        </div>
+        <div class="large-6 columns">
+      <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="16800987792925.html" 
+          title="Next Post: 传统IoC 实现">传统IoC 实现 &raquo;</a>
+      
+      </p>
+        </div>
+      </div>
+      <div class="comments-wrap">
+        <div class="share-comments">
+          
+
+          
+
+          
+        </div>
+      </div>
+    </div><!-- article-wrap -->
+  </div><!-- large 8 -->
+
+
+
 
  <div class="large-4 medium-4 columns">
   <div class="hide-for-small">
